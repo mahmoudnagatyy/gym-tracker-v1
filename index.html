@@ -203,10 +203,10 @@ tailwind.config = {
                         <table class="w-full text-left border-collapse">
                             <thead>
                                 <tr class="border-b border-white/5 bg-white/[0.02]">
-                                    <th class="py-4 px-6 font-label-caps text-xs text-zinc-500 uppercase">Date</th>
-                                    <th class="py-4 px-6 font-label-caps text-xs text-zinc-500 uppercase">Type</th>
-                                    <th class="py-4 px-6 font-label-caps text-xs text-zinc-500 uppercase text-right">Volume</th>
-                                    <th class="py-4 px-6 font-label-caps text-xs text-zinc-500 uppercase text-center w-12"></th>
+                                    <th class="py-4 px-3 md:px-6 font-label-caps text-[10px] md:text-xs text-zinc-500 uppercase">Date</th>
+                                    <th class="py-4 px-3 md:px-6 font-label-caps text-[10px] md:text-xs text-zinc-500 uppercase">Type</th>
+                                    <th class="py-4 px-3 md:px-6 font-label-caps text-[10px] md:text-xs text-zinc-500 uppercase text-right">Volume</th>
+                                    <th class="py-4 px-2 md:px-6 font-label-caps text-[10px] md:text-xs text-zinc-500 uppercase text-center w-10"></th>
                                 </tr>
                             </thead>
                             <tbody id="home-recent-table" class="font-body-md text-zinc-300">
@@ -700,13 +700,13 @@ function renderHome() {
     }
     recent.forEach(s => {
         tbody.innerHTML += `
-            <tr class="border-b border-white/5 hover:bg-white/[0.05] transition-colors cursor-pointer group" onclick="editSession(${s.startMs})">
-                <td class="py-4 px-6">${s.date}</td>
-                <td class="py-4 px-6"><span class="bg-orange-500/10 text-orange-400 border border-orange-500/30 px-2 py-1 rounded font-label-caps tracking-widest">${s.type}</span></td>
-                <td class="py-4 px-6 text-right text-cyan-400 font-bold">${s.totalVolume.toLocaleString()} kg</td>
-                <td class="py-4 px-6 text-center">
-                    <button onclick="deleteSession(${s.startMs}, event)" class="text-zinc-600 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100 p-1">
-                        <span class="material-symbols-outlined text-[20px]">delete</span>
+            <tr class="border-b border-white/5 hover:bg-white/[0.05] transition-colors cursor-pointer" onclick="editSession(${s.startMs})">
+                <td class="py-4 px-3 md:px-6 whitespace-nowrap text-sm text-zinc-400">${s.date}</td>
+                <td class="py-4 px-3 md:px-6 whitespace-nowrap"><span class="bg-orange-500/10 text-orange-400 border border-orange-500/30 px-2 py-1 rounded font-label-caps tracking-widest text-xs">${s.type}</span></td>
+                <td class="py-4 px-3 md:px-6 text-right text-cyan-400 font-bold whitespace-nowrap text-sm">${s.totalVolume.toLocaleString()} kg</td>
+                <td class="py-4 px-2 md:px-6 text-center">
+                    <button onclick="deleteSession(${s.startMs}, event)" class="text-zinc-600 hover:text-red-500 transition-colors p-2 active:scale-95">
+                        <span class="material-symbols-outlined text-[18px]">delete</span>
                     </button>
                 </td>
             </tr>
