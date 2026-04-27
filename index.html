@@ -297,8 +297,13 @@ tailwind.config = {
                     
                     <div class="mt-auto flex flex-col gap-3 pt-4 border-t border-white/10">
                             <button onclick="addSet()" id="btn-add-set" class="w-full border-2 border-dashed border-orange-500/50 text-orange-500 font-bold py-3 rounded-lg hover:bg-orange-500/10 transition-colors tracking-widest">+ ADD SET</button>
-                            <button onclick="finishWorkout()" class="w-full bg-[#00E5FF] text-black font-bold py-4 rounded-lg hover:bg-cyan-400 transition-colors shadow-[0_0_15px_rgba(0,227,253,0.3)]">FINISH & SAVE SESSION</button>
-                        </div>
+                            <div class="flex gap-3">
+                                <button onclick="deleteSession()" id="btn-delete-session" class="hidden bg-red-500/10 border border-red-500 text-red-500 font-bold py-4 px-4 rounded-lg hover:bg-red-500 hover:text-white transition-colors flex items-center justify-center shadow-[0_0_10px_rgba(239,68,68,0.2)]">
+                                    <span class="material-symbols-outlined">delete</span>
+                                </button>
+                                <button onclick="finishWorkout()" class="flex-1 bg-[#00E5FF] text-black font-bold py-4 rounded-lg hover:bg-cyan-400 transition-colors shadow-[0_0_15px_rgba(0,227,253,0.3)]">FINISH & SAVE SESSION</button>
+                            </div>
+                    </div>
                     </div>
                 </div>
             </div>
@@ -717,6 +722,8 @@ function startWorkout() {
     const time = document.getElementById('wo-time').value;
     const bw = document.getElementById('wo-bw').value;
     
+    document.getElementById('btn-delete-session').classList.add('hidden');
+    
     woState = {
         type, date, time, bw,
         startMs: Date.now(),
@@ -883,6 +890,8 @@ function editSession(startMs) {
     document.getElementById('edit-time').value = woState.time || '';
     document.getElementById('edit-bw').value = woState.bw || '';
     
+    document.getElementById('btn-delete-session').classList.remove('hidden');
+    
     switchNav('workout');
     document.getElementById('workout-setup').classList.add('hidden');
     document.getElementById('workout-active').classList.remove('hidden');
@@ -891,9 +900,25 @@ function editSession(startMs) {
     document.getElementById('wo-metadata-bar').classList.remove('hidden');
     document.getElementById('wo-metadata-bar').classList.add('flex');
     
-    if(woState.exercises.length > 0) woState.currExIdx = 0;
+    woState.currExIdx = 0;
     renderWOExercises();
     renderWOSets();
+}
+
+function deleteSession() {
+    if(!woState || !woState.isEditing) return;
+    if(confirm('WARNING: Are you sure you want to permanently delete this session?')) {
+        sessions.splice(woState.editIndex, 1);
+        localStorage.setItem('kinetic_sessions', JSON.stringify(sessions));
+        
+        document.getElementById('workout-active').classList.add('hidden');
+        document.getElementById('workout-active').classList.remove('flex');
+        document.getElementById('workout-setup').classList.remove('hidden');
+        
+        woState = null;
+        switchNav('home');
+        syncToCloud();
+    }
 }
 
 function finishWorkout() {
