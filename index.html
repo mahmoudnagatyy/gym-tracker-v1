@@ -206,6 +206,7 @@ tailwind.config = {
                                     <th class="py-4 px-6 font-label-caps text-xs text-zinc-500 uppercase">Date</th>
                                     <th class="py-4 px-6 font-label-caps text-xs text-zinc-500 uppercase">Type</th>
                                     <th class="py-4 px-6 font-label-caps text-xs text-zinc-500 uppercase text-right">Volume</th>
+                                    <th class="py-4 px-6 font-label-caps text-xs text-zinc-500 uppercase text-center w-12"></th>
                                 </tr>
                             </thead>
                             <tbody id="home-recent-table" class="font-body-md text-zinc-300">
@@ -695,17 +696,33 @@ function renderHome() {
     tbody.innerHTML = '';
     const recent = [...sessions].reverse().slice(0, 6);
     if(recent.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="3" class="py-6 text-center text-zinc-500">No sessions recorded yet.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="4" class="py-6 text-center text-zinc-500">No sessions recorded yet.</td></tr>`;
     }
     recent.forEach(s => {
         tbody.innerHTML += `
-            <tr class="border-b border-white/5 hover:bg-white/[0.05] transition-colors cursor-pointer" onclick="editSession(${s.startMs})">
+            <tr class="border-b border-white/5 hover:bg-white/[0.05] transition-colors cursor-pointer group" onclick="editSession(${s.startMs})">
                 <td class="py-4 px-6">${s.date}</td>
                 <td class="py-4 px-6"><span class="bg-orange-500/10 text-orange-400 border border-orange-500/30 px-2 py-1 rounded font-label-caps tracking-widest">${s.type}</span></td>
                 <td class="py-4 px-6 text-right text-cyan-400 font-bold">${s.totalVolume.toLocaleString()} kg</td>
+                <td class="py-4 px-6 text-center">
+                    <button onclick="deleteSession(${s.startMs}, event)" class="text-zinc-600 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100 p-1">
+                        <span class="material-symbols-outlined text-[20px]">delete</span>
+                    </button>
+                </td>
             </tr>
         `;
     });
+}
+
+function deleteSession(startMs, event) {
+    if(event) event.stopPropagation();
+    if(!confirm("Are you sure you want to completely delete this session? This action cannot be undone.")) return;
+    
+    sessions = sessions.filter(s => s.startMs !== startMs);
+    localStorage.setItem('kinetic_sessions', JSON.stringify(sessions));
+    
+    syncToCloud();
+    renderHome();
 }
 
 // --- WORKOUT LOGGER ---
