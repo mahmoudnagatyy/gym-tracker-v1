@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Gym Tracker Premium</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+    :root {
+        --bg-color: #0f172a;
+        --card-bg: #1e293b;
+        --primary: #3b82f6;
+        --primary-hover: #2563eb;
+        --success: #10b981;
+        --danger: #ef4444;
+        --warning: #f59e0b;
+        --text-main: #f8fafc;
+        --text-muted: #94a3b8;
+        --border: #334155;
+        --font-heading: 'Barlow Condensed', sans-serif;
+        --font-body: 'DM Sans', sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+        background-color: var(--bg-color);
+        color: var(--text-main);
+        font-family: var(--font-body);
+        line-height: 1.5;
+        padding-bottom: 80px;
+    }
+
+    h1, h2, h3 { font-family: var(--font-heading); text-transform: uppercase; }
+    
+    .header {
+        position: sticky; top: 0; background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(10px);
+        padding: 1rem; border-bottom: 1px solid var(--border); z-index: 100;
+        display: flex; justify-content: space-between; align-items: center;
+    }
+
+    .header-title { font-size: 1.5rem; font-weight: 700; color: var(--primary); }
+    .status-indicator { font-size: 0.875rem; font-weight: 500; display: flex; align-items: center; gap: 0.5rem; }
+    .status-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .status-online { background-color: var(--success); box-shadow: 0 0 8px var(--success); }
+    .status-offline { background-color: var(--danger); box-shadow: 0 0 8px var(--danger); }
+
+    .nav {
+        display: flex; gap: 0.5rem; padding: 1rem; overflow-x: auto; scrollbar-width: none;
+    }
+    .nav::-webkit-scrollbar { display: none; }
+    .nav-btn {
+        background: var(--card-bg); color: var(--text-main); border: 1px solid var(--border);
+        padding: 0.5rem 1rem; border-radius: 99px; font-family: var(--font-heading);
+        font-size: 1.1rem; cursor: pointer; white-space: nowrap; transition: all 0.2s;
+    }
+    .nav-btn.active { background: var(--primary); border-color: var(--primary); }
+
+    .container { padding: 0 1rem; max-width: 800px; margin: 0 auto; display: none; }
+    .container.active { display: block; animation: fadeIn 0.3s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    .card { background: var(--card-bg); border-radius: 12px; padding: 1.5rem; margin-bottom: 1rem; border: 1px solid var(--border); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+    .card-title { font-size: 1.25rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
+
+    .btn {
+        background: var(--primary); color: white; border: none; padding: 0.75rem 1.5rem;
+        border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.2s; width: 100%; font-family: var(--font-body);
+    }
+    .btn:hover { background: var(--primary-hover); }
+    .btn-success { background: var(--success); }
+    .btn-success:hover { background: #059669; }
+    .btn-danger { background: var(--danger); }
+    .btn-danger:hover { background: #dc2626; }
+    .btn-outline { background: transparent; border: 1px solid var(--primary); color: var(--primary); }
+
+    .input-group { margin-bottom: 1rem; }
+    .input-group label { display: block; font-size: 0.875rem; color: var(--text-muted); margin-bottom: 0.25rem; }
+    .input-group input, .input-group select {
+        width: 100%; background: var(--bg-color); border: 1px solid var(--border); color: var(--text-main);
+        padding: 0.75rem; border-radius: 6px; font-family: var(--font-body);
+    }
+    .input-group input:focus, .input-group select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2); }
+
+    .exercise-block { border-left: 3px solid var(--primary); padding-left: 1rem; margin-bottom: 1.5rem; }
+    .exercise-title { font-size: 1.2rem; margin-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: center; }
+    
+    .set-row { display: flex; gap: 0.5rem; margin-bottom: 0.5rem; align-items: center; }
+    .set-row input { width: 70px; text-align: center; }
+    .set-row span { color: var(--text-muted); width: 60px; text-align: right; }
+    .remove-set { color: var(--danger); cursor: pointer; font-size: 1.2rem; font-weight: bold; background: none; border: none; padding: 0.5rem; }
+
+    .timer-overlay {
+        position: fixed; bottom: 20px; right: 20px; background: rgba(30, 41, 59, 0.95);
+        border: 2px solid var(--primary); border-radius: 50%; width: 80px; height: 80px;
+        display: none; flex-direction: column; justify-content: center; align-items: center;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.5); z-index: 1000; cursor: pointer; backdrop-filter: blur(5px);
+    }
+    .timer-overlay.active { display: flex; animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+    @keyframes popIn { from { transform: scale(0); } to { transform: scale(1); } }
+    .timer-time { font-family: var(--font-heading); font-size: 1.8rem; font-weight: 700; color: var(--primary); }
+    .timer-label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; }
+
+    .water-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; margin-top: 1rem; }
+    .water-glass {
+        aspect-ratio: 1; background: var(--bg-color); border: 2px solid #38bdf8; border-radius: 8px 8px 24px 24px;
+        cursor: pointer; position: relative; overflow: hidden; transition: 0.3s;
+    }
+    .water-glass.filled::after {
+        content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 80%;
+        background: #38bdf8; opacity: 0.8;
+    }
+
+    .supplements-list { list-style: none; }
+    .supplements-list li {
+        display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0;
+        border-bottom: 1px solid var(--border);
+    }
+    .supplements-list li:last-child { border-bottom: none; }
+    .supp-checkbox { width: 24px; height: 24px; accent-color: var(--primary); cursor: pointer; }
+
+    .toast {
+        position: fixed; bottom: -50px; left: 50%; transform: translateX(-50%);
+        background: var(--success); color: white; padding: 0.75rem 1.5rem;
+        border-radius: 99px; font-weight: 600; opacity: 0; transition: all 0.3s ease; z-index: 2000;
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+    }
+    .toast.show { bottom: 20px; opacity: 1; }
+
+    .stat-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-bottom: 1rem; }
+    .stat-card { background: var(--bg-color); padding: 1rem; border-radius: 8px; border: 1px solid var(--border); text-align: center; }
+    .stat-val { font-family: var(--font-heading); font-size: 2rem; color: var(--primary); }
+    .stat-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; }
+
+    .export-grid { display: grid; grid-template-columns: 1fr; gap: 0.5rem; margin-top: 1rem; }
+    
+    #charts-container { margin-top: 1rem; }
+    .chart-wrapper { background: var(--bg-color); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; margin-bottom: 1rem; }
+</style>
+</head>
+<body>
+
+<div class="header">
+    <div class="header-title">GYM TRACKER</div>
+    <div class="status-indicator">
+        <div id="status-dot" class="status-dot status-offline"></div>
+        <span id="status-text">Checking...</span>
+    </div>
+</div>
+
+<div class="nav">
+    <button class="nav-btn active" onclick="switchTab('workout')">Workout</button>
+    <button class="nav-btn" onclick="switchTab('progress')">Progress</button>
+    <button class="nav-btn" onclick="switchTab('daily')">Daily Tracker</button>
+    <button class="nav-btn" onclick="switchTab('settings')">Settings / Export</button>
+</div>
+
+<!-- WORKOUT TAB -->
+<div id="tab-workout" class="container active">
+    <div class="card">
+        <h2 class="card-title">Setup Session</h2>
+        <div class="input-group">
+            <label>Session Type</label>
+            <select id="session-type" onchange="loadExercises()">
+                <option value="ANT-A">Anterior A (Push/Quads)</option>
+                <option value="POST-A">Posterior A (Pull/Hams)</option>
+                <option value="ANT-B">Anterior B (Push/Quads)</option>
+                <option value="POST-B">Posterior B (Pull/Hams)</option>
+            </select>
+        </div>
+        <div class="input-group">
+            <label>Bodyweight (kg) - Optional</label>
+            <input type="number" id="bodyweight" step="0.1" placeholder="e.g. 75.5">
+        </div>
+        <button class="btn" id="start-btn" onclick="startWorkout()">Start Workout</button>
+    </div>
+
+    <div id="workout-area" style="display: none;">
+        <div class="stat-grid" style="margin-bottom: 1.5rem;">
+            <div class="stat-card">
+                <div class="stat-val" id="current-vol">0</div>
+                <div class="stat-label">Total Volume (kg)</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-val" id="workout-timer">00:00</div>
+                <div class="stat-label">Duration</div>
+            </div>
+        </div>
+
+        <div id="exercises-list"></div>
+
+        <button class="btn btn-success" onclick="finishWorkout()" style="margin-top: 1rem; margin-bottom: 2rem;">Finish & Save Session</button>
+    </div>
+</div>
+
+<!-- PROGRESS TAB -->
+<div id="tab-progress" class="container">
+    <div class="card">
+        <h2 class="card-title">Analytics</h2>
+        <div class="stat-grid" id="lifetime-stats">
+            <div class="stat-card">
+                <div class="stat-val" id="tot-workouts">0</div>
+                <div class="stat-label">Total Workouts</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-val" id="tot-volume">0</div>
+                <div class="stat-label">Lifetime Vol (kg)</div>
+            </div>
+        </div>
+        
+        <div id="charts-container">
+            <div class="chart-wrapper">
+                <canvas id="volumeChart"></canvas>
+            </div>
+            <div class="chart-wrapper">
+                <canvas id="setsChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- DAILY TRACKER TAB -->
+<div id="tab-daily" class="container">
+    <div class="card">
+        <h2 class="card-title">Water Tracker</h2>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">Goal: 8 glasses (2L)</p>
+        <div class="water-grid" id="water-grid">
+            <!-- Glasses generated by JS -->
+        </div>
+    </div>
+
+    <div class="card">
+        <h2 class="card-title">Supplements</h2>
+        <ul class="supplements-list" id="supp-list">
+            <li><span>Creatine (5g)</span><input type="checkbox" class="supp-checkbox" onchange="saveDailies()"></li>
+            <li><span>Whey Protein</span><input type="checkbox" class="supp-checkbox" onchange="saveDailies()"></li>
+            <li><span>Multivitamin</span><input type="checkbox" class="supp-checkbox" onchange="saveDailies()"></li>
+            <li><span>Omega 3</span><input type="checkbox" class="supp-checkbox" onchange="saveDailies()"></li>
+            <li><span>Pre-workout</span><input type="checkbox" class="supp-checkbox" onchange="saveDailies()"></li>
+        </ul>
+    </div>
+</div>
+
+<!-- SETTINGS TAB -->
+<div id="tab-settings" class="container">
+    <div class="card">
+        <h2 class="card-title">Export Data</h2>
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;">Export your training history in various formats.</p>
+        
+        <div class="export-grid">
+            <button class="btn btn-success" onclick="exportAPIXLSX()">Download XLSX (From Server)</button>
+            <button class="btn btn-outline" onclick="exportLocalCSV()">Export Local CSV</button>
+            <button class="btn btn-outline" onclick="exportLocalJSON()">Export Local JSON</button>
+        </div>
+    </div>
+    
+    <div class="card">
+        <h2 class="card-title">Advanced</h2>
+        <button class="btn btn-danger" onclick="clearLocalData()">Clear Local Cache</button>
+    </div>
+</div>
+
+<!-- REST TIMER OVERLAY -->
+<div class="timer-overlay" id="rest-timer" onclick="stopRestTimer()">
+    <div class="timer-time" id="rest-time">60</div>
+    <div class="timer-label">Tap to skip</div>
+</div>
+
+<div class="toast" id="toast">✅ XLS updated</div>
+
+<script>
+// --- APP STATE ---
+const API_BASE = window.location.origin; // Assume served from FastAPI
+let isOnline = false;
+let currentWorkout = null;
+let workoutTimerInterval = null;
+let workoutSeconds = 0;
+let restTimerInterval = null;
+let restSeconds = 0;
+
+// Presets
+const PRESETS = {
+    'ANT-A': ['Incline Dumbbell Press', 'Pec Deck Fly', 'Leg Press', 'Leg Extensions', 'Lateral Raises', 'Tricep Pushdowns'],
+    'POST-A': ['Lat Pulldown', 'Seated Cable Row', 'Hamstring Curls', 'Calf Raises', 'Face Pulls', 'Bicep Curls'],
+    'ANT-B': ['Barbell Bench Press', 'Overhead Press', 'Hack Squat', 'Bulgarian Split Squats', 'Cable Laterals', 'Overhead Tricep Ext'],
+    'POST-B': ['Barbell Row', 'Pullups', 'Romanian Deadlift', 'Seated Calf Raises', 'Reverse Pec Deck', 'Hammer Curls']
+};
+
+// --- INITIALIZATION ---
+document.addEventListener('DOMContentLoaded', () => {
+    checkConnection();
+    initWater();
+    loadDailies();
+    
+    // Check connection every 10s
+    setInterval(checkConnection, 10000);
+});
+
+function switchTab(tabId) {
+    document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    
+    document.getElementById(`tab-${tabId}`).classList.add('active');
+    event.target.classList.add('active');
+    
+    if(tabId === 'progress') loadProgress();
+}
+
+function showToast(msg) {
+    const toast = document.getElementById('toast');
+    toast.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+// --- CONNECTION MANAGER ---
+async function checkConnection() {
+    try {
+        // Fast ping to root or a health endpoint
+        const res = await fetch(`${API_BASE}/sessions?limit=1`, { method: 'GET', signal: AbortSignal.timeout(2000) });
+        setOnlineStatus(res.ok);
+    } catch (e) {
+        setOnlineStatus(false);
+    }
+}
+
+function setOnlineStatus(online) {
+    isOnline = online;
+    const dot = document.getElementById('status-dot');
+    const txt = document.getElementById('status-text');
+    if(online) {
+        dot.className = 'status-dot status-online';
+        txt.textContent = '🟢 Connected';
+        syncLocalToServer(); // Sync queued if any
+    } else {
+        dot.className = 'status-dot status-offline';
+        txt.textContent = '🔴 Offline Mode';
+    }
+}
+
+// --- WORKOUT LOGIC ---
+function loadExercises() {
+    // Just a placeholder, actual load happens on start
+}
+
+function startWorkout() {
+    const type = document.getElementById('session-type').value;
+    const bw = document.getElementById('bodyweight').value;
+    
+    currentWorkout = {
+        date: new Date().toISOString().split('T')[0],
+        time: new Date().toLocaleTimeString(),
+        session_type: type,
+        bodyweight: bw ? parseFloat(bw) : null,
+        exercises: PRESETS[type].map(name => ({ name: name, sets: [] })),
+        total_volume: 0,
+        total_sets: 0
+    };
+    
+    document.querySelector('#tab-workout .card').style.display = 'none';
+    document.getElementById('workout-area').style.display = 'block';
+    
+    workoutSeconds = 0;
+    workoutTimerInterval = setInterval(() => {
+        workoutSeconds++;
+        const m = Math.floor(workoutSeconds / 60).toString().padStart(2, '0');
+        const s = (workoutSeconds % 60).toString().padStart(2, '0');
+        document.getElementById('workout-timer').textContent = `${m}:${s}`;
+    }, 1000);
+    
+    renderExercises();
+}
+
+function renderExercises() {
+    const list = document.getElementById('exercises-list');
+    list.innerHTML = '';
+    
+    currentWorkout.exercises.forEach((ex, exIdx) => {
+        const div = document.createElement('div');
+        div.className = 'card exercise-block';
+        
+        let setsHTML = '';
+        ex.sets.forEach((set, setIdx) => {
+            setsHTML += `
+                <div class="set-row">
+                    <span style="width: 20px;">${setIdx + 1}</span>
+                    <input type="number" placeholder="kg" value="${set.weight}" onchange="updateSet(${exIdx}, ${setIdx}, 'weight', this.value)">
+                    <span>×</span>
+                    <input type="number" placeholder="reps" value="${set.reps}" onchange="updateSet(${exIdx}, ${setIdx}, 'reps', this.value)">
+                    <span style="font-weight: bold; color: var(--success);">${set.weight * set.reps} kg</span>
+                    <button class="remove-set" onclick="removeSet(${exIdx}, ${setIdx})">×</button>
+                </div>
+            `;
+        });
+        
+        div.innerHTML = `
+            <div class="exercise-title">
+                ${ex.name}
+                <button class="btn btn-outline" style="width: auto; padding: 0.25rem 0.75rem;" onclick="addSet(${exIdx})">+ Set</button>
+            </div>
+            <div class="sets-container">${setsHTML}</div>
+        `;
+        list.appendChild(div);
+    });
+    
+    calculateTotals();
+}
+
+function addSet(exIdx) {
+    const ex = currentWorkout.exercises[exIdx];
+    // Copy prev set values if exists
+    let weight = '';
+    let reps = '';
+    if(ex.sets.length > 0) {
+        weight = ex.sets[ex.sets.length - 1].weight;
+        reps = ex.sets[ex.sets.length - 1].reps;
+    }
+    ex.sets.push({ weight: weight, reps: reps, volume: 0 });
+    renderExercises();
+}
+
+function updateSet(exIdx, setIdx, field, val) {
+    currentWorkout.exercises[exIdx].sets[setIdx][field] = val ? parseFloat(val) : 0;
+    const s = currentWorkout.exercises[exIdx].sets[setIdx];
+    s.volume = (s.weight || 0) * (s.reps || 0);
+    renderExercises();
+    
+    // Trigger rest timer only on rep update
+    if(field === 'reps' && val > 0) {
+        startRestTimer();
+    }
+}
+
+function removeSet(exIdx, setIdx) {
+    currentWorkout.exercises[exIdx].sets.splice(setIdx, 1);
+    renderExercises();
+}
+
+function calculateTotals() {
+    let vol = 0;
+    let setsCount = 0;
+    currentWorkout.exercises.forEach(ex => {
+        ex.sets.forEach(s => {
+            if(s.weight > 0 && s.reps > 0) {
+                vol += (s.weight * s.reps);
+                setsCount++;
+            }
+        });
+    });
+    currentWorkout.total_volume = vol;
+    currentWorkout.total_sets = setsCount;
+    document.getElementById('current-vol').textContent = vol;
+}
+
+// --- TIMER ---
+function startRestTimer() {
+    const timer = document.getElementById('rest-timer');
+    const timeEl = document.getElementById('rest-time');
+    timer.classList.add('active');
+    
+    restSeconds = 60;
+    timeEl.textContent = restSeconds;
+    
+    if(restTimerInterval) clearInterval(restTimerInterval);
+    restTimerInterval = setInterval(() => {
+        restSeconds--;
+        timeEl.textContent = restSeconds;
+        if(restSeconds <= 0) stopRestTimer();
+    }, 1000);
+}
+
+function stopRestTimer() {
+    if(restTimerInterval) clearInterval(restTimerInterval);
+    document.getElementById('rest-timer').classList.remove('active');
+}
+
+// --- SAVE & SYNC ---
+async function finishWorkout() {
+    if(!confirm("Finish and save session?")) return;
+    
+    clearInterval(workoutTimerInterval);
+    currentWorkout.duration = workoutSeconds;
+    
+    // Format for API
+    const flatSets = [];
+    currentWorkout.exercises.forEach(ex => {
+        ex.sets.forEach((s, idx) => {
+            if(s.weight > 0 && s.reps > 0) {
+                flatSets.push({
+                    exercise_name: ex.name,
+                    set_num: idx + 1,
+                    weight_kg: s.weight,
+                    reps: s.reps,
+                    volume: s.weight * s.reps
+                });
+            }
+        });
+    });
+    
+    const payload = {
+        date: currentWorkout.date,
+        time: currentWorkout.time,
+        session_type: currentWorkout.session_type,
+        bodyweight: currentWorkout.bodyweight,
+        total_volume: currentWorkout.total_volume,
+        total_sets: flatSets.length, // use actual completed sets
+        duration: currentWorkout.duration,
+        sets: flatSets
+    };
+
+    if(isOnline) {
+        try {
+            const res = await fetch(`${API_BASE}/sessions`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            if(res.ok) {
+                showToast("✅ XLS updated");
+                saveToLocalCache(payload); // Also save locally for charts
+            } else {
+                throw new Error("Server error");
+            }
+        } catch(e) {
+            console.error(e);
+            queueSync(payload);
+            saveToLocalCache(payload);
+            showToast("Saved offline");
+        }
+    } else {
+        queueSync(payload);
+        saveToLocalCache(payload);
+        showToast("Saved offline");
+    }
+    
+    // Reset UI
+    document.querySelector('#tab-workout .card').style.display = 'block';
+    document.getElementById('workout-area').style.display = 'none';
+    currentWorkout = null;
+    switchTab('progress');
+}
+
+function saveToLocalCache(session) {
+    const history = JSON.parse(localStorage.getItem('gym_history') || '[]');
+    history.push(session);
+    localStorage.setItem('gym_history', JSON.stringify(history));
+}
+
+function queueSync(session) {
+    const queue = JSON.parse(localStorage.getItem('gym_sync_queue') || '[]');
+    queue.push(session);
+    localStorage.setItem('gym_sync_queue', JSON.stringify(queue));
+}
+
+async function syncLocalToServer() {
+    const queue = JSON.parse(localStorage.getItem('gym_sync_queue') || '[]');
+    if(queue.length === 0) return;
+    
+    console.log("Syncing offline sessions...", queue.length);
+    const newQueue = [];
+    let synced = false;
+    for(let session of queue) {
+        try {
+            const res = await fetch(`${API_BASE}/sessions`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(session)
+            });
+            if(!res.ok) newQueue.push(session);
+            else synced = true;
+        } catch(e) {
+            newQueue.push(session);
+        }
+    }
+    localStorage.setItem('gym_sync_queue', JSON.stringify(newQueue));
+    if(synced) showToast("✅ Offline data synced & XLS updated");
+}
+
+// --- DAILY TRACKER ---
+function initWater() {
+    const grid = document.getElementById('water-grid');
+    grid.innerHTML = '';
+    const today = new Date().toISOString().split('T')[0];
+    const saved = JSON.parse(localStorage.getItem(`water_${today}`) || '0');
+    
+    for(let i=1; i<=8; i++) {
+        const glass = document.createElement('div');
+        glass.className = `water-glass ${i <= saved ? 'filled' : ''}`;
+        glass.onclick = () => toggleWater(i);
+        grid.appendChild(glass);
+    }
+}
+
+function toggleWater(index) {
+    const today = new Date().toISOString().split('T')[0];
+    const saved = JSON.parse(localStorage.getItem(`water_${today}`) || '0');
+    let newVal = index;
+    if(saved === index) newVal = index - 1; // untoggle
+    localStorage.setItem(`water_${today}`, newVal);
+    initWater();
+}
+
+function saveDailies() {
+    const today = new Date().toISOString().split('T')[0];
+    const checks = document.querySelectorAll('.supp-checkbox');
+    const state = Array.from(checks).map(c => c.checked);
+    localStorage.setItem(`supp_${today}`, JSON.stringify(state));
+}
+
+function loadDailies() {
+    const today = new Date().toISOString().split('T')[0];
+    const state = JSON.parse(localStorage.getItem(`supp_${today}`) || '[]');
+    const checks = document.querySelectorAll('.supp-checkbox');
+    checks.forEach((c, i) => { if(state[i]) c.checked = true; });
+}
+
+// --- PROGRESS / CHARTS ---
+let volChartInst = null;
+let setsChartInst = null;
+
+async function loadProgress() {
+    let data = [];
+    if(isOnline) {
+        try {
+            const res = await fetch(`${API_BASE}/sessions`);
+            if(res.ok) {
+                data = await res.json();
+                // Update local cache to match server
+                localStorage.setItem('gym_history', JSON.stringify(data.reverse())); 
+                data.reverse(); // Newest first from API, we want oldest first for charts
+            }
+        } catch(e) {
+            data = JSON.parse(localStorage.getItem('gym_history') || '[]');
+        }
+    } else {
+        data = JSON.parse(localStorage.getItem('gym_history') || '[]');
+    }
+    
+    // Sort oldest first for charts
+    data.sort((a,b) => new Date(a.date) - new Date(b.date));
+    
+    // Stats
+    const totalW = data.length;
+    const totalV = data.reduce((sum, d) => sum + d.total_volume, 0);
+    document.getElementById('tot-workouts').textContent = totalW;
+    document.getElementById('tot-volume').textContent = totalV;
+    
+    // Charts Data
+    const labels = data.map(d => `${d.date.slice(5)} (${d.session_type.split('-')[0]})`);
+    const vols = data.map(d => d.total_volume);
+    const sets = data.map(d => d.total_sets);
+    
+    Chart.defaults.color = '#94a3b8';
+    Chart.defaults.font.family = "'DM Sans', sans-serif";
+    
+    // Volume Chart
+    const ctxVol = document.getElementById('volumeChart').getContext('2d');
+    if(volChartInst) volChartInst.destroy();
+    volChartInst = new Chart(ctxVol, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Volume (kg)',
+                data: vols,
+                borderColor: '#3b82f6',
+                backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: { responsive: true, plugins: { title: { display: true, text: 'Volume Progression' } } }
+    });
+    
+    // Sets Chart
+    const ctxSets = document.getElementById('setsChart').getContext('2d');
+    if(setsChartInst) setsChartInst.destroy();
+    setsChartInst = new Chart(ctxSets, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Total Sets',
+                data: sets,
+                backgroundColor: '#10b981',
+                borderRadius: 4
+            }]
+        },
+        options: { responsive: true, plugins: { title: { display: true, text: 'Sets per Session' } } }
+    });
+}
+
+// --- EXPORT / SETTINGS ---
+function exportAPIXLSX() {
+    if(!isOnline) {
+        alert("Must be online to generate and download Server XLSX");
+        return;
+    }
+    window.open(`${API_BASE}/export/xlsx`, '_blank');
+}
+
+function exportLocalCSV() {
+    const data = JSON.parse(localStorage.getItem('gym_history') || '[]');
+    if(data.length === 0) return alert("No local data");
+    
+    let csv = "Date,Type,Total Volume,Total Sets,Duration\n";
+    data.forEach(d => {
+        csv += `${d.date},${d.session_type},${d.total_volume},${d.total_sets},${d.duration}\n`;
+    });
+    
+    downloadFile(csv, 'local_gym_summary.csv', 'text/csv');
+}
+
+function exportLocalJSON() {
+    const data = localStorage.getItem('gym_history') || '[]';
+    downloadFile(data, 'local_gym_data.json', 'application/json');
+}
+
+function downloadFile(content, filename, type) {
+    const blob = new Blob([content], { type: type });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    a.click();
+}
+
+function clearLocalData() {
+    if(confirm("Clear all local data? This won't delete server data, but will clear offline queue, daily tracker and local chart cache.")) {
+        localStorage.clear();
+        alert("Cleared!");
+        location.reload();
+    }
+}
+</script>
+</body>
+</html>
