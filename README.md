@@ -29,7 +29,7 @@ Track your mass trends, volume PRs, and monthly progressions through an intuitiv
 ### 2. Live Workout Logger
 Focus on your lift. The streamlined logger handles the math, calculates your volume per exercise, and manages your rest periods.
 
-<img src="assets/workout.png" alt="Live Workout Logger" width="800"/>
+<img src="assets/Workout.png" alt="Live Workout Logger" width="800"/>
 
 ### 3. Fuel & Hydration
 Don't let your supplements slide. Track your daily intakes and watch your streaks build.
