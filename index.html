@@ -637,6 +637,10 @@ let supps = JSON.parse(localStorage.getItem('kinetic_supps') || '{}');
 let woState = null;
 let timerInt = null;
 
+function getLocalYMD(d) {
+    return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+
 // --- NAVIGATION ---
 function switchNav(target) {
     document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
@@ -728,7 +732,7 @@ function deleteSession(startMs, event) {
 // --- WORKOUT LOGGER ---
 function initLogger() {
     const d = new Date();
-    document.getElementById('wo-date').value = d.toISOString().split('T')[0];
+    document.getElementById('wo-date').value = getLocalYMD(d);
     document.getElementById('wo-time').value = d.toTimeString().slice(0,5);
 }
 
@@ -1218,7 +1222,7 @@ function renderExerciseTrendChart(exName) {
 
 // --- WELLNESS & SUPPS ---
 function renderSupps() {
-    const today = new Date().toISOString().split('T')[0];
+    const today = getLocalYMD(new Date());
     if(!supps[today]) supps[today] = { c:false, m:false, o:false, water:0 };
     const t = supps[today];
     
@@ -1264,7 +1268,7 @@ function renderSupps() {
     
     for(let i=6; i>=0; i--) {
         const dt = new Date(d); dt.setDate(d.getDate()-i);
-        const dateStr = dt.toISOString().split('T')[0];
+        const dateStr = getLocalYMD(dt);
         
         const hasWork = sessions.some(s => s.date === dateStr);
         const hasSupp = supps[dateStr] && supps[dateStr].c; // taking creatine counts as trying!
@@ -1299,7 +1303,7 @@ function renderSupps() {
     const wLabels = [];
     for(let i=6; i>=0; i--) {
         const dt = new Date(d); dt.setDate(d.getDate()-i);
-        const ds = dt.toISOString().split('T')[0];
+        const ds = getLocalYMD(dt);
         wData.push((supps[ds] && supps[ds].water) || 0);
         wLabels.push(i===0 ? 'Today' : dt.toLocaleDateString('en-US',{weekday:'short'}));
     }
@@ -1316,7 +1320,7 @@ function renderSupps() {
 }
 
 function saveSupps() {
-    const today = new Date().toISOString().split('T')[0];
+    const today = getLocalYMD(new Date());
     if(!supps[today]) supps[today] = { water:0 };
     supps[today].c = document.getElementById('supp-creatine').checked;
     supps[today].m = document.getElementById('supp-multi').checked;
@@ -1335,7 +1339,7 @@ function saveSupps() {
 }
 
 function setWater(n) {
-    const today = new Date().toISOString().split('T')[0];
+    const today = getLocalYMD(new Date());
     if(!supps[today]) supps[today] = { c:false,m:false,o:false,water:0 };
     // toggle off if clicking the same glass
     supps[today].water = (supps[today].water === n) ? n-1 : n;
