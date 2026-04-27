@@ -24,7 +24,7 @@ Kinetic is a completely serverless, zero-dependency workout companion built for 
 ### 1. The Dashboard & Analytics
 Track your mass trends, volume PRs, and monthly progressions through an intuitive, data-dense dashboard.
 
-<img src="assets/stats.png" alt="Performance Analytics" width="800"/>
+<img src="assets/stats2.png" alt="Performance Analytics" width="800"/>
 
 ### 2. Live Workout Logger
 Focus on your lift. The streamlined logger handles the math, calculates your volume per exercise, and manages your rest periods.
