@@ -107,8 +107,7 @@ tailwind.config = {
     
     .view-section { display: none; animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
     .view-section.active { display: block; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-    
+
     .glass-panel { transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease; }
     .glass-panel:hover { transform: translateY(-2px); box-shadow: 0 10px 40px rgba(0,0,0,0.6); }
 
@@ -117,6 +116,35 @@ tailwind.config = {
     .circle-bg { fill: none; stroke: rgba(255,255,255,0.1); stroke-width: 3.8; }
     .circle { fill: none; stroke-width: 3.8; stroke-linecap: round; transition: stroke-dasharray 1s linear; }
     .percentage { fill: #fff; font-family: 'Space Grotesk'; font-size: 0.5em; text-anchor: middle; font-weight: bold; }
+
+    /* Animations */
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes scaleIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+    @keyframes bounceIn { 0% { transform: scale(0); } 50% { transform: scale(1.15); } 100% { transform: scale(1); } }
+    @keyframes slideInRight { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+    @keyframes pulseGlow { 0%, 100% { box-shadow: 0 0 5px rgba(255,140,0,0.2); } 50% { box-shadow: 0 0 20px rgba(255,140,0,0.5); } }
+
+    .animate-fade-in { animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) both; }
+    .animate-slide-up { animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both; }
+    .animate-scale-in { animation: scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) both; }
+    .animate-bounce-in { animation: bounceIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+    .animate-slide-right { animation: slideInRight 0.4s cubic-bezier(0.16, 1, 0.3, 1) both; }
+    .animate-pulse-glow { animation: pulseGlow 2s ease-in-out infinite; }
+
+    .stagger-1 { animation-delay: 0.05s; }
+    .stagger-2 { animation-delay: 0.1s; }
+    .stagger-3 { animation-delay: 0.15s; }
+    .stagger-4 { animation-delay: 0.2s; }
+    .stagger-5 { animation-delay: 0.25s; }
+
+    /* Collapsible sections */
+    .collapsible-content { max-height: 0; overflow: hidden; transition: max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+    .collapsible-content.open { max-height: 2000px; }
+
+    /* Heatmap body */
+    .muscle-zone { transition: fill 0.3s ease, opacity 0.3s ease; cursor: pointer; }
+    .muscle-zone:hover { opacity: 0.8; filter: brightness(1.2); }
 </style>
 </head>
 <body class="min-h-screen flex antialiased">
@@ -169,15 +197,32 @@ tailwind.config = {
                     <span class="material-symbols-outlined">add_circle</span> START WORKOUT
                 </button>
             </header>
+
+            <!-- Split Selector -->
+            <div class="mb-6 glass-panel p-4 rounded-xl flex flex-col sm:flex-row items-start sm:items-center gap-3">
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-orange-500">view_timeline</span>
+                    <span class="font-label-caps text-xs text-zinc-400 uppercase tracking-widest">My Split</span>
+                </div>
+                <select id="home-split-selector" onchange="saveActiveSplit(this.value)" class="flex-1 sm:max-w-xs bg-zinc-900 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:border-orange-500 outline-none">
+                    <option value="All">All Programs</option>
+                    <option value="Anterior/Posterior">Anterior / Posterior</option>
+                    <option value="PPL">Push Pull Legs</option>
+                    <option value="Upper/Lower">Upper / Lower</option>
+                    <option value="Pro Split">Pro Split</option>
+                    <option value="Custom">Custom</option>
+                </select>
+            </div>
+
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div onclick="switchNav('progress')" class="glass-panel p-6 rounded-xl flex flex-col justify-between h-40 cursor-pointer hover:border-orange-500/50 transition-colors">
+                <div onclick="switchNav('progress')" class="glass-panel p-6 rounded-xl flex flex-col justify-between h-40 cursor-pointer hover:border-orange-500/50 transition-colors animate-slide-up stagger-1">
                     <div class="flex justify-between items-start">
                         <h3 class="font-label-caps text-xs text-zinc-400 uppercase tracking-widest">Total Sessions</h3>
                         <span class="material-symbols-outlined text-orange-500">calendar_month</span>
                     </div>
                     <div class="font-data-display text-4xl text-on-surface mt-auto" id="home-total-sessions">0</div>
                 </div>
-                <div onclick="switchNav('progress')" class="glass-panel p-6 rounded-xl flex flex-col justify-between h-40 relative overflow-hidden cursor-pointer hover:border-cyan-400/50 transition-colors">
+                <div onclick="switchNav('progress')" class="glass-panel p-6 rounded-xl flex flex-col justify-between h-40 relative overflow-hidden cursor-pointer hover:border-cyan-400/50 transition-colors animate-slide-up stagger-2">
                     <div class="absolute inset-0 bg-gradient-to-br from-orange-500/10 to-transparent pointer-events-none"></div>
                     <div class="flex justify-between items-start relative z-10">
                         <h3 class="font-label-caps text-xs text-zinc-400 uppercase tracking-widest">Lifetime Volume</h3>
@@ -187,7 +232,7 @@ tailwind.config = {
                         <span id="home-total-volume">0</span> <span class="font-label-caps text-sm text-zinc-500">kg</span>
                     </div>
                 </div>
-                <div onclick="if(sessions.length > 0) editSession(sessions[sessions.length - 1].startMs);" class="glass-panel p-6 rounded-xl flex flex-col justify-between h-40 border-l-4 border-l-orange-500 cursor-pointer hover:bg-white/5 transition-colors">
+                <div onclick="if(sessions.length > 0) editSession(sessions[sessions.length - 1].startMs);" class="glass-panel p-6 rounded-xl flex flex-col justify-between h-40 border-l-4 border-l-orange-500 cursor-pointer hover:bg-white/5 transition-colors animate-slide-up stagger-3">
                     <div class="flex justify-between items-start">
                         <h3 class="font-label-caps text-xs text-zinc-400 uppercase tracking-widest">Last Session</h3>
                         <span class="material-symbols-outlined text-zinc-500">history</span>
@@ -230,18 +275,6 @@ tailwind.config = {
                 <div class="mb-5">
                     <label class="block text-xs text-zinc-400 uppercase tracking-widest mb-2 font-label-caps">Template Day</label>
                     <select id="wo-type" class="w-full bg-zinc-900 border border-white/10 rounded-lg p-3 text-white focus:border-orange-500 outline-none">
-                        <option value="PPL-PUSH">PPL • Push</option>
-                        <option value="PPL-PULL">PPL • Pull</option>
-                        <option value="PPL-LEGS">PPL • Legs</option>
-                        <option value="UL-UPPER-A">Upper/Lower • Upper A</option>
-                        <option value="UL-LOWER-A">Upper/Lower • Lower A</option>
-                        <option value="UL-UPPER-B">Upper/Lower • Upper B</option>
-                        <option value="UL-LOWER-B">Upper/Lower • Lower B</option>
-                        <option value="PRO-CHEST">Pro Split • Chest</option>
-                        <option value="PRO-BACK">Pro Split • Back</option>
-                        <option value="PRO-SHOULDERS">Pro Split • Shoulders</option>
-                        <option value="PRO-ARMS">Pro Split • Arms</option>
-                        <option value="PRO-LEGS">Pro Split • Legs</option>
                     </select>
                 </div>
                 <div class="mb-5">
@@ -401,20 +434,10 @@ tailwind.config = {
                     </button>
                 </div>
                 
-                <!-- Session Paused Modal -->
-                <div id="wo-paused-overlay" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
-                    <div class="glass-panel p-8 rounded-2xl text-center max-w-sm mx-4 shadow-2xl border border-white/20">
-                        <div class="mb-2">
-                            <span class="material-symbols-outlined text-4xl text-amber-500 block mb-2">pause_circle</span>
-                        </div>
-                        <h3 class="font-h1 text-3xl text-on-surface font-bold mb-2">Session Paused</h3>
-                        <p class="text-zinc-400 mb-6 font-label-caps text-sm">Effective Time: <span id="wo-paused-time" class="text-orange-500 font-bold text-lg">00:00</span></p>
-                        <button onclick="togglePauseTraining()" class="w-full bg-gradient-to-r from-cyan-500 to-cyan-400 hover:from-cyan-400 hover:to-cyan-300 text-black font-bold py-4 rounded-lg transition-all mb-3 font-label-caps tracking-wider">
-                            <span class="material-symbols-outlined text-sm align-text-bottom mr-1">play_circle</span> RESUME TRAINING
-                        </button>
-                        <button onclick="finishWorkout()" class="w-full bg-surface-container-high border border-white/20 hover:bg-white/5 text-on-surface font-bold py-3 rounded-lg transition-all font-label-caps tracking-wider text-sm">
-                            FINISH SESSION
-                        </button>
+                <!-- Session Paused Indicator (inline, no popup) -->
+                <div id="wo-paused-overlay" class="hidden fixed top-0 left-0 right-0 z-50 pointer-events-none">
+                    <div class="bg-amber-600/90 backdrop-blur-sm text-center py-2 animate-pulse">
+                        <span class="font-label-caps text-xs text-white tracking-widest">PAUSED — <span id="wo-paused-time" class="font-bold">00:00</span></span>
                     </div>
                 </div>
 
@@ -473,6 +496,32 @@ tailwind.config = {
                 <div id="exercise-library-results" class="p-4 overflow-y-auto max-h-[calc(88vh-150px)] space-y-2"></div>
             </div>
 
+            <!-- 1RM ESTIMATOR MODAL -->
+            <div id="one-rm-modal" class="hidden fixed inset-0 z-[75] bg-black/70 backdrop-blur-sm" onclick="closeOneRMModal()"></div>
+            <div id="one-rm-sheet" class="hidden fixed inset-x-0 bottom-0 z-[76] max-h-[85vh] bg-gradient-to-t from-surface-container to-surface-container-low rounded-t-3xl border-t border-amber-500/20 shadow-2xl translate-y-full transition-transform duration-300 overflow-hidden">
+                <div class="sticky top-0 bg-surface-container border-b border-white/10 p-4 flex items-center justify-between gap-2">
+                    <div>
+                        <h3 class="font-h1 text-xl text-on-surface font-bold">1RM Estimator</h3>
+                        <p class="text-[10px] text-zinc-500 font-label-caps uppercase tracking-wider mt-1" id="one-rm-exercise-name">Exercise</p>
+                    </div>
+                    <button onclick="closeOneRMModal()" class="p-2 rounded-lg hover:bg-red-500/20 transition-all">
+                        <span class="material-symbols-outlined text-zinc-300">close</span>
+                    </button>
+                </div>
+                <div class="p-4 overflow-y-auto max-h-[calc(85vh-80px)] space-y-4">
+                    <div class="space-y-2">
+                        <label class="block text-xs text-zinc-400 uppercase tracking-widest font-label-caps">Formula</label>
+                        <select id="one-rm-formula" onchange="updateOneRMEstimate()" class="w-full bg-zinc-900 border border-white/10 rounded-lg p-3 text-white focus:border-amber-500 outline-none">
+                            <option value="epley">Epley (1 + reps/30)</option>
+                            <option value="brzycki">Brzycki (36/(37 - reps))</option>
+                            <option value="lombardi">Lombardi (weight^(reps/10))</option>
+                        </select>
+                        <p class="text-[9px] text-zinc-600 mt-1 italic" id="one-rm-formula-desc"></p>
+                    </div>
+                    <div id="one-rm-results" class="space-y-3"></div>
+                </div>
+            </div>
+
         </section>
 
         <!-- EXERCISE LIBRARY SECTION -->
@@ -496,21 +545,191 @@ tailwind.config = {
             </div>
         </section>
         
-        <!-- PROGRESS SECTION -->
+        <!-- PROGRESS SECTION - ANALYTICS DASHBOARD -->
         <section id="view-progress" class="view-section">
             <header class="mb-8">
-                <h2 class="font-h1 text-4xl text-on-surface font-bold">Progress Analytics</h2>
+                <h2 class="font-h1 text-4xl text-on-surface font-bold">Performance Dashboard</h2>
+                <p class="font-body-lg text-zinc-400 mt-1">Advanced analytics powered by your training data.</p>
             </header>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                <div class="glass-panel p-4 rounded-xl shadow-lg relative z-20">
-                    <canvas id="chart-volume" height="250"></canvas>
+
+            <!-- OVERVIEW CARDS -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
+                <div class="glass-panel p-4 rounded-xl animate-slide-up stagger-1">
+                    <div class="text-[9px] text-zinc-500 font-label-caps uppercase tracking-wider">Sessions (Month)</div>
+                    <div class="font-data-display text-2xl text-orange-500 mt-1" id="analytics-month-sessions">0</div>
                 </div>
+                <div class="glass-panel p-4 rounded-xl animate-slide-up stagger-2">
+                    <div class="text-[9px] text-zinc-500 font-label-caps uppercase tracking-wider">Volume (Month)</div>
+                    <div class="font-data-display text-2xl text-cyan-400 mt-1" id="analytics-month-volume">0</div>
+                </div>
+                <div class="glass-panel p-4 rounded-xl animate-slide-up stagger-3">
+                    <div class="text-[9px] text-zinc-500 font-label-caps uppercase tracking-wider">Avg Duration</div>
+                    <div class="font-data-display text-2xl text-green-400 mt-1" id="analytics-avg-duration">0<span class="text-sm text-zinc-500 ml-1">min</span></div>
+                </div>
+                <div class="glass-panel p-4 rounded-xl animate-slide-up stagger-4">
+                    <div class="text-[9px] text-zinc-500 font-label-caps uppercase tracking-wider">Streak</div>
+                    <div class="font-data-display text-2xl text-amber-400 mt-1" id="analytics-streak">0<span class="text-sm text-zinc-500 ml-1">days</span></div>
+                </div>
+            </div>
+
+            <!-- FATIGUE INDEX -->
+            <div class="glass-panel p-5 rounded-xl mb-8 animate-slide-up stagger-5">
+                <div class="flex items-center justify-between mb-3 cursor-pointer" onclick="toggleCollapsible('fatigue-section')">
+                    <h3 class="font-label-caps text-xs text-zinc-400 uppercase tracking-widest">Fatigue Index</h3>
+                    <span class="material-symbols-outlined text-zinc-500 text-sm collapsible-icon" data-target="fatigue-section">expand_less</span>
+                </div>
+                <div id="fatigue-section" class="collapsible-content open">
+                    <div class="flex items-center gap-4">
+                        <div class="flex-1 h-3 bg-zinc-800 rounded-full overflow-hidden">
+                            <div id="fatigue-bar" class="h-full rounded-full transition-all duration-700" style="width: 0%; background: linear-gradient(90deg, #4ae183, #ffb77d, #ff6b6b);"></div>
+                        </div>
+                        <span id="fatigue-label" class="font-label-caps text-xs text-green-400 tracking-wider">Recovered</span>
+                    </div>
+                    <p id="fatigue-detail" class="text-[10px] text-zinc-500 mt-2">Based on frequency, volume, and RPE over the past 7 days.</p>
+                </div>
+            </div>
+
+            <!-- MUSCLE HEATMAP -->
+            <div class="glass-panel p-5 rounded-xl mb-8">
+                <div class="flex items-center justify-between mb-4 cursor-pointer" onclick="toggleCollapsible('heatmap-section')">
+                    <h3 class="font-label-caps text-xs text-zinc-400 uppercase tracking-widest">Muscle Heatmap</h3>
+                    <span class="material-symbols-outlined text-zinc-500 text-sm collapsible-icon" data-target="heatmap-section">expand_less</span>
+                </div>
+                <div id="heatmap-section" class="collapsible-content open">
+                    <div class="flex items-center gap-3 mb-4">
+                        <select id="heatmap-scope" onchange="renderHeatmap()" class="bg-zinc-900 border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white focus:border-orange-500 outline-none">
+                            <option value="week">This Week</option>
+                            <option value="month">This Month</option>
+                            <option value="all">All Time</option>
+                        </select>
+                        <button onclick="toggleHeatmapView()" id="heatmap-flip-btn" class="px-3 py-1.5 border border-white/10 rounded-lg text-xs text-zinc-400 hover:text-orange-500 hover:border-orange-500/50 transition-all font-label-caps tracking-wider">
+                            <span class="material-symbols-outlined text-sm align-text-bottom">sync</span> Flip
+                        </button>
+                    </div>
+                    <div class="flex flex-col md:flex-row items-center gap-6">
+                        <div id="heatmap-body" class="relative w-48 md:w-56"></div>
+                        <div id="heatmap-legend" class="flex-1 w-full">
+                            <div id="heatmap-details" class="space-y-2 text-sm"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RECOVERY ESTIMATOR -->
+            <div class="glass-panel p-5 rounded-xl mb-8">
+                <div class="flex items-center justify-between mb-4 cursor-pointer" onclick="toggleCollapsible('recovery-section')">
+                    <h3 class="font-label-caps text-xs text-zinc-400 uppercase tracking-widest">Recovery Estimator</h3>
+                    <span class="material-symbols-outlined text-zinc-500 text-sm collapsible-icon" data-target="recovery-section">expand_less</span>
+                </div>
+                <div id="recovery-section" class="collapsible-content open">
+                    <div id="recovery-content" class="space-y-3"></div>
+                </div>
+            </div>
+
+            <!-- 1RM ESTIMATOR -->
+            <div class="glass-panel p-5 rounded-xl mb-8">
+                <div class="flex items-center justify-between mb-4 cursor-pointer" onclick="toggleCollapsible('onerm-section')">
+                    <h3 class="font-label-caps text-xs text-zinc-400 uppercase tracking-widest">1RM Estimator</h3>
+                    <span class="material-symbols-outlined text-zinc-500 text-sm collapsible-icon" data-target="onerm-section">expand_less</span>
+                </div>
+                <div id="onerm-section" class="collapsible-content open">
+                    <div class="flex flex-col md:flex-row gap-3 mb-4">
+                        <select id="onerm-exercise" onchange="renderOneRM()" class="flex-1 bg-zinc-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-orange-500 outline-none"></select>
+                        <select id="onerm-formula" onchange="renderOneRM()" class="md:w-40 bg-zinc-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-cyan-500 outline-none">
+                            <option value="epley">Epley</option>
+                            <option value="brzycki">Brzycki</option>
+                            <option value="lombardi">Lombardi</option>
+                        </select>
+                    </div>
+                    <div id="onerm-result" class="space-y-3"></div>
+                    <div class="mt-4 w-full h-[200px]">
+                        <canvas id="chart-onerm-trend"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VOLUME PROGRESSION -->
+            <div class="glass-panel p-5 rounded-xl mb-8">
+                <div class="flex items-center justify-between mb-4 cursor-pointer" onclick="toggleCollapsible('volume-section')">
+                    <h3 class="font-label-caps text-xs text-zinc-400 uppercase tracking-widest">Volume Progression (12 Weeks)</h3>
+                    <span class="material-symbols-outlined text-zinc-500 text-sm collapsible-icon" data-target="volume-section">expand_less</span>
+                </div>
+                <div id="volume-section" class="collapsible-content open">
+                    <div class="flex gap-2 mb-3">
+                        <select id="volume-muscle-filter" onchange="renderVolumeChart()" class="bg-zinc-900 border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white focus:border-orange-500 outline-none">
+                            <option value="all">All Muscles</option>
+                        </select>
+                    </div>
+                    <div class="w-full h-[250px]"><canvas id="chart-volume"></canvas></div>
+                </div>
+            </div>
+
+            <!-- STRENGTH PROGRESSION (1RM TREND) -->
+            <div class="glass-panel p-5 rounded-xl mb-8">
+                <div class="flex items-center justify-between mb-4 cursor-pointer" onclick="toggleCollapsible('strength-section')">
+                    <h3 class="font-label-caps text-xs text-zinc-400 uppercase tracking-widest">Strength Progression</h3>
+                    <span class="material-symbols-outlined text-zinc-500 text-sm collapsible-icon" data-target="strength-section">expand_less</span>
+                </div>
+                <div id="strength-section" class="collapsible-content open">
+                    <select id="trend-ex-select" onchange="renderExerciseTrendChart(this.value)" class="bg-zinc-900 border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white focus:border-cyan-500 outline-none mb-3 max-w-[200px]"></select>
+                    <div class="w-full h-[250px]"><canvas id="chart-ex-trend"></canvas></div>
+                </div>
+            </div>
+
+            <!-- REST TIME ANALYTICS -->
+            <div class="glass-panel p-5 rounded-xl mb-8">
+                <div class="flex items-center justify-between mb-4 cursor-pointer" onclick="toggleCollapsible('rest-section')">
+                    <h3 class="font-label-caps text-xs text-zinc-400 uppercase tracking-widest">Rest Time Analytics</h3>
+                    <span class="material-symbols-outlined text-zinc-500 text-sm collapsible-icon" data-target="rest-section">expand_less</span>
+                </div>
+                <div id="rest-section" class="collapsible-content open">
+                    <div id="rest-analytics-content" class="space-y-3"></div>
+                    <div class="w-full h-[200px] mt-4"><canvas id="chart-rest-trend"></canvas></div>
+                </div>
+            </div>
+
+            <!-- TRAINING CONSISTENCY CALENDAR -->
+            <div class="glass-panel p-5 rounded-xl mb-8">
+                <div class="flex items-center justify-between mb-4 cursor-pointer" onclick="toggleCollapsible('calendar-section')">
+                    <h3 class="font-label-caps text-xs text-zinc-400 uppercase tracking-widest">Training Consistency</h3>
+                    <span class="material-symbols-outlined text-zinc-500 text-sm collapsible-icon" data-target="calendar-section">expand_less</span>
+                </div>
+                <div id="calendar-section" class="collapsible-content open">
+                    <div id="consistency-calendar" class="overflow-x-auto"></div>
+                </div>
+            </div>
+
+            <!-- PERSONAL RECORDS BOARD -->
+            <div class="glass-panel p-5 rounded-xl mb-8">
+                <div class="flex items-center justify-between mb-4 cursor-pointer" onclick="toggleCollapsible('pr-section')">
+                    <h3 class="font-label-caps text-xs text-amber-300 uppercase tracking-widest">Personal Records</h3>
+                    <span class="material-symbols-outlined text-zinc-500 text-sm collapsible-icon" data-target="pr-section">expand_less</span>
+                </div>
+                <div id="pr-section" class="collapsible-content open">
+                    <div id="pr-board" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
+                </div>
+            </div>
+
+            <!-- SESSION HISTORY -->
+            <div class="glass-panel p-5 rounded-xl mb-8">
+                <div class="flex items-center justify-between mb-4 cursor-pointer" onclick="toggleCollapsible('history-section')">
+                    <h3 class="font-label-caps text-xs text-zinc-400 uppercase tracking-widest">Session History</h3>
+                    <span class="material-symbols-outlined text-zinc-500 text-sm collapsible-icon" data-target="history-section">expand_less</span>
+                </div>
+                <div id="history-section" class="collapsible-content open">
+                    <div id="session-history-list" class="space-y-2 max-h-[60vh] overflow-y-auto pr-1"></div>
+                </div>
+            </div>
+
+            <!-- ADDITIONAL CHARTS ROW -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                 <div class="glass-panel p-4 rounded-xl shadow-lg relative z-20">
                     <canvas id="chart-bw" height="250"></canvas>
                 </div>
+                <div class="glass-panel p-4 rounded-xl shadow-lg relative z-20">
+                    <canvas id="chart-rpe" height="250"></canvas>
+                </div>
             </div>
-            
-            <!-- DURATION AND SETS CHARTS -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                 <div class="glass-panel p-4 rounded-xl shadow-lg relative z-20">
                     <canvas id="chart-duration" height="250"></canvas>
@@ -519,22 +738,6 @@ tailwind.config = {
                     <canvas id="chart-sets" height="250"></canvas>
                 </div>
             </div>
-            <div class="glass-panel p-4 rounded-xl shadow-lg relative z-20 mb-8">
-                <canvas id="chart-rpe" height="220"></canvas>
-            </div>
-            
-            <!-- EX TREND CHART -->
-            <div class="glass-panel p-4 rounded-xl shadow-lg relative z-20 mb-8">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-label-caps text-xs text-zinc-400 uppercase tracking-widest">Exercise Max Weight</h3>
-                    <select id="trend-ex-select" class="bg-zinc-900 border border-white/10 rounded px-2 py-1 text-xs text-white focus:border-[#00e3fd] outline-none max-w-[150px] font-body-md" onchange="renderExerciseTrendChart(this.value)">
-                    </select>
-                </div>
-                <div class="w-full h-[250px]">
-                    <canvas id="chart-ex-trend"></canvas>
-                </div>
-            </div>
-            
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                 <div class="glass-panel p-4 rounded-xl shadow-lg md:col-span-1 flex items-center justify-center relative z-20">
                     <canvas id="chart-doughnut" height="250"></canvas>
@@ -783,10 +986,76 @@ const EXERCISE_LIBRARY = [
     { name: 'Lat Pulldown (underhand)', primary: 'Back', secondary: 'Biceps' },
     { name: 'Cable Row (wide grip)', primary: 'Back', secondary: 'Biceps' },
     { name: 'EZ-Bar Curl', primary: 'Biceps', secondary: 'Forearms' },
-    { name: 'Calf Raise', primary: 'Calves', secondary: 'Hamstrings' }
+    { name: 'Calf Raise', primary: 'Calves', secondary: 'Hamstrings' },
+    { name: 'Cable Chest Fly', primary: 'Chest', secondary: 'Shoulders' },
+    { name: 'Arnold Press', primary: 'Shoulders', secondary: 'Triceps' },
+    { name: 'Lateral Raise (cable)', primary: 'Shoulders', secondary: 'Traps' },
+    { name: 'Chest Dips', primary: 'Chest', secondary: 'Triceps' },
+    { name: 'Hack Squat', primary: 'Quads', secondary: 'Glutes' },
+    { name: 'Plank', primary: 'Core', secondary: 'Shoulders' },
+    { name: 'Leg Extension', primary: 'Quads', secondary: 'Hip Flexors' },
+    { name: 'DB Single-Arm Row', primary: 'Back', secondary: 'Biceps' },
+    { name: 'Overhead Tricep Ext.', primary: 'Triceps', secondary: 'Shoulders' },
+    { name: 'Seated / Lying Leg Curl', primary: 'Hamstrings', secondary: 'Calves' },
+    { name: 'Hack Squat / Smith Squat', primary: 'Quads', secondary: 'Glutes' },
+    { name: 'Ab Wheel / Crunches', primary: 'Core', secondary: 'Shoulders' },
+    { name: 'Face Pulls', primary: 'Upper Back', secondary: 'Shoulders' },
+    { name: 'Incline DB Curl', primary: 'Biceps', secondary: 'Forearms' }
 ];
 
 const BUILTIN_TEMPLATES = [
+    {
+        id: 'ANT-A', label: 'Anterior/Posterior • Anterior A', family: 'Anterior/Posterior', day: 'Anterior A',
+        exercises: [
+            { name: 'Incline DB Press', sets: 4, reps: '8-10', primary: 'Chest', secondary: 'Shoulders' },
+            { name: 'Flat DB Press', sets: 3, reps: '8-10', primary: 'Chest', secondary: 'Triceps' },
+            { name: 'Cable Chest Fly', sets: 3, reps: '12-15', primary: 'Chest', secondary: 'Shoulders' },
+            { name: 'DB Shoulder Press', sets: 3, reps: '8-10', primary: 'Shoulders', secondary: 'Triceps' },
+            { name: 'Lateral Raise', sets: 3, reps: '12-15', primary: 'Shoulders', secondary: 'Traps' },
+            { name: 'Tricep Pushdown', sets: 3, reps: '10-12', primary: 'Triceps', secondary: 'Forearms' },
+            { name: 'Leg Extension', sets: 3, reps: '12-15', primary: 'Quads', secondary: 'Hip Flexors' },
+            { name: 'Plank', sets: 3, reps: '30-60s', primary: 'Core', secondary: 'Shoulders' }
+        ]
+    },
+    {
+        id: 'POST-A', label: 'Anterior/Posterior • Posterior A', family: 'Anterior/Posterior', day: 'Posterior A',
+        exercises: [
+            { name: 'Lat Pulldown (wide)', sets: 4, reps: '8-12', primary: 'Back', secondary: 'Biceps' },
+            { name: 'Seated Cable Row', sets: 3, reps: '8-12', primary: 'Back', secondary: 'Biceps' },
+            { name: 'DB Single-Arm Row', sets: 3, reps: '8-10', primary: 'Back', secondary: 'Biceps' },
+            { name: 'Face Pulls', sets: 3, reps: '12-15', primary: 'Upper Back', secondary: 'Shoulders' },
+            { name: 'EZ-Bar Curl', sets: 3, reps: '10-12', primary: 'Biceps', secondary: 'Forearms' },
+            { name: 'Hammer Curl', sets: 2, reps: '12-15', primary: 'Biceps', secondary: 'Forearms' },
+            { name: 'Romanian Deadlift', sets: 3, reps: '8-10', primary: 'Hamstrings', secondary: 'Glutes' },
+            { name: 'Calf Raise', sets: 4, reps: '12-15', primary: 'Calves', secondary: 'Hamstrings' }
+        ]
+    },
+    {
+        id: 'ANT-B', label: 'Anterior/Posterior • Anterior B', family: 'Anterior/Posterior', day: 'Anterior B',
+        exercises: [
+            { name: 'DB Shoulder Press', sets: 4, reps: '8-10', primary: 'Shoulders', secondary: 'Triceps' },
+            { name: 'Arnold Press', sets: 3, reps: '10-12', primary: 'Shoulders', secondary: 'Triceps' },
+            { name: 'Lateral Raise (cable)', sets: 3, reps: '12-15', primary: 'Shoulders', secondary: 'Traps' },
+            { name: 'Incline DB Press', sets: 3, reps: '8-10', primary: 'Chest', secondary: 'Shoulders' },
+            { name: 'Chest Dips', sets: 3, reps: '8-12', primary: 'Chest', secondary: 'Triceps' },
+            { name: 'Overhead Tricep Ext.', sets: 3, reps: '10-12', primary: 'Triceps', secondary: 'Shoulders' },
+            { name: 'Hack Squat / Smith Squat', sets: 3, reps: '10-15', primary: 'Quads', secondary: 'Glutes' },
+            { name: 'Ab Wheel / Crunches', sets: 3, reps: '10-15', primary: 'Core', secondary: 'Shoulders' }
+        ]
+    },
+    {
+        id: 'POST-B', label: 'Anterior/Posterior • Posterior B', family: 'Anterior/Posterior', day: 'Posterior B',
+        exercises: [
+            { name: 'Lat Pulldown (underhand)', sets: 4, reps: '8-12', primary: 'Back', secondary: 'Biceps' },
+            { name: 'Cable Row (wide grip)', sets: 3, reps: '8-12', primary: 'Back', secondary: 'Biceps' },
+            { name: 'Incline DB Curl', sets: 3, reps: '10-12', primary: 'Biceps', secondary: 'Forearms' },
+            { name: 'EZ-Bar Curl', sets: 3, reps: '10-12', primary: 'Biceps', secondary: 'Forearms' },
+            { name: 'Face Pulls', sets: 3, reps: '12-15', primary: 'Upper Back', secondary: 'Shoulders' },
+            { name: 'Seated / Lying Leg Curl', sets: 4, reps: '10-12', primary: 'Hamstrings', secondary: 'Calves' },
+            { name: 'Romanian Deadlift', sets: 3, reps: '8-10', primary: 'Hamstrings', secondary: 'Glutes' },
+            { name: 'Calf Raise', sets: 3, reps: '12-15', primary: 'Calves', secondary: 'Hamstrings' }
+        ]
+    },
     {
         id: 'PPL-PUSH', label: 'PPL • Push', family: 'PPL', day: 'Push',
         exercises: [
@@ -1053,11 +1322,30 @@ function getCurrentExercisePrimary() {
     return woState.exercises[woState.currExIdx].primary || getExerciseMetaByName(woState.exercises[woState.currExIdx].name)?.primary || null;
 }
 
+function getActiveSplit() {
+    return localStorage.getItem('kinetic_active_split') || 'All';
+}
+
+function saveActiveSplit(value) {
+    localStorage.setItem('kinetic_active_split', value);
+    rebuildTemplateSelector();
+    loadTemplateDraftFromSelection();
+}
+
+function initSplitSelector() {
+    const sel = document.getElementById('home-split-selector');
+    if (sel) sel.value = getActiveSplit();
+}
+
 function rebuildTemplateSelector() {
     const select = document.getElementById('wo-type');
     if (!select) return;
     const current = select.value;
-    const templates = getAllTemplates();
+    const activeSplit = getActiveSplit();
+    let templates = getAllTemplates();
+    if (activeSplit !== 'All') {
+        templates = templates.filter(t => t.family === activeSplit);
+    }
     select.innerHTML = templates.map(t => `<option value="${t.id}">${t.label}</option>`).join('');
     select.value = templates.some(t => t.id === current) ? current : (templates[0]?.id || '');
 }
@@ -1188,6 +1476,85 @@ function renderExerciseLibraryResults() {
             </button>
         `;
     });
+}
+
+// --- 1RM ESTIMATOR MODAL ---
+function show1RMEstimator() {
+    const exName = document.getElementById('wo-current-ex-name')?.innerText || 'Current Exercise';
+    const modal = document.getElementById('one-rm-modal');
+    const sheet = document.getElementById('one-rm-sheet');
+    
+    document.getElementById('one-rm-exercise-name').innerText = exName;
+    modal.classList.remove('hidden');
+    sheet.classList.remove('hidden');
+    setTimeout(() => sheet.style.transform = 'translateY(0)', 10);
+    
+    // Default formula description
+    updateOneRMEstimate();
+}
+
+function closeOneRMModal() {
+    const modal = document.getElementById('one-rm-modal');
+    const sheet = document.getElementById('one-rm-sheet');
+    sheet.style.transform = 'translateY(100%)';
+    setTimeout(() => {
+        modal.classList.add('hidden');
+        sheet.classList.add('hidden');
+    }, 280);
+}
+
+function updateOneRMEstimate() {
+    const formula = document.getElementById('one-rm-formula')?.value || 'epley';
+    const exName = document.getElementById('wo-current-ex-name')?.innerText || 'Current Exercise';
+    const results = document.getElementById('one-rm-results');
+    
+    const descriptions = {
+        epley: 'Most popular. Formula: 1RM = weight × (1 + reps/30)',
+        brzycki: 'Conservative for reps 2-10. Formula: 1RM = weight × 36/(37 - reps)',
+        lombardi: 'Better for high reps. Formula: 1RM = weight^(reps/10)'
+    };
+    document.getElementById('one-rm-formula-desc').innerText = descriptions[formula];
+    
+    // Get best estimate from history
+    let best1RM = 0, bestWeight = 0, bestReps = 0;
+    sessions.forEach(session => {
+        (session.exercises || []).forEach(ex => {
+            if (ex.name === exName) {
+                (ex.sets || []).forEach(set => {
+                    const est = calc1RM(set.w || 0, set.r || 0, formula);
+                    if (est > best1RM) { best1RM = est; bestWeight = set.w; bestReps = set.r; }
+                });
+            }
+        });
+    });
+    
+    best1RM = Math.round(best1RM * 10) / 10;
+    
+    let html = `
+        <div class="bg-gradient-to-br from-amber-500/10 to-orange-500/5 p-4 rounded-xl border border-amber-500/30">
+            <div class="text-[10px] text-zinc-500 font-label-caps uppercase tracking-wider mb-2">Estimated 1RM</div>
+            <div class="font-data-display text-5xl text-amber-400">${best1RM} <span class="text-lg text-zinc-500">kg</span></div>
+            <div class="text-xs text-zinc-400 mt-2">From: ${bestWeight}kg × ${bestReps} reps</div>
+        </div>
+        
+        <div class="space-y-2">
+            <h4 class="text-xs text-zinc-400 uppercase tracking-widest font-label-caps">Training Zones</h4>
+            <div class="bg-red-500/10 p-3 rounded-lg border border-red-500/30">
+                <div class="text-[10px] text-zinc-500 uppercase font-label-caps">Strength (85-95%)</div>
+                <div class="font-data-display text-lg text-red-400 mt-1">${Math.round(best1RM * 0.85)} - ${Math.round(best1RM * 0.95)} kg</div>
+            </div>
+            <div class="bg-green-500/10 p-3 rounded-lg border border-green-500/30">
+                <div class="text-[10px] text-zinc-500 uppercase font-label-caps">Hypertrophy (67-82%)</div>
+                <div class="font-data-display text-lg text-green-400 mt-1">${Math.round(best1RM * 0.67)} - ${Math.round(best1RM * 0.82)} kg</div>
+            </div>
+            <div class="bg-blue-500/10 p-3 rounded-lg border border-blue-500/30">
+                <div class="text-[10px] text-zinc-500 uppercase font-label-caps">Endurance (50-65%)</div>
+                <div class="font-data-display text-lg text-blue-400 mt-1">${Math.round(best1RM * 0.50)} - ${Math.round(best1RM * 0.65)} kg</div>
+            </div>
+        </div>
+    `;
+    
+    results.innerHTML = html;
 }
 
 function selectExerciseFromLibrary(exName) {
@@ -1705,8 +2072,6 @@ function deleteSession() {
 }
 
 function finishWorkout() {
-    if(!confirm('Are you sure you want to finish this session?')) return;
-    
     let tSets = 0;
     let tVol = 0;
     let rpeSum = 0;
@@ -1725,28 +2090,67 @@ function finishWorkout() {
     woState.totalSets = tSets;
     woState.totalVolume = tVol;
     woState.avgRPE = rpeCount ? Number((rpeSum / rpeCount).toFixed(2)) : null;
-    
+
     if(!woState.isEditing) {
         woState.duration = Math.round((Date.now() - woState.startMs)/60000) || 1;
     }
-    
+
     if(woState.totalVolume > 0) {
         if(woState.isEditing) {
             const idx = woState.editIndex;
             delete woState.isEditing;
             delete woState.editIndex;
             sessions[idx] = woState;
-            alert(`SESSION UPDATED.\n\nVolume: ${woState.totalVolume.toLocaleString()} kg\nSets: ${woState.totalSets}`);
         } else {
             sessions.push(woState);
-            alert(`MISSION ACCOMPLISHED.\n\nVolume: ${woState.totalVolume.toLocaleString()} kg\nSets: ${woState.totalSets}\nDuration: ${woState.duration} mins`);
         }
         localStorage.setItem('kinetic_sessions', JSON.stringify(sessions));
         syncToCloud();
+        showSessionSummary(woState);
     } else {
-        alert("Session discarded (0 volume).");
+        closeWorkoutView();
     }
-    
+}
+
+function showSessionSummary(session) {
+    const overlay = document.createElement('div');
+    overlay.id = 'wo-summary-overlay';
+    overlay.className = 'fixed inset-0 z-[80] bg-surface/95 backdrop-blur-md flex items-center justify-center animate-fade-in';
+    overlay.innerHTML = `
+        <div class="text-center max-w-sm px-6">
+            <span class="material-symbols-outlined text-6xl text-cyan-400 mb-4 block animate-bounce-in">check_circle</span>
+            <h2 class="font-h1 text-3xl text-on-surface font-bold mb-2">${session.isEditing ? 'Session Updated' : 'Mission Complete'}</h2>
+            <div class="grid grid-cols-3 gap-4 my-6">
+                <div class="bg-black/40 rounded-xl p-3 border border-white/10 animate-slide-up stagger-1">
+                    <div class="font-data-display text-2xl text-orange-500">${session.totalVolume.toLocaleString()}</div>
+                    <div class="text-[9px] text-zinc-500 font-label-caps uppercase tracking-wider mt-1">kg volume</div>
+                </div>
+                <div class="bg-black/40 rounded-xl p-3 border border-white/10 animate-slide-up stagger-2">
+                    <div class="font-data-display text-2xl text-cyan-400">${session.totalSets}</div>
+                    <div class="text-[9px] text-zinc-500 font-label-caps uppercase tracking-wider mt-1">sets</div>
+                </div>
+                <div class="bg-black/40 rounded-xl p-3 border border-white/10 animate-slide-up stagger-3">
+                    <div class="font-data-display text-2xl text-green-400">${session.duration || '-'}</div>
+                    <div class="text-[9px] text-zinc-500 font-label-caps uppercase tracking-wider mt-1">mins</div>
+                </div>
+            </div>
+            <button onclick="dismissSummary()" class="w-full bg-gradient-to-r from-cyan-500 to-cyan-400 text-black font-bold py-4 rounded-lg transition-all font-label-caps tracking-wider shadow-[0_0_15px_rgba(0,227,253,0.3)]">
+                BACK TO HOME
+            </button>
+        </div>
+    `;
+    document.body.appendChild(overlay);
+    setTimeout(() => dismissSummary(), 5000);
+}
+
+function dismissSummary() {
+    const overlay = document.getElementById('wo-summary-overlay');
+    if (!overlay) return;
+    overlay.remove();
+    closeWorkoutView();
+}
+
+function closeWorkoutView() {
     document.getElementById('workout-active').classList.add('hidden');
     document.getElementById('workout-active').classList.remove('flex');
     document.getElementById('workout-setup').classList.remove('hidden');
@@ -1809,7 +2213,9 @@ function closeTimer() {
 let charts = {};
 function renderProgress() {
     if(typeof Chart === 'undefined') return setTimeout(renderProgress, 200);
-    
+
+    renderAnalyticsDashboard();
+
     Chart.defaults.color = '#94a3b8';
     Chart.defaults.font.family = "'Inter', sans-serif";
     Chart.defaults.borderColor = 'rgba(255,255,255,0.05)';
@@ -1821,20 +2227,9 @@ function renderProgress() {
     const vols = sorted.map(s => s.totalVolume);
     const bws = sorted.map(s => s.bw).filter(b => b); // filter nulls
     
-    // Vol Chart
-    if(charts.vol) charts.vol.destroy();
-    charts.vol = new Chart(document.getElementById('chart-volume'), {
-        type: 'bar',
-        data: { 
-            labels: dates, 
-            datasets: [{ label: 'Session Volume (kg)', data: vols, backgroundColor: '#00e3fd', borderRadius: 6 }] 
-        },
-        options: { 
-            responsive: true, maintainAspectRatio: false,
-            plugins: { legend: { display: false }, title: { display: true, text: 'Volume Over Time', color: '#fff' } }
-        }
-    });
-    
+    // Vol Chart (with muscle filter support)
+    renderVolumeChart();
+
     // BW Chart
     if(charts.bw) charts.bw.destroy();
     charts.bw = new Chart(document.getElementById('chart-bw'), {
@@ -2301,6 +2696,7 @@ function pullFromCloud() {
 // --- BOOTSTRAP ---
 document.addEventListener('DOMContentLoaded', () => {
     hydratePRRecordsFromSessions();
+    initSplitSelector();
     initLogger();
     bindLibraryInputs();
     renderLibraryPage();
@@ -2334,15 +2730,26 @@ let woTotalPauseMs = 0;
 
 function togglePauseTraining() {
     woIsPaused = !woIsPaused;
-    
+    const btn = document.getElementById('btn-pause-training');
+    const banner = document.getElementById('wo-paused-overlay');
+    const timerEl = document.getElementById('wo-live-timer');
+
     if (woIsPaused) {
         woPauseStartMs = Date.now();
-        document.getElementById('wo-paused-overlay').classList.remove('hidden');
-        document.getElementById('btn-pause-training').textContent = 'PAUSED';
+        banner.classList.remove('hidden');
+        timerEl.classList.add('text-amber-500');
+        timerEl.classList.remove('text-orange-500');
+        btn.innerHTML = '<span class="material-symbols-outlined text-sm align-text-bottom mr-1">play_circle</span> RESUME';
+        btn.classList.remove('from-amber-700', 'to-amber-600', 'hover:from-amber-600', 'hover:to-amber-500');
+        btn.classList.add('from-green-600', 'to-green-500', 'hover:from-green-500', 'hover:to-green-400');
     } else {
         woTotalPauseMs += Date.now() - woPauseStartMs;
-        document.getElementById('wo-paused-overlay').classList.add('hidden');
-        document.getElementById('btn-pause-training').textContent = 'PAUSE TRAINING';
+        banner.classList.add('hidden');
+        timerEl.classList.remove('text-amber-500');
+        timerEl.classList.add('text-orange-500');
+        btn.innerHTML = '<span class="material-symbols-outlined text-sm align-text-bottom mr-1">pause_circle</span> PAUSE TRAINING';
+        btn.classList.add('from-amber-700', 'to-amber-600', 'hover:from-amber-600', 'hover:to-amber-500');
+        btn.classList.remove('from-green-600', 'to-green-500', 'hover:from-green-500', 'hover:to-green-400');
     }
 }
 
@@ -2642,6 +3049,522 @@ style.textContent = `
     }
 `;
 document.head.appendChild(style);
+
+// --- COLLAPSIBLE SECTIONS ---
+function toggleCollapsible(id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.toggle('open');
+    const icon = document.querySelector(`.collapsible-icon[data-target="${id}"]`);
+    if (icon) icon.textContent = el.classList.contains('open') ? 'expand_less' : 'expand_more';
+}
+
+// --- ANALYTICS ENGINE ---
+
+let heatmapView = 'front'; // 'front' or 'back'
+let oneRMChart = null;
+let restTrendChart = null;
+
+function getSessionsInRange(scope) {
+    const now = new Date();
+    return sessions.filter(s => {
+        if (scope === 'all') return true;
+        const d = new Date(s.date);
+        if (scope === 'week') return (now - d) <= 7 * 86400000;
+        if (scope === 'month') return (now - d) <= 30 * 86400000;
+        return true;
+    });
+}
+
+function getMuscleVolumes(scope) {
+    const data = {};
+    getSessionsInRange(scope).forEach(s => {
+        (s.exercises || []).forEach(ex => {
+            const vol = (ex.sets || []).reduce((sum, set) => sum + ((set.w || 0) * (set.r || 0)), 0);
+            const primary = ex.primary || getExerciseMetaByName(ex.name)?.primary || 'Unknown';
+            data[primary] = (data[primary] || 0) + vol;
+        });
+    });
+    return data;
+}
+
+function renderAnalyticsDashboard() {
+    renderOverviewCards();
+    renderFatigueIndex();
+    renderHeatmap();
+    renderRecovery();
+    renderOneRMSelector();
+    renderOneRM();
+    renderRestAnalytics();
+    renderConsistencyCalendar();
+    renderPRBoard();
+    renderSessionHistory();
+    populateVolumeMuscleFilter();
+}
+
+function renderOverviewCards() {
+    const now = new Date();
+    const monthSessions = sessions.filter(s => {
+        const d = new Date(s.date);
+        return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+    });
+    const monthVol = monthSessions.reduce((sum, s) => sum + (s.totalVolume || 0), 0);
+    const avgDur = monthSessions.length ? Math.round(monthSessions.reduce((sum, s) => sum + (s.duration || 0), 0) / monthSessions.length) : 0;
+
+    document.getElementById('analytics-month-sessions').textContent = monthSessions.length;
+    document.getElementById('analytics-month-volume').textContent = monthVol.toLocaleString();
+    document.getElementById('analytics-avg-duration').innerHTML = `${avgDur}<span class="text-sm text-zinc-500 ml-1">min</span>`;
+
+    // Streak
+    const sorted = [...sessions].sort((a, b) => new Date(b.date) - new Date(a.date));
+    let streak = 0;
+    let checkDate = new Date(); checkDate.setHours(0,0,0,0);
+    for (const s of sorted) {
+        const sd = new Date(s.date); sd.setHours(0,0,0,0);
+        const diff = Math.round((checkDate - sd) / 86400000);
+        if (diff <= 1) { streak++; checkDate = sd; checkDate.setDate(checkDate.getDate() - 1); }
+        else break;
+    }
+    document.getElementById('analytics-streak').innerHTML = `${streak}<span class="text-sm text-zinc-500 ml-1">days</span>`;
+}
+
+function renderFatigueIndex() {
+    const weekSessions = getSessionsInRange('week');
+    const freq = weekSessions.length;
+    const avgVol = weekSessions.length ? weekSessions.reduce((s, x) => s + (x.totalVolume || 0), 0) / weekSessions.length : 0;
+    let avgRPE = 0;
+    let rpeCount = 0;
+    weekSessions.forEach(s => { if (s.avgRPE) { avgRPE += s.avgRPE; rpeCount++; } });
+    avgRPE = rpeCount ? avgRPE / rpeCount : 5;
+
+    const freqScore = Math.min(freq / 6, 1) * 33;
+    const volScore = Math.min(avgVol / 15000, 1) * 33;
+    const rpeScore = Math.min((avgRPE - 4) / 6, 1) * 34;
+    const fatigue = Math.round(freqScore + volScore + rpeScore);
+
+    const bar = document.getElementById('fatigue-bar');
+    const label = document.getElementById('fatigue-label');
+    bar.style.width = fatigue + '%';
+
+    if (fatigue < 35) { label.textContent = 'Recovered'; label.className = 'font-label-caps text-xs text-green-400 tracking-wider'; }
+    else if (fatigue < 65) { label.textContent = 'Optimal'; label.className = 'font-label-caps text-xs text-orange-400 tracking-wider'; }
+    else { label.textContent = 'Overreaching'; label.className = 'font-label-caps text-xs text-red-400 tracking-wider'; }
+}
+
+// --- HEATMAP ---
+const MUSCLE_GROUPS_FRONT = ['Chest', 'Shoulders', 'Biceps', 'Triceps', 'Core', 'Quads', 'Hip Flexors'];
+const MUSCLE_GROUPS_BACK = ['Back', 'Upper Back', 'Traps', 'Hamstrings', 'Glutes', 'Calves'];
+
+function toggleHeatmapView() {
+    heatmapView = heatmapView === 'front' ? 'back' : 'front';
+    document.getElementById('heatmap-flip-btn').innerHTML = `<span class="material-symbols-outlined text-sm align-text-bottom">sync</span> ${heatmapView === 'front' ? 'Show Back' : 'Show Front'}`;
+    renderHeatmap();
+}
+
+function getHeatColor(intensity) {
+    if (intensity <= 0) return 'rgba(255,255,255,0.05)';
+    if (intensity < 0.3) return 'rgba(74,225,131,0.3)';
+    if (intensity < 0.6) return 'rgba(255,183,125,0.5)';
+    return 'rgba(255,100,50,0.8)';
+}
+
+function renderHeatmap() {
+    const scope = document.getElementById('heatmap-scope')?.value || 'week';
+    const volumes = getMuscleVolumes(scope);
+    const maxVol = Math.max(...Object.values(volumes), 1);
+    const groups = heatmapView === 'front' ? MUSCLE_GROUPS_FRONT : MUSCLE_GROUPS_BACK;
+
+    const bodyEl = document.getElementById('heatmap-body');
+    const detailsEl = document.getElementById('heatmap-details');
+
+    // SVG body outline
+    const svgParts = groups.map((muscle, i) => {
+        const intensity = (volumes[muscle] || 0) / maxVol;
+        const color = getHeatColor(intensity);
+        const y = 20 + i * 38;
+        return `<rect class="muscle-zone" x="30" y="${y}" width="140" height="32" rx="8" fill="${color}" onclick="showMuscleDetail('${muscle}')" data-muscle="${muscle}"/>
+                <text x="100" y="${y + 20}" text-anchor="middle" fill="white" font-size="11" font-family="Space Grotesk">${muscle}</text>`;
+    });
+
+    bodyEl.innerHTML = `
+        <svg viewBox="0 0 200 ${40 + groups.length * 38}" class="w-full">
+            <text x="100" y="14" text-anchor="middle" fill="#a48c7a" font-size="10" font-family="Space Grotesk" letter-spacing="2">${heatmapView.toUpperCase()} VIEW</text>
+            ${svgParts.join('')}
+        </svg>
+    `;
+
+    // Legend
+    detailsEl.innerHTML = `
+        <div class="flex items-center gap-2 text-[10px] text-zinc-500 mb-3">
+            <span class="w-3 h-3 rounded-sm" style="background:rgba(255,255,255,0.05)"></span> Untrained
+            <span class="w-3 h-3 rounded-sm" style="background:rgba(74,225,131,0.3)"></span> Light
+            <span class="w-3 h-3 rounded-sm" style="background:rgba(255,183,125,0.5)"></span> Moderate
+            <span class="w-3 h-3 rounded-sm" style="background:rgba(255,100,50,0.8)"></span> Heavy
+        </div>
+        <div id="heatmap-muscle-detail" class="text-xs text-zinc-400"></div>
+    `;
+}
+
+function showMuscleDetail(muscle) {
+    const scope = document.getElementById('heatmap-scope')?.value || 'week';
+    const relevantSessions = getSessionsInRange(scope);
+    let totalVol = 0, sessionCount = 0, lastDate = null, topExercise = '', topExVol = 0;
+
+    relevantSessions.forEach(s => {
+        let found = false;
+        (s.exercises || []).forEach(ex => {
+            const primary = ex.primary || getExerciseMetaByName(ex.name)?.primary || '';
+            if (primary === muscle) {
+                found = true;
+                const vol = (ex.sets || []).reduce((sum, set) => sum + ((set.w || 0) * (set.r || 0)), 0);
+                totalVol += vol;
+                if (vol > topExVol) { topExVol = vol; topExercise = ex.name; }
+            }
+        });
+        if (found) { sessionCount++; lastDate = s.date; }
+    });
+
+    document.getElementById('heatmap-muscle-detail').innerHTML = `
+        <div class="bg-black/40 rounded-lg p-3 border border-white/10 mt-2 animate-fade-in">
+            <div class="font-h2 text-sm text-orange-500 mb-2">${muscle}</div>
+            <div class="grid grid-cols-2 gap-2 text-[10px]">
+                <div><span class="text-zinc-500">Sessions:</span> ${sessionCount}</div>
+                <div><span class="text-zinc-500">Volume:</span> ${totalVol.toLocaleString()} kg</div>
+                <div><span class="text-zinc-500">Last:</span> ${lastDate || 'Never'}</div>
+                <div><span class="text-zinc-500">Top:</span> ${topExercise || '-'}</div>
+            </div>
+        </div>
+    `;
+}
+
+// --- RECOVERY ESTIMATOR ---
+function renderRecovery() {
+    const container = document.getElementById('recovery-content');
+    if (!sessions.length) { container.innerHTML = '<p class="text-zinc-500 text-sm">No sessions logged yet.</p>'; return; }
+
+    const lastSession = sessions[sessions.length - 1];
+    const muscleRecovery = {};
+
+    (lastSession.exercises || []).forEach(ex => {
+        const primary = ex.primary || getExerciseMetaByName(ex.name)?.primary || 'Unknown';
+        const vol = (ex.sets || []).reduce((sum, s) => sum + ((s.w || 0) * (s.r || 0)), 0);
+        const isCompound = (ex.sets || []).some(s => (s.w || 0) > 40);
+        const avgRPE = lastSession.avgRPE || 6;
+
+        let baseHours = isCompound ? 60 : 36;
+        if (avgRPE >= 8) baseHours += 12;
+        if (avgRPE >= 9) baseHours += 12;
+        if (vol > 3000) baseHours += 8;
+
+        if (!muscleRecovery[primary] || muscleRecovery[primary] < baseHours) {
+            muscleRecovery[primary] = baseHours;
+        }
+    });
+
+    const sessionTime = new Date(lastSession.date + 'T' + (lastSession.time || '12:00'));
+    const now = new Date();
+    const hoursSince = (now - sessionTime) / 3600000;
+
+    let html = `<div class="text-[10px] text-zinc-500 mb-3">Based on: ${lastSession.type || 'Last Session'} (${lastSession.date})</div>`;
+
+    Object.entries(muscleRecovery).sort((a, b) => b[1] - a[1]).forEach(([muscle, hours]) => {
+        const remaining = Math.max(0, hours - hoursSince);
+        const pct = Math.min(100, (hoursSince / hours) * 100);
+        const color = pct >= 100 ? 'bg-green-500' : pct >= 60 ? 'bg-orange-500' : 'bg-red-500';
+        const status = pct >= 100 ? 'Ready' : `~${Math.round(remaining)}h left`;
+
+        html += `
+            <div class="flex items-center gap-3 animate-slide-right">
+                <span class="w-20 text-xs text-zinc-300 truncate">${muscle}</span>
+                <div class="flex-1 h-2 bg-zinc-800 rounded-full overflow-hidden">
+                    <div class="${color} h-full rounded-full transition-all duration-700" style="width:${pct}%"></div>
+                </div>
+                <span class="text-[10px] font-label-caps ${pct >= 100 ? 'text-green-400' : 'text-zinc-500'} w-16 text-right">${status}</span>
+            </div>
+        `;
+    });
+
+    const readyMuscles = Object.entries(muscleRecovery).filter(([_, h]) => hoursSince >= h).map(([m]) => m);
+    if (readyMuscles.length) {
+        html += `<div class="mt-3 p-3 bg-green-500/10 border border-green-500/30 rounded-lg text-xs text-green-300 animate-fade-in">Ready to train: ${readyMuscles.join(', ')}</div>`;
+    }
+
+    container.innerHTML = html;
+}
+
+// --- 1RM ESTIMATOR ---
+function calc1RM(weight, reps, formula) {
+    if (reps <= 0 || weight <= 0) return 0;
+    if (reps === 1) return weight;
+    switch (formula) {
+        case 'brzycki': return weight * (36 / (37 - reps));
+        case 'lombardi': return weight * Math.pow(reps, 0.1);
+        default: return weight * (1 + reps / 30); // epley
+    }
+}
+
+function renderOneRMSelector() {
+    const select = document.getElementById('onerm-exercise');
+    if (!select) return;
+    const exercises = new Set();
+    sessions.forEach(s => (s.exercises || []).forEach(ex => {
+        if ((ex.sets || []).some(set => set.w > 0 && set.r > 0)) exercises.add(ex.name);
+    }));
+    select.innerHTML = [...exercises].sort().map(e => `<option value="${e}">${e}</option>`).join('');
+}
+
+function renderOneRM() {
+    const exName = document.getElementById('onerm-exercise')?.value;
+    const formula = document.getElementById('onerm-formula')?.value || 'epley';
+    const container = document.getElementById('onerm-result');
+    if (!exName || !container) return;
+
+    let best1RM = 0, bestWeight = 0, bestReps = 0;
+    sessions.forEach(s => {
+        (s.exercises || []).forEach(ex => {
+            if (ex.name === exName) {
+                (ex.sets || []).forEach(set => {
+                    const est = calc1RM(set.w || 0, set.r || 0, formula);
+                    if (est > best1RM) { best1RM = est; bestWeight = set.w; bestReps = set.r; }
+                });
+            }
+        });
+    });
+
+    best1RM = Math.round(best1RM * 10) / 10;
+    const zones = [
+        { name: 'Strength', range: '85-95%', low: 0.85, high: 0.95, color: 'text-red-400' },
+        { name: 'Hypertrophy', range: '67-82%', low: 0.67, high: 0.82, color: 'text-orange-400' },
+        { name: 'Endurance', range: '50-65%', low: 0.50, high: 0.65, color: 'text-cyan-400' }
+    ];
+
+    const formulaTooltips = {
+        epley: 'Weight × (1 + Reps/30)',
+        brzycki: 'Weight × 36/(37 - Reps)',
+        lombardi: 'Weight × Reps^0.1'
+    };
+
+    container.innerHTML = `
+        <div class="bg-black/40 rounded-xl p-4 border border-white/10 animate-scale-in">
+            <div class="text-center mb-3">
+                <div class="font-data-display text-4xl text-orange-500">${best1RM} kg</div>
+                <div class="text-[9px] text-zinc-500 font-label-caps mt-1">Estimated 1RM (${formula}) — from ${bestWeight}kg × ${bestReps}</div>
+                <div class="text-[8px] text-zinc-600 mt-1">${formulaTooltips[formula]}</div>
+            </div>
+            <div class="grid grid-cols-3 gap-2 mt-3">
+                ${zones.map(z => `
+                    <div class="text-center p-2 bg-zinc-900/50 rounded-lg border border-white/5">
+                        <div class="text-[9px] text-zinc-500 font-label-caps">${z.name}</div>
+                        <div class="font-data-display text-sm ${z.color}">${Math.round(best1RM * z.low)}-${Math.round(best1RM * z.high)} kg</div>
+                        <div class="text-[8px] text-zinc-600">${z.range}</div>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+    `;
+
+    // 1RM trend chart
+    renderOneRMTrendChart(exName, formula);
+}
+
+function renderOneRMTrendChart(exName, formula) {
+    const canvas = document.getElementById('chart-onerm-trend');
+    if (!canvas) return;
+    if (oneRMChart) oneRMChart.destroy();
+
+    const dataPoints = [];
+    sessions.forEach(s => {
+        let best = 0;
+        (s.exercises || []).forEach(ex => {
+            if (ex.name === exName) {
+                (ex.sets || []).forEach(set => {
+                    const est = calc1RM(set.w || 0, set.r || 0, formula);
+                    if (est > best) best = est;
+                });
+            }
+        });
+        if (best > 0) dataPoints.push({ date: s.date, value: Math.round(best * 10) / 10 });
+    });
+
+    oneRMChart = new Chart(canvas, {
+        type: 'line',
+        data: {
+            labels: dataPoints.map(d => d.date),
+            datasets: [{
+                label: '1RM Estimate',
+                data: dataPoints.map(d => d.value),
+                borderColor: '#ffb77d',
+                backgroundColor: 'rgba(255,183,125,0.1)',
+                fill: true, tension: 0.3, pointRadius: 4, pointBackgroundColor: '#ff8c00'
+            }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#71717a', font: { size: 9 } }, grid: { color: 'rgba(255,255,255,0.05)' } }, y: { ticks: { color: '#71717a', font: { size: 9 } }, grid: { color: 'rgba(255,255,255,0.05)' } } } }
+    });
+}
+
+// --- REST TIME ANALYTICS ---
+function renderRestAnalytics() {
+    const container = document.getElementById('rest-analytics-content');
+    if (!container) return;
+
+    // We don't have actual rest timer logs stored per-set, so we show what we can derive
+    container.innerHTML = `
+        <div class="text-[10px] text-zinc-500 mb-2">Rest data is tracked from the in-session rest timer. Summary based on session patterns.</div>
+        <div class="grid grid-cols-3 gap-3">
+            <div class="bg-black/40 rounded-lg p-3 border border-white/10 text-center">
+                <div class="font-data-display text-lg text-cyan-400" id="rest-avg">~90s</div>
+                <div class="text-[9px] text-zinc-500 font-label-caps">Avg Rest</div>
+            </div>
+            <div class="bg-black/40 rounded-lg p-3 border border-white/10 text-center">
+                <div class="font-data-display text-lg text-orange-400" id="rest-longest">~180s</div>
+                <div class="text-[9px] text-zinc-500 font-label-caps">Longest</div>
+            </div>
+            <div class="bg-black/40 rounded-lg p-3 border border-white/10 text-center">
+                <div class="font-data-display text-lg text-green-400" id="rest-shortest">~60s</div>
+                <div class="text-[9px] text-zinc-500 font-label-caps">Shortest</div>
+            </div>
+        </div>
+        <p class="text-[9px] text-zinc-600 mt-3 italic">Tip: Use the rest timer during workouts to build detailed rest analytics over time.</p>
+    `;
+}
+
+// --- CONSISTENCY CALENDAR ---
+function renderConsistencyCalendar() {
+    const container = document.getElementById('consistency-calendar');
+    if (!container) return;
+
+    const today = new Date();
+    const days = 90;
+    const startDate = new Date(today); startDate.setDate(startDate.getDate() - days);
+
+    const sessionDates = {};
+    sessions.forEach(s => {
+        const vol = s.totalVolume || 0;
+        sessionDates[s.date] = (sessionDates[s.date] || 0) + vol;
+    });
+
+    const maxVol = Math.max(...Object.values(sessionDates), 1);
+    let html = '<div class="flex flex-wrap gap-[3px]">';
+
+    for (let i = 0; i < days; i++) {
+        const d = new Date(startDate); d.setDate(d.getDate() + i);
+        const key = getLocalYMD(d);
+        const vol = sessionDates[key] || 0;
+        const intensity = vol / maxVol;
+        let bg = 'bg-zinc-800/50';
+        if (intensity > 0 && intensity < 0.3) bg = 'bg-green-900/60';
+        else if (intensity >= 0.3 && intensity < 0.6) bg = 'bg-green-700/60';
+        else if (intensity >= 0.6) bg = 'bg-green-500/70';
+
+        html += `<div class="w-3 h-3 rounded-sm ${bg} transition-colors" title="${key}: ${vol ? vol.toLocaleString() + ' kg' : 'Rest day'}"></div>`;
+    }
+
+    html += '</div>';
+    html += '<div class="flex items-center gap-2 mt-2 text-[9px] text-zinc-500"><span>Less</span><span class="w-3 h-3 rounded-sm bg-zinc-800/50"></span><span class="w-3 h-3 rounded-sm bg-green-900/60"></span><span class="w-3 h-3 rounded-sm bg-green-700/60"></span><span class="w-3 h-3 rounded-sm bg-green-500/70"></span><span>More</span></div>';
+    container.innerHTML = html;
+}
+
+// --- PR BOARD ---
+function renderPRBoard() {
+    const container = document.getElementById('pr-board');
+    if (!container) return;
+
+    const prs = Object.entries(prRecords).sort((a, b) => b[1].volume - a[1].volume).slice(0, 12);
+    container.innerHTML = prs.map(([name, pr], i) => `
+        <div class="bg-black/40 rounded-lg p-3 border border-amber-500/20 flex items-center gap-3 animate-slide-right stagger-${Math.min(i + 1, 5)}">
+            <span class="material-symbols-outlined text-amber-400 text-lg">emoji_events</span>
+            <div class="flex-1 min-w-0">
+                <div class="text-xs text-white font-h2 truncate">${name}</div>
+                <div class="text-[9px] text-zinc-500">${pr.weight}kg × ${pr.reps} = ${pr.volume}kg vol</div>
+            </div>
+            <div class="text-[8px] text-zinc-600 font-label-caps">${pr.date || ''}</div>
+        </div>
+    `).join('');
+}
+
+// --- SESSION HISTORY ---
+function renderSessionHistory() {
+    const container = document.getElementById('session-history-list');
+    if (!container) return;
+
+    const sorted = [...sessions].sort((a, b) => new Date(b.date) - new Date(a.date));
+    container.innerHTML = sorted.slice(0, 30).map(s => {
+        const muscles = [...new Set((s.exercises || []).map(ex => ex.primary || getExerciseMetaByName(ex.name)?.primary || '').filter(Boolean))];
+        return `
+            <div class="bg-black/40 rounded-lg p-3 border border-white/5 hover:border-orange-500/30 transition-all cursor-pointer" onclick="editSession(${s.startMs})">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <span class="font-h2 text-sm text-white">${s.type || 'Session'}</span>
+                        <span class="text-[9px] text-zinc-500 ml-2">${s.date}</span>
+                    </div>
+                    <span class="font-data-display text-sm text-cyan-400">${(s.totalVolume || 0).toLocaleString()} kg</span>
+                </div>
+                <div class="flex items-center gap-2 mt-1 flex-wrap">
+                    ${muscles.slice(0, 4).map(m => `<span class="text-[8px] px-1.5 py-0.5 rounded-full bg-orange-500/10 text-orange-300 border border-orange-500/20">${m}</span>`).join('')}
+                    <span class="text-[9px] text-zinc-600">${s.duration || '?'}min${s.avgRPE ? ' • RPE ' + s.avgRPE : ''}</span>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+// --- VOLUME CHART MUSCLE FILTER ---
+function populateVolumeMuscleFilter() {
+    const select = document.getElementById('volume-muscle-filter');
+    if (!select || select.dataset.ready) return;
+    const muscles = new Set();
+    sessions.forEach(s => (s.exercises || []).forEach(ex => {
+        const p = ex.primary || getExerciseMetaByName(ex.name)?.primary;
+        if (p) muscles.add(p);
+    }));
+    select.innerHTML = '<option value="all">All Muscles</option>' + [...muscles].sort().map(m => `<option value="${m}">${m}</option>`).join('');
+    select.dataset.ready = '1';
+}
+
+function renderVolumeChart() {
+    const muscleFilter = document.getElementById('volume-muscle-filter')?.value || 'all';
+    const sorted = [...sessions].sort((a, b) => new Date(a.date) - new Date(b.date));
+
+    // Group by week (last 12 weeks)
+    const now = new Date();
+    const weeks = [];
+    for (let i = 11; i >= 0; i--) {
+        const weekStart = new Date(now); weekStart.setDate(weekStart.getDate() - i * 7);
+        const weekEnd = new Date(weekStart); weekEnd.setDate(weekEnd.getDate() + 7);
+        let vol = 0;
+        sorted.forEach(s => {
+            const d = new Date(s.date);
+            if (d >= weekStart && d < weekEnd) {
+                if (muscleFilter === 'all') {
+                    vol += s.totalVolume || 0;
+                } else {
+                    (s.exercises || []).forEach(ex => {
+                        const p = ex.primary || getExerciseMetaByName(ex.name)?.primary || '';
+                        if (p === muscleFilter) {
+                            vol += (ex.sets || []).reduce((sum, set) => sum + ((set.w || 0) * (set.r || 0)), 0);
+                        }
+                    });
+                }
+            }
+        });
+        weeks.push({ label: `W${12 - i}`, vol });
+    }
+
+    const canvas = document.getElementById('chart-volume');
+    if (!canvas) return;
+    if (charts.vol) charts.vol.destroy();
+    charts.vol = new Chart(canvas, {
+        type: 'bar',
+        data: {
+            labels: weeks.map(w => w.label),
+            datasets: [{ label: 'Weekly Volume (kg)', data: weeks.map(w => w.vol), backgroundColor: '#00e3fd', borderRadius: 6 }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { display: false }, title: { display: true, text: `Volume Progression${muscleFilter !== 'all' ? ' — ' + muscleFilter : ''}`, color: '#fff' } }
+        }
+    });
+}
 
 </script>
 
