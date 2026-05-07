@@ -251,124 +251,177 @@ tailwind.config = {
             </div>
             
                         <!-- FULLSCREEN WORKOUT ACTIVE VIEW -->
-            <div id="workout-active" class="hidden fixed inset-0 flex flex-col bg-gradient-to-b from-surface to-surface-dim z-50 overflow-hidden">
-                <!-- Top Bar with Timer and Controls -->
-                <div id="wo-top-bar" class="flex justify-between items-center p-4 md:p-6 border-b border-white/10 bg-surface-container/50">
-                    <div class="flex items-center gap-2">
-                        <button onclick="toggleDayViewDrawer()" class="material-symbols-outlined text-white hover:text-orange-500 transition-colors text-[24px]">menu</button>
-                        <div>
-                            <div class="text-[10px] text-zinc-400 font-label-caps uppercase tracking-widest">Session</div>
-                            <div id="wo-session-type-label" class="text-xs font-bold text-orange-500"></div>
+            <!-- FULLSCREEN WORKOUT ACTIVE VIEW - REDESIGNED -->
+            <div id="workout-active" class="hidden fixed inset-0 flex flex-col bg-gradient-to-b from-surface via-surface-container to-surface-dim z-50 overflow-hidden">
+                
+                <!-- HEADER BAR -->
+                <div class="flex items-center justify-between p-4 md:p-6 bg-surface-container/80 backdrop-blur border-b border-cyan-500/20 sticky top-0 z-10">
+                    <!-- Left: Session Info + Day View Toggle -->
+                    <div class="flex items-center gap-3 flex-1">
+                        <button onclick="toggleDayViewDrawer()" class="p-2 rounded-lg hover:bg-orange-500/20 transition-all group" title="View all exercises">
+                            <span class="material-symbols-outlined text-orange-500 group-hover:scale-110 transition-transform">view_list</span>
+                        </button>
+                        <div class="hidden sm:flex flex-col">
+                            <span class="text-[9px] text-zinc-500 font-label-caps uppercase tracking-wider">Current Session</span>
+                            <span id="wo-session-type-label" class="text-sm font-bold text-orange-500">ANT-A</span>
                         </div>
                     </div>
                     
-                    <div class="flex gap-4 md:gap-8 items-center">
-                        <div class="text-center">
-                            <div class="text-[10px] text-zinc-400 font-label-caps uppercase tracking-widest">Effective Time</div>
-                            <div id="wo-live-timer" class="text-lg md:text-xl font-bold text-orange-500 font-data-display">00:00</div>
-                        </div>
-                        <div class="text-center hidden md:block">
-                            <div class="text-[10px] text-zinc-400 font-label-caps uppercase tracking-widest">Total Volume</div>
-                            <div id="wo-total-volume" class="text-lg md:text-xl font-bold text-cyan-400 font-data-display">0 kg</div>
-                        </div>
+                    <!-- Center: Timer Display -->
+                    <div class="text-center">
+                        <div class="text-[8px] text-zinc-400 font-label-caps uppercase tracking-wider">Effective Time</div>
+                        <div id="wo-live-timer" class="text-2xl md:text-3xl font-bold text-orange-500 font-data-display tabular-nums">00:00</div>
                     </div>
                     
-                    <button onclick="deleteSession()" id="btn-delete-session" class="hidden material-symbols-outlined text-red-500 hover:text-red-400 transition-colors">delete</button>
+                    <!-- Right: Volume + Delete -->
+                    <div class="flex items-center gap-3 flex-1 justify-end">
+                        <div class="text-right hidden sm:block">
+                            <div class="text-[8px] text-zinc-400 font-label-caps uppercase tracking-wider">Total Volume</div>
+                            <div id="wo-total-volume" class="text-sm md:text-lg font-bold text-cyan-400 font-data-display">0 kg</div>
+                        </div>
+                        <button onclick="deleteSession()" id="btn-delete-session" class="hidden p-2 rounded-lg hover:bg-red-500/20 transition-all" title="Delete session">
+                            <span class="material-symbols-outlined text-red-500 text-lg">delete</span>
+                        </button>
+                    </div>
                 </div>
                 
-                <!-- Previous Exercise Context (Greyed out) -->
-                <div id="wo-prev-context" class="px-4 md:px-6 py-2 text-center">
-                    <div class="text-[11px] text-zinc-600 font-label-caps uppercase tracking-widest">Previous</div>
-                    <div id="wo-prev-ex-name" class="text-xs text-zinc-600">---</div>
-                </div>
-                
-                <!-- Main Fullscreen Exercise Card -->
-                <div class="flex-1 overflow-y-auto px-4 md:px-6 py-6 flex items-center justify-center">
-                    <div id="wo-fullscreen-card" class="w-full max-w-md glass-panel p-6 md:p-8 rounded-xl flex flex-col gap-6 transition-transform duration-300">
-                        <!-- Exercise Name and Hints -->
-                        <div class="text-center">
-                            <h3 id="wo-current-ex-name" class="font-h1 text-3xl md:text-4xl text-on-surface font-bold mb-2">Select Exercise</h3>
-                            <div id="wo-ex-hint" class="font-label-caps text-[10px] tracking-widest text-zinc-500 uppercase">---</div>
-                        </div>
-                        
-                        <!-- Sets Display -->
-                        <div id="wo-sets-area" class="flex flex-col gap-3 max-h-[300px] overflow-y-auto">
-                            <div class="text-center text-zinc-600 py-6 font-medium italic">No sets logged yet.</div>
-                        </div>
-                        
-                        <!-- Add Set Button -->
-                        <button onclick="addSet()" id="btn-add-set" class="w-full border-2 border-dashed border-orange-500/50 text-orange-500 font-bold py-3 rounded-lg hover:bg-orange-500/10 transition-colors tracking-widest font-label-caps text-sm">+ ADD SET</button>
-                        
-                        <!-- Rest Timer -->
-                        <div id="wo-rest-timer-section" class="hidden">
-                            <div class="text-center p-4 bg-black/40 rounded-lg border border-cyan-500/30">
-                                <div class="text-[10px] text-zinc-400 font-label-caps uppercase tracking-widest mb-2">Rest Timer</div>
-                                <div id="wo-rest-timer" class="text-2xl font-bold text-cyan-400 font-data-display">00:00</div>
+                <!-- MAIN CONTENT AREA -->
+                <div class="flex-1 overflow-hidden flex flex-col">
+                    
+                    <!-- Exercise Context - Previous (Top) -->
+                    <div id="wo-prev-context" class="px-4 pt-4 pb-2 text-center opacity-60 hover:opacity-100 transition-opacity cursor-pointer hidden sm:block" onclick="prevExercise()">
+                        <div class="text-[11px] text-zinc-500 font-label-caps uppercase tracking-wider">← Previous Exercise</div>
+                        <div id="wo-prev-ex-name" class="text-sm text-zinc-400 truncate">Warm-up</div>
+                    </div>
+                    
+                    <!-- Center Card Area -->
+                    <div class="flex-1 overflow-y-auto px-3 md:px-6 py-4 md:py-6 flex items-center justify-center">
+                        <div id="wo-fullscreen-card" class="w-full max-w-lg glass-panel p-6 md:p-8 rounded-2xl flex flex-col gap-5 shadow-2xl transition-transform duration-300">
+                            
+                            <!-- Exercise Header -->
+                            <div class="text-center border-b border-white/10 pb-5">
+                                <h2 id="wo-current-ex-name" class="font-h1 text-3xl md:text-4xl text-on-surface font-bold mb-2">Barbell Squat</h2>
+                                <div id="wo-ex-hint" class="font-label-caps text-[10px] tracking-wider text-zinc-400 uppercase space-x-2">
+                                    <span class="text-orange-500">PR: 200kg x 5</span>
+                                    <span class="text-zinc-600">|</span>
+                                    <span>LAST: 190kg x 6</span>
+                                </div>
                             </div>
-                        </div>
-                        
-                        <!-- Notes Field (Expandable) -->
-                        <div class="flex flex-col gap-2">
-                            <button onclick="toggleNotesField()" class="w-full text-left p-3 bg-black/40 rounded-lg border border-white/5 hover:border-zinc-500 transition-colors font-label-caps text-[10px] uppercase tracking-widest text-zinc-400 flex items-center justify-between">
-                                <span>Add Notes</span>
-                                <span id="wo-notes-toggle-icon" class="material-symbols-outlined text-sm">expand_more</span>
+                            
+                            <!-- Sets Display -->
+                            <div id="wo-sets-area" class="flex flex-col gap-3 min-h-[120px] max-h-[280px] overflow-y-auto pr-2">
+                                <div class="text-center text-zinc-600 py-8 font-medium italic">No sets logged yet</div>
+                            </div>
+                            
+                            <!-- Add Set Button -->
+                            <button onclick="addSet()" id="btn-add-set" class="w-full border-2 border-dashed border-orange-500/50 text-orange-500 font-bold py-3 rounded-lg hover:bg-orange-500/10 hover:border-orange-500 transition-all tracking-widest font-label-caps text-sm">
+                                <span class="material-symbols-outlined text-sm align-text-bottom mr-1">add</span> ADD SET
                             </button>
-                            <textarea id="wo-notes-field" class="hidden w-full h-20 bg-zinc-900 border border-white/10 rounded-lg p-3 text-white text-sm font-body-md placeholder-zinc-600 focus:border-orange-500 outline-none resize-none" placeholder="e.g., felt weak on left side, increase weight next time"></textarea>
+                            
+                            <!-- Rest Timer (Hidden by default) -->
+                            <div id="wo-rest-timer-section" class="hidden">
+                                <div class="text-center p-4 bg-cyan-500/10 rounded-lg border border-cyan-500/30 animate-pulse">
+                                    <div class="text-[9px] text-cyan-400 font-label-caps uppercase tracking-wider mb-1">Rest Timer</div>
+                                    <div id="wo-rest-timer" class="text-3xl font-bold text-cyan-400 font-data-display">00:00</div>
+                                </div>
+                            </div>
+                            
+                            <!-- Notes Section -->
+                            <div class="border-t border-white/10 pt-4">
+                                <button onclick="toggleNotesField()" class="w-full text-left p-3 bg-zinc-900/50 rounded-lg border border-white/5 hover:border-orange-500/50 transition-all group">
+                                    <div class="flex items-center justify-between">
+                                        <span class="font-label-caps text-[10px] uppercase tracking-wider text-zinc-400 group-hover:text-orange-500">
+                                            <span class="material-symbols-outlined text-xs align-text-bottom mr-1">edit_note</span> Session Notes
+                                        </span>
+                                        <span id="wo-notes-toggle-icon" class="material-symbols-outlined text-sm text-orange-500">expand_more</span>
+                                    </div>
+                                </button>
+                                <textarea id="wo-notes-field" class="hidden w-full h-24 mt-2 bg-zinc-900 border border-white/10 rounded-lg p-3 text-white text-sm font-body-md placeholder-zinc-600 focus:border-orange-500 outline-none resize-none" placeholder="felt strong today, increase weight next session..."></textarea>
+                            </div>
+                            
+                            <!-- Pause Button -->
+                            <button onclick="togglePauseTraining()" id="btn-pause-training" class="w-full bg-gradient-to-r from-amber-700 to-amber-600 hover:from-amber-600 hover:to-amber-500 text-white font-bold py-3 rounded-lg transition-all tracking-widest font-label-caps text-sm shadow-[0_0_15px_rgba(180,83,9,0.3)] hover:shadow-[0_0_20px_rgba(180,83,9,0.5)]">
+                                <span class="material-symbols-outlined text-sm align-text-bottom mr-1">pause_circle</span> PAUSE TRAINING
+                            </button>
                         </div>
-                        
-                        <!-- Pause/Resume Button -->
-                        <button onclick="togglePauseTraining()" id="btn-pause-training" class="w-full bg-amber-600 hover:bg-amber-500 text-white font-bold py-3 rounded-lg transition-colors tracking-widest font-label-caps text-sm shadow-[0_0_10px_rgba(180,83,9,0.3)]">PAUSE TRAINING</button>
+                    </div>
+                    
+                    <!-- Exercise Context - Next (Bottom) -->
+                    <div id="wo-next-context" class="px-4 pb-4 pt-2 text-center opacity-60 hover:opacity-100 transition-opacity cursor-pointer hidden sm:block" onclick="nextExercise()">
+                        <div class="text-sm text-zinc-400 truncate">Leg Press</div>
+                        <div class="text-[11px] text-zinc-500 font-label-caps uppercase tracking-wider">Next Exercise →</div>
                     </div>
                 </div>
                 
-                <!-- Session Paused Overlay -->
-                <div id="wo-paused-overlay" class="hidden fixed inset-0 bg-black/60 flex items-center justify-center z-50">
-                    <div class="glass-panel p-8 rounded-xl text-center max-w-sm mx-4">
-                        <h3 class="font-h1 text-3xl text-on-surface font-bold mb-2">Session Paused</h3>
-                        <div class="text-zinc-400 mb-6 font-label-caps text-sm">Effective Time: <span id="wo-paused-time" class="text-orange-500 font-bold">00:00</span></div>
-                        <button onclick="togglePauseTraining()" class="w-full bg-cyan-500 hover:bg-cyan-400 text-black font-bold py-4 rounded-lg transition-colors mb-3">RESUME TRAINING</button>
-                        <button onclick="finishWorkout()" class="w-full bg-surface-container-high border border-white/10 hover:bg-white/5 text-on-surface font-bold py-3 rounded-lg transition-colors">FINISH SESSION</button>
-                    </div>
-                </div>
-                
-                <!-- Next Exercise Context (Greyed out) -->
-                <div id="wo-next-context" class="px-4 md:px-6 py-2 text-center">
-                    <div class="text-xs text-zinc-600">---</div>
-                    <div class="text-[11px] text-zinc-600 font-label-caps uppercase tracking-widest">Next</div>
-                </div>
-                
-                <!-- Navigation and Action Bar -->
-                <div id="wo-bottom-bar" class="flex gap-3 p-4 md:p-6 bg-surface-container/50 border-t border-white/10">
-                    <button onclick="prevExercise()" id="btn-prev-ex" class="flex-1 bg-surface-container-high border border-white/10 text-on-surface font-bold py-3 rounded-lg hover:bg-white/5 transition-colors flex items-center justify-center gap-2">
+                <!-- BOTTOM NAVIGATION -->
+                <div class="flex gap-2 p-4 md:p-6 bg-surface-container/80 backdrop-blur border-t border-cyan-500/20 flex-wrap md:flex-nowrap">
+                    <button onclick="prevExercise()" id="btn-prev-ex" class="flex-1 min-h-12 bg-surface-container-high border border-white/20 text-on-surface font-bold rounded-lg hover:bg-white/10 hover:border-orange-500/50 transition-all flex items-center justify-center gap-2 shadow-lg">
                         <span class="material-symbols-outlined">arrow_back</span>
-                        <span class="hidden sm:inline font-label-caps text-xs uppercase tracking-widest">Previous</span>
+                        <span class="hidden sm:inline font-label-caps text-xs uppercase tracking-wider">Prev</span>
                     </button>
                     
-                    <div class="text-center flex-1 flex items-center justify-center flex-col">
-                        <div class="text-[10px] text-zinc-400 font-label-caps uppercase tracking-widest">Exercise</div>
-                        <div id="wo-exercise-counter" class="text-sm font-bold text-on-surface font-data-display">1 / 1</div>
+                    <div class="flex-1 flex items-center justify-center">
+                        <div class="text-center">
+                            <div class="text-[8px] text-zinc-500 font-label-caps uppercase tracking-wider">Exercise</div>
+                            <div id="wo-exercise-counter" class="text-lg font-bold text-on-surface font-data-display">1 / 8</div>
+                        </div>
                     </div>
                     
-                    <button onclick="nextExercise()" id="btn-next-ex" class="flex-1 bg-surface-container-high border border-white/10 text-on-surface font-bold py-3 rounded-lg hover:bg-white/5 transition-colors flex items-center justify-center gap-2">
-                        <span class="hidden sm:inline font-label-caps text-xs uppercase tracking-widest">Next</span>
+                    <button onclick="nextExercise()" id="btn-next-ex" class="flex-1 min-h-12 bg-surface-container-high border border-white/20 text-on-surface font-bold rounded-lg hover:bg-white/10 hover:border-orange-500/50 transition-all flex items-center justify-center gap-2 shadow-lg">
+                        <span class="hidden sm:inline font-label-caps text-xs uppercase tracking-wider">Next</span>
                         <span class="material-symbols-outlined">arrow_forward</span>
                     </button>
                     
-                    <button onclick="finishWorkout()" class="flex-1 bg-cyan-500 hover:bg-cyan-400 text-black font-bold py-3 rounded-lg transition-colors tracking-widest font-label-caps text-xs shadow-[0_0_15px_rgba(0,227,253,0.3)]">FINISH</button>
+                    <button onclick="finishWorkout()" class="flex-1 min-h-12 bg-gradient-to-r from-cyan-500 to-cyan-400 hover:from-cyan-400 hover:to-cyan-300 text-black font-bold rounded-lg transition-all tracking-widest font-label-caps text-xs shadow-[0_0_15px_rgba(0,227,253,0.3)] hover:shadow-[0_0_20px_rgba(0,227,253,0.5)] flex items-center justify-center gap-2">
+                        <span class="material-symbols-outlined text-sm">check_circle</span>
+                        <span>FINISH</span>
+                    </button>
+                </div>
+                
+                <!-- Session Paused Modal -->
+                <div id="wo-paused-overlay" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
+                    <div class="glass-panel p-8 rounded-2xl text-center max-w-sm mx-4 shadow-2xl border border-white/20">
+                        <div class="mb-2">
+                            <span class="material-symbols-outlined text-4xl text-amber-500 block mb-2">pause_circle</span>
+                        </div>
+                        <h3 class="font-h1 text-3xl text-on-surface font-bold mb-2">Session Paused</h3>
+                        <p class="text-zinc-400 mb-6 font-label-caps text-sm">Effective Time: <span id="wo-paused-time" class="text-orange-500 font-bold text-lg">00:00</span></p>
+                        <button onclick="togglePauseTraining()" class="w-full bg-gradient-to-r from-cyan-500 to-cyan-400 hover:from-cyan-400 hover:to-cyan-300 text-black font-bold py-4 rounded-lg transition-all mb-3 font-label-caps tracking-wider">
+                            <span class="material-symbols-outlined text-sm align-text-bottom mr-1">play_circle</span> RESUME TRAINING
+                        </button>
+                        <button onclick="finishWorkout()" class="w-full bg-surface-container-high border border-white/20 hover:bg-white/5 text-on-surface font-bold py-3 rounded-lg transition-all font-label-caps tracking-wider text-sm">
+                            FINISH SESSION
+                        </button>
+                    </div>
                 </div>
             </div>
             
-            <!-- Day View Bottom Sheet Drawer -->
-            <div id="wo-day-view-drawer" class="hidden fixed inset-0 bg-black/40 z-40 transition-opacity duration-300" onclick="closeDayViewDrawer()"></div>
-            <div id="wo-day-view-sheet" class="hidden fixed bottom-0 left-0 right-0 bg-surface-container rounded-t-2xl z-40 max-h-[80vh] overflow-y-auto transition-transform duration-300 translate-y-full">
-                <div class="sticky top-0 bg-surface-container border-b border-white/10 p-4 flex items-center justify-between">
-                    <h3 class="font-h2 text-lg text-on-surface">Workout Schedule</h3>
-                    <button onclick="closeDayViewDrawer()" class="material-symbols-outlined text-white hover:text-orange-500">close</button>
+            <!-- DAY VIEW SHEET - Enhanced and more visible -->
+            <div id="wo-day-view-drawer" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-40 transition-opacity duration-300" onclick="closeDayViewDrawer()"></div>
+            <div id="wo-day-view-sheet" class="hidden fixed bottom-0 left-0 right-0 bg-gradient-to-t from-surface-container to-surface-container-low rounded-t-3xl z-40 max-h-[90vh] overflow-hidden transition-transform duration-300 translate-y-full shadow-2xl border-t border-cyan-500/20">
+                
+                <!-- Sheet Header -->
+                <div class="sticky top-0 bg-surface-container border-b border-white/10 p-4 md:p-6 flex items-center justify-between z-10">
+                    <div>
+                        <h3 class="font-h1 text-xl md:text-2xl text-on-surface font-bold">Today's Workout</h3>
+                        <p class="text-[11px] text-zinc-500 font-label-caps uppercase tracking-wider mt-1">All Exercises</p>
+                    </div>
+                    <button onclick="closeDayViewDrawer()" class="p-2 rounded-lg hover:bg-red-500/20 transition-all">
+                        <span class="material-symbols-outlined text-white hover:text-red-500">close</span>
+                    </button>
                 </div>
-                <div id="wo-day-view-list" class="p-4 flex flex-col gap-2">
-                    <!-- Exercise list will be populated here -->
+                
+                <!-- Exercise List -->
+                <div id="wo-day-view-list" class="overflow-y-auto px-4 md:px-6 py-4 max-h-[calc(90vh-100px)] pb-6">
+                    <!-- Exercises populated dynamically -->
+                </div>
+                
+                <!-- Sheet Footer Hint -->
+                <div class="sticky bottom-0 bg-gradient-to-t from-surface-container via-surface-container to-transparent p-4 text-center text-[10px] text-zinc-500 font-label-caps">
+                    Tap an exercise to jump to it • Swipe down to close
                 </div>
             </div>
+
         </section>
         
         <!-- PROGRESS SECTION -->
@@ -1739,28 +1792,40 @@ function closeDayViewDrawer() {
 }
 
 // Render Day View Exercise List
+// Enhanced renderDayViewList for better visual presentation
 function renderDayViewList() {
     const list = document.getElementById('wo-day-view-list');
     list.innerHTML = '';
     
+    if (!woState || !woState.exercises) return;
+    
     woState.exercises.forEach((ex, idx) => {
         const isActive = idx === woState.currExIdx;
         const vol = ex.sets.reduce((sum, set) => sum + (set.w * set.r), 0);
+        const setsCompleted = ex.sets.filter(s => s.w && s.r).length;
         
         const item = document.createElement('div');
-        item.className = `p-4 rounded-lg border cursor-pointer transition-all ${
+        item.className = `p-4 md:p-5 rounded-xl border-2 cursor-pointer transition-all transform hover:scale-102 ${
             isActive 
-                ? 'bg-orange-500/20 border-orange-500 shadow-[0_0_10px_rgba(255,140,0,0.2)]' 
-                : 'bg-black/40 border-white/10 hover:bg-white/5'
+                ? 'bg-orange-500/20 border-orange-500 shadow-[0_0_20px_rgba(255,140,0,0.3)]' 
+                : 'bg-black/40 border-white/10 hover:bg-white/5 hover:border-white/20'
         }`;
         
+        const progressPercent = ex.maxSets > 0 ? Math.round((setsCompleted / ex.maxSets) * 100) : 0;
+        
         item.innerHTML = `
-            <div class="flex justify-between items-center">
-                <div>
-                    <div class="font-h2 text-sm text-on-surface font-bold">${ex.name}</div>
-                    <div class="text-[10px] text-zinc-500 font-label-caps mt-1">${ex.maxSets} sets | ${vol} kg</div>
+            <div class="flex items-center justify-between mb-2">
+                <div class="flex items-center gap-3 flex-1">
+                    ${isActive ? '<span class="material-symbols-outlined text-orange-500 animate-pulse">radio_button_checked</span>' : '<span class="material-symbols-outlined text-zinc-600">radio_button_unchecked</span>'}
+                    <div>
+                        <div class="font-h2 text-base md:text-lg text-on-surface font-bold">${ex.name}</div>
+                        <div class="text-[9px] text-zinc-500 font-label-caps uppercase tracking-wider">${setsCompleted} / ${ex.maxSets} sets | ${vol} kg</div>
+                    </div>
                 </div>
-                ${isActive ? '<span class="material-symbols-outlined text-orange-500">check_circle</span>' : ''}
+                ${isActive ? '<span class="material-symbols-outlined text-orange-500 text-2xl">check_circle</span>' : ''}
+            </div>
+            <div class="w-full bg-black/60 rounded-full h-1.5 overflow-hidden">
+                <div class="bg-gradient-to-r from-orange-500 to-cyan-400 h-full transition-all" style="width: ${progressPercent}%"></div>
             </div>
         `;
         
@@ -1778,7 +1843,6 @@ function renderDayViewList() {
     });
 }
 
-// Update the timer display for effective time (excluding pauses)
 function updateTimerDisplay() {
     const timerEl = document.getElementById('wo-live-timer');
     if (!woState || !timerEl) return;
