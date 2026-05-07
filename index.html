@@ -137,6 +137,9 @@ tailwind.config = {
         <button data-target="progress" class="nav-btn flex items-center gap-3 px-4 py-3 rounded-lg w-full text-left font-h2 text-sm font-medium transition-all duration-200 text-zinc-500 hover:bg-white/5 hover:text-zinc-100">
             <span class="material-symbols-outlined">monitoring</span><span>Progress Analytics</span>
         </button>
+        <button data-target="library" class="nav-btn flex items-center gap-3 px-4 py-3 rounded-lg w-full text-left font-h2 text-sm font-medium transition-all duration-200 text-zinc-500 hover:bg-white/5 hover:text-zinc-100">
+            <span class="material-symbols-outlined">menu_book</span><span>Exercise Library</span>
+        </button>
         <button data-target="supps" class="nav-btn flex items-center gap-3 px-4 py-3 rounded-lg w-full text-left font-h2 text-sm font-medium transition-all duration-200 text-zinc-500 hover:bg-white/5 hover:text-zinc-100">
             <span class="material-symbols-outlined">pill</span><span>Wellness & Supps</span>
         </button>
@@ -225,13 +228,29 @@ tailwind.config = {
             
             <div id="workout-setup" class="glass-panel p-6 rounded-xl max-w-lg mx-auto md:mx-0 shadow-lg relative z-20">
                 <div class="mb-5">
-                    <label class="block text-xs text-zinc-400 uppercase tracking-widest mb-2 font-label-caps">Session Type</label>
+                    <label class="block text-xs text-zinc-400 uppercase tracking-widest mb-2 font-label-caps">Template Day</label>
                     <select id="wo-type" class="w-full bg-zinc-900 border border-white/10 rounded-lg p-3 text-white focus:border-orange-500 outline-none">
-                        <option value="ANT-A">ANT-A (Anterior A)</option>
-                        <option value="POST-A">POST-A (Posterior A)</option>
-                        <option value="ANT-B">ANT-B (Anterior B)</option>
-                        <option value="POST-B">POST-B (Posterior B)</option>
+                        <option value="PPL-PUSH">PPL • Push</option>
+                        <option value="PPL-PULL">PPL • Pull</option>
+                        <option value="PPL-LEGS">PPL • Legs</option>
+                        <option value="UL-UPPER-A">Upper/Lower • Upper A</option>
+                        <option value="UL-LOWER-A">Upper/Lower • Lower A</option>
+                        <option value="UL-UPPER-B">Upper/Lower • Upper B</option>
+                        <option value="UL-LOWER-B">Upper/Lower • Lower B</option>
+                        <option value="PRO-CHEST">Pro Split • Chest</option>
+                        <option value="PRO-BACK">Pro Split • Back</option>
+                        <option value="PRO-SHOULDERS">Pro Split • Shoulders</option>
+                        <option value="PRO-ARMS">Pro Split • Arms</option>
+                        <option value="PRO-LEGS">Pro Split • Legs</option>
                     </select>
+                </div>
+                <div class="mb-5">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-xs text-zinc-400 uppercase tracking-widest font-label-caps">Template Exercises</h3>
+                        <button onclick="openExerciseLibrary('browse', null, null)" class="text-[10px] font-label-caps uppercase tracking-wider text-cyan-400 hover:text-cyan-300 transition-colors">Browse Library</button>
+                    </div>
+                    <div id="wo-template-editor" class="max-h-64 overflow-y-auto space-y-2 pr-1"></div>
+                    <button onclick="saveCurrentTemplateAsCustom()" class="mt-3 w-full border border-cyan-500/40 text-cyan-400 font-label-caps text-xs tracking-wider py-2 rounded-lg hover:bg-cyan-500/10 transition-all">Save as Custom Template</button>
                 </div>
                 <div class="grid grid-cols-2 gap-4 mb-5">
                     <div>
@@ -306,6 +325,10 @@ tailwind.config = {
                                     <span class="text-zinc-600">|</span>
                                     <span>LAST: 190kg x 6</span>
                                 </div>
+                                <div id="wo-pr-incoming" class="hidden mt-2 text-[10px] font-label-caps tracking-wider text-amber-300 uppercase"></div>
+                                <button onclick="openExerciseLibrary('session-swap', woState.currExIdx, getCurrentExercisePrimary())" class="mt-3 px-4 py-2 border border-cyan-500/40 text-cyan-400 rounded-lg text-[10px] font-label-caps uppercase tracking-wider hover:bg-cyan-500/10 transition-all">
+                                    <span class="material-symbols-outlined text-sm align-text-bottom mr-1">swap_horiz</span> Swap Exercise
+                                </button>
                             </div>
                             
                             <!-- Sets Display -->
@@ -394,6 +417,15 @@ tailwind.config = {
                         </button>
                     </div>
                 </div>
+
+                <!-- PR Celebration -->
+                <div id="wo-pr-celebration" class="hidden fixed inset-0 z-[70] bg-black/45 backdrop-blur-sm flex items-center justify-center" onclick="hidePRCelebration()">
+                    <div class="glass-panel rounded-2xl p-8 text-center mx-4 max-w-md border border-amber-400/40 shadow-[0_0_30px_rgba(255,183,125,0.35)]">
+                        <span class="material-symbols-outlined text-6xl text-amber-300 block mb-2">emoji_events</span>
+                        <h3 class="font-h1 text-3xl text-amber-200 font-bold mb-2">NEW PR!</h3>
+                        <p id="wo-pr-message" class="text-zinc-100 font-body-lg"></p>
+                    </div>
+                </div>
             </div>
             
             <!-- DAY VIEW SHEET - Enhanced and more visible -->
@@ -422,6 +454,46 @@ tailwind.config = {
                 </div>
             </div>
 
+            <!-- Exercise Library Modal -->
+            <div id="exercise-library-modal" class="hidden fixed inset-0 z-[75] bg-black/70 backdrop-blur-sm" onclick="closeExerciseLibrary()"></div>
+            <div id="exercise-library-sheet" class="hidden fixed inset-x-0 bottom-0 z-[76] max-h-[88vh] bg-gradient-to-t from-surface-container to-surface-container-low rounded-t-3xl border-t border-cyan-500/20 shadow-2xl translate-y-full transition-transform duration-300 overflow-hidden">
+                <div class="sticky top-0 bg-surface-container border-b border-white/10 p-4 flex items-center justify-between gap-2">
+                    <div class="min-w-0">
+                        <h3 class="font-h1 text-xl text-on-surface font-bold truncate">Exercise Library</h3>
+                        <p id="exercise-library-subtitle" class="text-[10px] text-zinc-500 font-label-caps uppercase tracking-wider">Browse all exercises</p>
+                    </div>
+                    <button onclick="closeExerciseLibrary()" class="p-2 rounded-lg hover:bg-red-500/20 transition-all">
+                        <span class="material-symbols-outlined text-zinc-300">close</span>
+                    </button>
+                </div>
+                <div class="p-4 border-b border-white/5 bg-black/20 space-y-3">
+                    <input id="exercise-library-search" type="text" placeholder="Search exercise..." class="w-full bg-zinc-900 border border-white/10 rounded-lg p-3 text-white focus:border-orange-500 outline-none"/>
+                    <select id="exercise-library-filter" class="w-full bg-zinc-900 border border-white/10 rounded-lg p-3 text-white focus:border-cyan-500 outline-none"></select>
+                </div>
+                <div id="exercise-library-results" class="p-4 overflow-y-auto max-h-[calc(88vh-150px)] space-y-2"></div>
+            </div>
+
+        </section>
+
+        <!-- EXERCISE LIBRARY SECTION -->
+        <section id="view-library" class="view-section">
+            <header class="mb-8">
+                <h2 class="font-h1 text-4xl text-on-surface font-bold">Exercise Library</h2>
+                <p class="text-zinc-400 font-body-lg mt-2">Browse movements, swap intelligently, and track all-time PRs.</p>
+            </header>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="glass-panel p-5 rounded-xl lg:col-span-2">
+                    <div class="flex flex-col md:flex-row gap-3 mb-4">
+                        <input id="library-page-search" type="text" placeholder="Search by exercise..." class="flex-1 bg-zinc-900 border border-white/10 rounded-lg p-3 text-white focus:border-orange-500 outline-none"/>
+                        <select id="library-page-filter" class="md:w-52 bg-zinc-900 border border-white/10 rounded-lg p-3 text-white focus:border-cyan-500 outline-none"></select>
+                    </div>
+                    <div id="library-page-results" class="max-h-[70vh] overflow-y-auto space-y-2 pr-1"></div>
+                </div>
+                <div class="glass-panel p-5 rounded-xl">
+                    <h3 class="font-label-caps text-xs text-amber-300 uppercase tracking-wider mb-4">Hall of Fame</h3>
+                    <div id="pr-hall-of-fame" class="space-y-2 max-h-[70vh] overflow-y-auto pr-1"></div>
+                </div>
+            </div>
         </section>
         
         <!-- PROGRESS SECTION -->
@@ -446,6 +518,9 @@ tailwind.config = {
                 <div class="glass-panel p-4 rounded-xl shadow-lg relative z-20">
                     <canvas id="chart-sets" height="250"></canvas>
                 </div>
+            </div>
+            <div class="glass-panel p-4 rounded-xl shadow-lg relative z-20 mb-8">
+                <canvas id="chart-rpe" height="220"></canvas>
             </div>
             
             <!-- EX TREND CHART -->
@@ -605,6 +680,9 @@ tailwind.config = {
     <button data-target="progress" class="nav-btn-mob flex flex-col items-center justify-center w-full h-full text-zinc-500 hover:text-orange-500 transition-colors gap-1 pt-1">
         <span class="material-symbols-outlined text-[24px]">monitoring</span><span class="font-h2 text-[10px] font-bold">Stats</span>
     </button>
+    <button data-target="library" class="nav-btn-mob flex flex-col items-center justify-center w-full h-full text-zinc-500 hover:text-orange-500 transition-colors gap-1 pt-1">
+        <span class="material-symbols-outlined text-[24px]">menu_book</span><span class="font-h2 text-[10px] font-bold">Library</span>
+    </button>
     <button data-target="supps" class="nav-btn-mob flex flex-col items-center justify-center w-full h-full text-zinc-500 hover:text-orange-500 transition-colors gap-1 pt-1">
         <span class="material-symbols-outlined text-[24px]">pill</span><span class="font-h2 text-[10px] font-bold">Supps</span>
     </button>
@@ -667,32 +745,181 @@ function playBeep() {
 }
 
 // --- DATA MODELS ---
-const PRESETS = {
-    'ANT-A': [
-        {name: 'Incline DB Press', maxSets: 4}, {name: 'Flat DB Press', maxSets: 3}, 
-        {name: 'Cable Chest Fly', maxSets: 3}, {name: 'DB Shoulder Press', maxSets: 3}, 
-        {name: 'Lateral Raise', maxSets: 3}, {name: 'Tricep Pushdown', maxSets: 3}, 
-        {name: 'Leg Extension', maxSets: 3}, {name: 'Plank', maxSets: 3}
-    ],
-    'POST-A': [
-        {name: 'Lat Pulldown (wide)', maxSets: 4}, {name: 'Seated Cable Row', maxSets: 3}, 
-        {name: 'DB Single-Arm Row', maxSets: 3}, {name: 'Face Pulls', maxSets: 3}, 
-        {name: 'EZ-Bar Curl', maxSets: 3}, {name: 'Hammer Curl', maxSets: 2}, 
-        {name: 'Romanian Deadlift', maxSets: 3}, {name: 'Calf Raise', maxSets: 4}
-    ],
-    'ANT-B': [
-        {name: 'DB Shoulder Press', maxSets: 4}, {name: 'Arnold Press', maxSets: 3}, 
-        {name: 'Lateral Raise (cable)', maxSets: 3}, {name: 'Incline DB Press', maxSets: 3}, 
-        {name: 'Chest Dips', maxSets: 3}, {name: 'Overhead Tricep Ext.', maxSets: 3}, 
-        {name: 'Hack Squat', maxSets: 3}, {name: 'Ab Wheel', maxSets: 3}
-    ],
-    'POST-B': [
-        {name: 'Lat Pulldown (underhand)', maxSets: 4}, {name: 'Cable Row (wide grip)', maxSets: 3}, 
-        {name: 'Incline DB Curl', maxSets: 3}, {name: 'EZ-Bar Curl', maxSets: 3}, 
-        {name: 'Face Pulls', maxSets: 3}, {name: 'Seated / Lying Leg Curl', maxSets: 4}, 
-        {name: 'Romanian Deadlift', maxSets: 3}, {name: 'Calf Raise', maxSets: 3}
-    ]
-};
+const EXERCISE_LIBRARY = [
+    { name: 'Barbell Bench Press', primary: 'Chest', secondary: 'Triceps' },
+    { name: 'Incline Dumbbell Press', primary: 'Chest', secondary: 'Shoulders' },
+    { name: 'Machine Chest Press', primary: 'Chest', secondary: 'Triceps' },
+    { name: 'Cable Fly', primary: 'Chest', secondary: 'Shoulders' },
+    { name: 'Overhead Press', primary: 'Shoulders', secondary: 'Triceps' },
+    { name: 'Lateral Raise', primary: 'Shoulders', secondary: 'Traps' },
+    { name: 'Rear Delt Fly', primary: 'Shoulders', secondary: 'Upper Back' },
+    { name: 'Tricep Pushdown', primary: 'Triceps', secondary: 'Forearms' },
+    { name: 'Overhead Tricep Extension', primary: 'Triceps', secondary: 'Shoulders' },
+    { name: 'Skull Crusher', primary: 'Triceps', secondary: 'Forearms' },
+    { name: 'Pull-Up', primary: 'Back', secondary: 'Biceps' },
+    { name: 'Lat Pulldown', primary: 'Back', secondary: 'Biceps' },
+    { name: 'Chest Supported Row', primary: 'Back', secondary: 'Biceps' },
+    { name: 'Seated Cable Row', primary: 'Back', secondary: 'Biceps' },
+    { name: 'Single-Arm Dumbbell Row', primary: 'Back', secondary: 'Biceps' },
+    { name: 'Face Pull', primary: 'Upper Back', secondary: 'Shoulders' },
+    { name: 'Barbell Curl', primary: 'Biceps', secondary: 'Forearms' },
+    { name: 'Incline Dumbbell Curl', primary: 'Biceps', secondary: 'Forearms' },
+    { name: 'Hammer Curl', primary: 'Biceps', secondary: 'Forearms' },
+    { name: 'Back Squat', primary: 'Quads', secondary: 'Glutes' },
+    { name: 'Front Squat', primary: 'Quads', secondary: 'Core' },
+    { name: 'Leg Press', primary: 'Quads', secondary: 'Glutes' },
+    { name: 'Walking Lunge', primary: 'Quads', secondary: 'Glutes' },
+    { name: 'Romanian Deadlift', primary: 'Hamstrings', secondary: 'Glutes' },
+    { name: 'Leg Curl', primary: 'Hamstrings', secondary: 'Calves' },
+    { name: 'Hip Thrust', primary: 'Glutes', secondary: 'Hamstrings' },
+    { name: 'Standing Calf Raise', primary: 'Calves', secondary: 'Hamstrings' },
+    { name: 'Seated Calf Raise', primary: 'Calves', secondary: 'Quads' },
+    { name: 'Cable Crunch', primary: 'Core', secondary: 'Hip Flexors' },
+    { name: 'Ab Wheel', primary: 'Core', secondary: 'Shoulders' },
+    { name: 'Flat DB Press', primary: 'Chest', secondary: 'Triceps' },
+    { name: 'Incline DB Press', primary: 'Chest', secondary: 'Shoulders' },
+    { name: 'DB Shoulder Press', primary: 'Shoulders', secondary: 'Triceps' },
+    { name: 'Lat Pulldown (wide)', primary: 'Back', secondary: 'Biceps' },
+    { name: 'Lat Pulldown (underhand)', primary: 'Back', secondary: 'Biceps' },
+    { name: 'Cable Row (wide grip)', primary: 'Back', secondary: 'Biceps' },
+    { name: 'EZ-Bar Curl', primary: 'Biceps', secondary: 'Forearms' },
+    { name: 'Calf Raise', primary: 'Calves', secondary: 'Hamstrings' }
+];
+
+const BUILTIN_TEMPLATES = [
+    {
+        id: 'PPL-PUSH', label: 'PPL • Push', family: 'PPL', day: 'Push',
+        exercises: [
+            { name: 'Barbell Bench Press', sets: 4, reps: '6-8', primary: 'Chest', secondary: 'Triceps' },
+            { name: 'Incline Dumbbell Press', sets: 3, reps: '8-10', primary: 'Chest', secondary: 'Shoulders' },
+            { name: 'Machine Chest Press', sets: 3, reps: '10-12', primary: 'Chest', secondary: 'Triceps' },
+            { name: 'Overhead Press', sets: 3, reps: '6-8', primary: 'Shoulders', secondary: 'Triceps' },
+            { name: 'Lateral Raise', sets: 3, reps: '12-15', primary: 'Shoulders', secondary: 'Traps' },
+            { name: 'Tricep Pushdown', sets: 3, reps: '10-12', primary: 'Triceps', secondary: 'Forearms' }
+        ]
+    },
+    {
+        id: 'PPL-PULL', label: 'PPL • Pull', family: 'PPL', day: 'Pull',
+        exercises: [
+            { name: 'Pull-Up', sets: 4, reps: '6-10', primary: 'Back', secondary: 'Biceps' },
+            { name: 'Lat Pulldown', sets: 3, reps: '8-12', primary: 'Back', secondary: 'Biceps' },
+            { name: 'Chest Supported Row', sets: 3, reps: '8-10', primary: 'Back', secondary: 'Biceps' },
+            { name: 'Face Pull', sets: 3, reps: '12-15', primary: 'Upper Back', secondary: 'Shoulders' },
+            { name: 'Barbell Curl', sets: 3, reps: '8-12', primary: 'Biceps', secondary: 'Forearms' },
+            { name: 'Hammer Curl', sets: 2, reps: '12-15', primary: 'Biceps', secondary: 'Forearms' }
+        ]
+    },
+    {
+        id: 'PPL-LEGS', label: 'PPL • Legs', family: 'PPL', day: 'Legs',
+        exercises: [
+            { name: 'Back Squat', sets: 4, reps: '5-8', primary: 'Quads', secondary: 'Glutes' },
+            { name: 'Leg Press', sets: 3, reps: '10-12', primary: 'Quads', secondary: 'Glutes' },
+            { name: 'Walking Lunge', sets: 3, reps: '10-12', primary: 'Quads', secondary: 'Glutes' },
+            { name: 'Romanian Deadlift', sets: 3, reps: '8-10', primary: 'Hamstrings', secondary: 'Glutes' },
+            { name: 'Leg Curl', sets: 3, reps: '12-15', primary: 'Hamstrings', secondary: 'Calves' },
+            { name: 'Standing Calf Raise', sets: 4, reps: '12-15', primary: 'Calves', secondary: 'Hamstrings' }
+        ]
+    },
+    {
+        id: 'UL-UPPER-A', label: 'Upper/Lower • Upper A', family: 'Upper/Lower', day: 'Upper A',
+        exercises: [
+            { name: 'Barbell Bench Press', sets: 4, reps: '6-8', primary: 'Chest', secondary: 'Triceps' },
+            { name: 'Pull-Up', sets: 4, reps: '6-10', primary: 'Back', secondary: 'Biceps' },
+            { name: 'Overhead Press', sets: 3, reps: '6-8', primary: 'Shoulders', secondary: 'Triceps' },
+            { name: 'Seated Cable Row', sets: 3, reps: '8-12', primary: 'Back', secondary: 'Biceps' },
+            { name: 'Lateral Raise', sets: 3, reps: '12-15', primary: 'Shoulders', secondary: 'Traps' },
+            { name: 'Tricep Pushdown', sets: 3, reps: '10-12', primary: 'Triceps', secondary: 'Forearms' }
+        ]
+    },
+    {
+        id: 'UL-LOWER-A', label: 'Upper/Lower • Lower A', family: 'Upper/Lower', day: 'Lower A',
+        exercises: [
+            { name: 'Back Squat', sets: 4, reps: '5-8', primary: 'Quads', secondary: 'Glutes' },
+            { name: 'Romanian Deadlift', sets: 3, reps: '8-10', primary: 'Hamstrings', secondary: 'Glutes' },
+            { name: 'Leg Press', sets: 3, reps: '10-12', primary: 'Quads', secondary: 'Glutes' },
+            { name: 'Leg Curl', sets: 3, reps: '10-12', primary: 'Hamstrings', secondary: 'Calves' },
+            { name: 'Standing Calf Raise', sets: 4, reps: '12-15', primary: 'Calves', secondary: 'Hamstrings' },
+            { name: 'Cable Crunch', sets: 3, reps: '12-15', primary: 'Core', secondary: 'Hip Flexors' }
+        ]
+    },
+    {
+        id: 'UL-UPPER-B', label: 'Upper/Lower • Upper B', family: 'Upper/Lower', day: 'Upper B',
+        exercises: [
+            { name: 'Incline Dumbbell Press', sets: 4, reps: '8-10', primary: 'Chest', secondary: 'Shoulders' },
+            { name: 'Lat Pulldown', sets: 4, reps: '8-12', primary: 'Back', secondary: 'Biceps' },
+            { name: 'Machine Chest Press', sets: 3, reps: '10-12', primary: 'Chest', secondary: 'Triceps' },
+            { name: 'Single-Arm Dumbbell Row', sets: 3, reps: '8-10', primary: 'Back', secondary: 'Biceps' },
+            { name: 'Rear Delt Fly', sets: 3, reps: '12-15', primary: 'Shoulders', secondary: 'Upper Back' },
+            { name: 'Barbell Curl', sets: 3, reps: '10-12', primary: 'Biceps', secondary: 'Forearms' }
+        ]
+    },
+    {
+        id: 'UL-LOWER-B', label: 'Upper/Lower • Lower B', family: 'Upper/Lower', day: 'Lower B',
+        exercises: [
+            { name: 'Front Squat', sets: 4, reps: '5-8', primary: 'Quads', secondary: 'Core' },
+            { name: 'Hip Thrust', sets: 4, reps: '8-12', primary: 'Glutes', secondary: 'Hamstrings' },
+            { name: 'Walking Lunge', sets: 3, reps: '10-12', primary: 'Quads', secondary: 'Glutes' },
+            { name: 'Leg Curl', sets: 3, reps: '10-12', primary: 'Hamstrings', secondary: 'Calves' },
+            { name: 'Seated Calf Raise', sets: 4, reps: '12-15', primary: 'Calves', secondary: 'Quads' },
+            { name: 'Ab Wheel', sets: 3, reps: '10-15', primary: 'Core', secondary: 'Shoulders' }
+        ]
+    },
+    {
+        id: 'PRO-CHEST', label: 'Pro Split • Chest', family: 'Pro Split', day: 'Chest',
+        exercises: [
+            { name: 'Barbell Bench Press', sets: 4, reps: '5-8', primary: 'Chest', secondary: 'Triceps' },
+            { name: 'Incline Dumbbell Press', sets: 4, reps: '8-10', primary: 'Chest', secondary: 'Shoulders' },
+            { name: 'Machine Chest Press', sets: 3, reps: '10-12', primary: 'Chest', secondary: 'Triceps' },
+            { name: 'Cable Fly', sets: 3, reps: '12-15', primary: 'Chest', secondary: 'Shoulders' },
+            { name: 'Tricep Pushdown', sets: 3, reps: '10-12', primary: 'Triceps', secondary: 'Forearms' }
+        ]
+    },
+    {
+        id: 'PRO-BACK', label: 'Pro Split • Back', family: 'Pro Split', day: 'Back',
+        exercises: [
+            { name: 'Pull-Up', sets: 4, reps: '6-10', primary: 'Back', secondary: 'Biceps' },
+            { name: 'Lat Pulldown', sets: 4, reps: '8-12', primary: 'Back', secondary: 'Biceps' },
+            { name: 'Chest Supported Row', sets: 4, reps: '8-10', primary: 'Back', secondary: 'Biceps' },
+            { name: 'Single-Arm Dumbbell Row', sets: 3, reps: '10-12', primary: 'Back', secondary: 'Biceps' },
+            { name: 'Face Pull', sets: 3, reps: '12-15', primary: 'Upper Back', secondary: 'Shoulders' }
+        ]
+    },
+    {
+        id: 'PRO-SHOULDERS', label: 'Pro Split • Shoulders', family: 'Pro Split', day: 'Shoulders',
+        exercises: [
+            { name: 'Overhead Press', sets: 4, reps: '6-8', primary: 'Shoulders', secondary: 'Triceps' },
+            { name: 'Lateral Raise', sets: 4, reps: '12-15', primary: 'Shoulders', secondary: 'Traps' },
+            { name: 'Rear Delt Fly', sets: 4, reps: '12-15', primary: 'Shoulders', secondary: 'Upper Back' },
+            { name: 'Machine Chest Press', sets: 3, reps: '10-12', primary: 'Chest', secondary: 'Triceps' },
+            { name: 'Overhead Tricep Extension', sets: 3, reps: '10-12', primary: 'Triceps', secondary: 'Shoulders' }
+        ]
+    },
+    {
+        id: 'PRO-ARMS', label: 'Pro Split • Arms', family: 'Pro Split', day: 'Arms',
+        exercises: [
+            { name: 'Barbell Curl', sets: 4, reps: '8-12', primary: 'Biceps', secondary: 'Forearms' },
+            { name: 'Incline Dumbbell Curl', sets: 3, reps: '10-12', primary: 'Biceps', secondary: 'Forearms' },
+            { name: 'Hammer Curl', sets: 3, reps: '12-15', primary: 'Biceps', secondary: 'Forearms' },
+            { name: 'Skull Crusher', sets: 4, reps: '8-12', primary: 'Triceps', secondary: 'Forearms' },
+            { name: 'Tricep Pushdown', sets: 3, reps: '10-12', primary: 'Triceps', secondary: 'Forearms' }
+        ]
+    },
+    {
+        id: 'PRO-LEGS', label: 'Pro Split • Legs', family: 'Pro Split', day: 'Legs',
+        exercises: [
+            { name: 'Back Squat', sets: 4, reps: '5-8', primary: 'Quads', secondary: 'Glutes' },
+            { name: 'Leg Press', sets: 4, reps: '10-12', primary: 'Quads', secondary: 'Glutes' },
+            { name: 'Romanian Deadlift', sets: 4, reps: '8-10', primary: 'Hamstrings', secondary: 'Glutes' },
+            { name: 'Leg Curl', sets: 3, reps: '12-15', primary: 'Hamstrings', secondary: 'Calves' },
+            { name: 'Standing Calf Raise', sets: 4, reps: '12-15', primary: 'Calves', secondary: 'Hamstrings' }
+        ]
+    }
+];
+
+const EXERCISE_LOOKUP = EXERCISE_LIBRARY.reduce((acc, ex) => {
+    acc[ex.name.toLowerCase()] = ex;
+    return acc;
+}, {});
 
 const PRELOADED_SESSIONS = [
     {
@@ -747,12 +974,330 @@ if(!sessions) {
         localStorage.setItem('kinetic_sessions', JSON.stringify(sessions));
     }
 }
+let customTemplates = JSON.parse(localStorage.getItem('kinetic_custom_templates') || '[]');
+let prRecords = JSON.parse(localStorage.getItem('kinetic_pr_records') || '{}');
 let supps = JSON.parse(localStorage.getItem('kinetic_supps') || '{}');
 let woState = null;
 let timerInt = null;
+let woTemplateDraft = [];
+let exerciseLibraryContext = { mode: 'browse', index: null };
+let prCelebrateTimeout = null;
+
+const RPE_LABELS = {
+    1: 'Very easy',
+    2: 'Easy warm-up',
+    3: 'Comfortable',
+    4: 'Light effort',
+    5: 'Moderate',
+    6: '4 reps left',
+    7: '2-3 reps left',
+    8: '2 reps left',
+    9: '1 rep left',
+    10: 'Absolute max'
+};
 
 function getLocalYMD(d) {
     return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+
+function getAllTemplates() {
+    return [...BUILTIN_TEMPLATES, ...customTemplates];
+}
+
+function getTemplateById(templateId) {
+    return getAllTemplates().find(t => t.id === templateId);
+}
+
+function getExerciseMetaByName(name) {
+    return EXERCISE_LOOKUP[String(name || '').toLowerCase()] || null;
+}
+
+function normalizeTemplateExercise(ex) {
+    const libMeta = getExerciseMetaByName(ex.name) || {};
+    const sets = Math.max(1, Number(ex.sets || ex.maxSets || 3));
+    return {
+        name: ex.name,
+        sets,
+        maxSets: sets,
+        reps: ex.reps || ex.defaultReps || '8-12',
+        primary: ex.primary || libMeta.primary || 'Unknown',
+        secondary: ex.secondary || libMeta.secondary || 'General'
+    };
+}
+
+function cloneTemplateExercises(exercises) {
+    return exercises.map(ex => {
+        const norm = normalizeTemplateExercise(ex);
+        const sets = [];
+        for (let i = 0; i < norm.sets; i++) sets.push({ w: '', r: '', rpe: null });
+        return { ...norm, sets };
+    });
+}
+
+function enrichExerciseMeta(ex) {
+    const meta = getExerciseMetaByName(ex.name) || {};
+    ex.primary = ex.primary || meta.primary || 'Unknown';
+    ex.secondary = ex.secondary || meta.secondary || 'General';
+    ex.reps = ex.reps || ex.defaultReps || '8-12';
+    ex.maxSets = Number(ex.maxSets || ex.sets?.length || ex.setsCount || 3);
+    if (!Array.isArray(ex.sets)) ex.sets = [];
+    ex.sets = ex.sets.map(s => ({ w: Number(s.w) || 0, r: Number(s.r) || 0, rpe: s.rpe ? Number(s.rpe) : null }));
+    if (ex.sets.length < ex.maxSets) {
+        for (let i = ex.sets.length; i < ex.maxSets; i++) ex.sets.push({ w: 0, r: 0, rpe: null });
+    }
+    return ex;
+}
+
+function getCurrentExercisePrimary() {
+    if (!woState || !woState.exercises || !woState.exercises[woState.currExIdx]) return null;
+    return woState.exercises[woState.currExIdx].primary || getExerciseMetaByName(woState.exercises[woState.currExIdx].name)?.primary || null;
+}
+
+function rebuildTemplateSelector() {
+    const select = document.getElementById('wo-type');
+    if (!select) return;
+    const current = select.value;
+    const templates = getAllTemplates();
+    select.innerHTML = templates.map(t => `<option value="${t.id}">${t.label}</option>`).join('');
+    select.value = templates.some(t => t.id === current) ? current : (templates[0]?.id || '');
+}
+
+function renderTemplateEditor() {
+    const container = document.getElementById('wo-template-editor');
+    if (!container) return;
+    container.innerHTML = '';
+    woTemplateDraft.forEach((ex, idx) => {
+        container.innerHTML += `
+            <div class="bg-black/40 border border-white/10 rounded-lg p-3 space-y-2">
+                <div class="flex items-center justify-between gap-2">
+                    <input value="${ex.name}" onchange="updateTemplateExercise(${idx}, 'name', this.value)" class="flex-1 bg-zinc-900 border border-white/10 rounded px-2 py-1.5 text-sm text-white focus:border-orange-500 outline-none"/>
+                    <button onclick="openExerciseLibrary('template-swap', ${idx}, '${ex.primary}')" class="px-2 py-1 text-[10px] font-label-caps uppercase tracking-wider text-cyan-400 border border-cyan-500/30 rounded hover:bg-cyan-500/10">Swap</button>
+                </div>
+                <div class="grid grid-cols-3 gap-2">
+                    <input type="number" min="1" value="${ex.sets}" onchange="updateTemplateExercise(${idx}, 'sets', this.value)" class="bg-zinc-900 border border-white/10 rounded px-2 py-1.5 text-xs text-white focus:border-orange-500 outline-none" title="Default sets"/>
+                    <input value="${ex.reps}" onchange="updateTemplateExercise(${idx}, 'reps', this.value)" class="bg-zinc-900 border border-white/10 rounded px-2 py-1.5 text-xs text-white focus:border-cyan-500 outline-none" title="Default reps"/>
+                    <input value="${ex.primary}" onchange="updateTemplateExercise(${idx}, 'primary', this.value)" class="bg-zinc-900 border border-white/10 rounded px-2 py-1.5 text-xs text-white focus:border-cyan-500 outline-none" title="Target muscle"/>
+                </div>
+                <div class="flex gap-2 text-[10px] font-label-caps uppercase tracking-wider">
+                    <span class="px-2 py-1 rounded-full bg-orange-500/15 text-orange-300 border border-orange-500/25">${ex.primary}</span>
+                    <span class="px-2 py-1 rounded-full bg-cyan-500/15 text-cyan-300 border border-cyan-500/25">${ex.secondary}</span>
+                </div>
+            </div>
+        `;
+    });
+}
+
+function loadTemplateDraftFromSelection() {
+    const type = document.getElementById('wo-type')?.value;
+    const template = getTemplateById(type);
+    if (!template) return;
+    woTemplateDraft = template.exercises.map(ex => ({ ...normalizeTemplateExercise(ex), sets: Number(ex.sets || ex.maxSets || 3) }));
+    renderTemplateEditor();
+}
+
+function updateTemplateExercise(idx, field, value) {
+    if (!woTemplateDraft[idx]) return;
+    if (field === 'sets') {
+        woTemplateDraft[idx][field] = Math.max(1, Number(value || 1));
+    } else {
+        woTemplateDraft[idx][field] = value;
+    }
+    if (field === 'name') {
+        const meta = getExerciseMetaByName(value);
+        if (meta) {
+            woTemplateDraft[idx].primary = meta.primary;
+            woTemplateDraft[idx].secondary = meta.secondary;
+        }
+    }
+    renderTemplateEditor();
+}
+
+function saveCurrentTemplateAsCustom() {
+    if (!woTemplateDraft.length) return alert('No template exercises to save.');
+    const name = prompt('Custom template name?');
+    if (!name) return;
+    const id = `CUSTOM-${Date.now()}`;
+    customTemplates.push({
+        id,
+        label: `Custom • ${name}`,
+        family: 'Custom',
+        day: name,
+        exercises: woTemplateDraft.map(ex => ({ ...normalizeTemplateExercise(ex), sets: Number(ex.sets) }))
+    });
+    localStorage.setItem('kinetic_custom_templates', JSON.stringify(customTemplates));
+    rebuildTemplateSelector();
+    document.getElementById('wo-type').value = id;
+    loadTemplateDraftFromSelection();
+}
+
+function getLibraryPrimaryGroups() {
+    return ['All', ...new Set(EXERCISE_LIBRARY.map(e => e.primary).sort())];
+}
+
+function openExerciseLibrary(mode = 'browse', index = null, defaultPrimary = null) {
+    exerciseLibraryContext = { mode, index };
+    const modal = document.getElementById('exercise-library-modal');
+    const sheet = document.getElementById('exercise-library-sheet');
+    const search = document.getElementById('exercise-library-search');
+    const filter = document.getElementById('exercise-library-filter');
+    const subtitle = document.getElementById('exercise-library-subtitle');
+    const groups = getLibraryPrimaryGroups();
+    filter.innerHTML = groups.map(g => `<option value="${g}">${g}</option>`).join('');
+    filter.value = groups.includes(defaultPrimary) ? defaultPrimary : 'All';
+    search.value = '';
+    subtitle.textContent = mode === 'session-swap' ? 'Swap current exercise (same muscle filtered)' : (mode === 'template-swap' ? 'Swap template exercise' : 'Browse all exercises');
+    modal.classList.remove('hidden');
+    sheet.classList.remove('hidden');
+    setTimeout(() => { sheet.style.transform = 'translateY(0)'; }, 10);
+    renderExerciseLibraryResults();
+}
+
+function closeExerciseLibrary() {
+    const modal = document.getElementById('exercise-library-modal');
+    const sheet = document.getElementById('exercise-library-sheet');
+    sheet.style.transform = 'translateY(100%)';
+    setTimeout(() => {
+        modal.classList.add('hidden');
+        sheet.classList.add('hidden');
+    }, 280);
+}
+
+function renderExerciseLibraryResults() {
+    const search = document.getElementById('exercise-library-search')?.value?.trim().toLowerCase() || '';
+    const filter = document.getElementById('exercise-library-filter')?.value || 'All';
+    const results = document.getElementById('exercise-library-results');
+    if (!results) return;
+    const items = EXERCISE_LIBRARY.filter(ex => {
+        const matchSearch = !search || ex.name.toLowerCase().includes(search) || ex.primary.toLowerCase().includes(search) || ex.secondary.toLowerCase().includes(search);
+        const matchFilter = filter === 'All' || ex.primary === filter;
+        return matchSearch && matchFilter;
+    });
+    results.innerHTML = '';
+    if (!items.length) {
+        results.innerHTML = `<div class="text-center text-zinc-500 py-6">No exercises found.</div>`;
+        return;
+    }
+    items.forEach(ex => {
+        results.innerHTML += `
+            <button class="w-full text-left p-3 rounded-xl border border-white/10 bg-black/40 hover:bg-white/5 transition-all" onclick="selectExerciseFromLibrary('${ex.name.replace(/'/g, "\\'")}')">
+                <div class="font-h2 text-base text-on-surface">${ex.name}</div>
+                <div class="mt-1 flex gap-2 text-[10px] font-label-caps uppercase tracking-wider">
+                    <span class="px-2 py-1 rounded-full bg-orange-500/15 text-orange-300 border border-orange-500/25">${ex.primary}</span>
+                    <span class="px-2 py-1 rounded-full bg-cyan-500/15 text-cyan-300 border border-cyan-500/25">${ex.secondary}</span>
+                </div>
+            </button>
+        `;
+    });
+}
+
+function selectExerciseFromLibrary(exName) {
+    const choice = EXERCISE_LIBRARY.find(e => e.name === exName);
+    if (!choice) return;
+    if (exerciseLibraryContext.mode === 'session-swap' && woState?.exercises?.[exerciseLibraryContext.index]) {
+        const current = woState.exercises[exerciseLibraryContext.index];
+        current.name = choice.name;
+        current.primary = choice.primary;
+        current.secondary = choice.secondary;
+        renderWOSets();
+        renderWOExercises();
+        updateContextLabels();
+    } else if (exerciseLibraryContext.mode === 'template-swap' && woTemplateDraft?.[exerciseLibraryContext.index]) {
+        const current = woTemplateDraft[exerciseLibraryContext.index];
+        current.name = choice.name;
+        current.primary = choice.primary;
+        current.secondary = choice.secondary;
+        renderTemplateEditor();
+    }
+    closeExerciseLibrary();
+}
+
+function hydratePRRecordsFromSessions() {
+    const merged = { ...prRecords };
+    sessions.forEach(session => {
+        session.exercises?.forEach(ex => {
+            ex.sets?.forEach(set => {
+                const volume = (Number(set.w) || 0) * (Number(set.r) || 0);
+                if (volume <= 0) return;
+                const prev = merged[ex.name];
+                if (!prev || volume > prev.volume) {
+                    merged[ex.name] = {
+                        exercise: ex.name,
+                        volume,
+                        weight: Number(set.w) || 0,
+                        reps: Number(set.r) || 0,
+                        date: session.date
+                    };
+                }
+            });
+        });
+    });
+    prRecords = merged;
+    localStorage.setItem('kinetic_pr_records', JSON.stringify(prRecords));
+}
+
+function renderLibraryPage() {
+    const search = document.getElementById('library-page-search');
+    const filter = document.getElementById('library-page-filter');
+    const results = document.getElementById('library-page-results');
+    const hall = document.getElementById('pr-hall-of-fame');
+    if (!search || !filter || !results || !hall) return;
+
+    const groups = getLibraryPrimaryGroups();
+    if (!filter.dataset.ready) {
+        filter.innerHTML = groups.map(g => `<option value="${g}">${g}</option>`).join('');
+        filter.dataset.ready = '1';
+    }
+
+    const query = search.value.trim().toLowerCase();
+    const primary = filter.value || 'All';
+    const items = EXERCISE_LIBRARY.filter(ex => {
+        const bySearch = !query || ex.name.toLowerCase().includes(query) || ex.primary.toLowerCase().includes(query) || ex.secondary.toLowerCase().includes(query);
+        const byPrimary = primary === 'All' || ex.primary === primary;
+        return bySearch && byPrimary;
+    });
+
+    results.innerHTML = items.map(ex => `
+        <div class="p-3 rounded-xl border border-white/10 bg-black/40">
+            <div class="font-h2 text-base text-on-surface">${ex.name}</div>
+            <div class="mt-1 flex gap-2 text-[10px] font-label-caps uppercase tracking-wider">
+                <span class="px-2 py-1 rounded-full bg-orange-500/15 text-orange-300 border border-orange-500/25">${ex.primary}</span>
+                <span class="px-2 py-1 rounded-full bg-cyan-500/15 text-cyan-300 border border-cyan-500/25">${ex.secondary}</span>
+            </div>
+        </div>
+    `).join('');
+
+    const hof = Object.values(prRecords).sort((a, b) => b.volume - a.volume).slice(0, 20);
+    hall.innerHTML = hof.length ? hof.map(pr => `
+        <div class="p-3 rounded-xl border border-amber-500/20 bg-amber-500/5">
+            <div class="text-sm font-h2 text-amber-100">${pr.exercise}</div>
+            <div class="text-xs text-zinc-400 mt-1">${pr.weight}kg × ${pr.reps} = <span class="text-amber-300 font-bold">${pr.volume}</span></div>
+            <div class="text-[10px] text-zinc-500 font-label-caps uppercase tracking-wider mt-1">${pr.date || 'Unknown date'}</div>
+        </div>
+    `).join('') : `<div class="text-center text-zinc-500 py-6">No PRs yet.</div>`;
+}
+
+function bindLibraryInputs() {
+    const modalSearch = document.getElementById('exercise-library-search');
+    const modalFilter = document.getElementById('exercise-library-filter');
+    if (modalSearch && !modalSearch.dataset.bound) {
+        modalSearch.dataset.bound = '1';
+        modalSearch.addEventListener('input', renderExerciseLibraryResults);
+    }
+    if (modalFilter && !modalFilter.dataset.bound) {
+        modalFilter.dataset.bound = '1';
+        modalFilter.addEventListener('change', renderExerciseLibraryResults);
+    }
+
+    const pageSearch = document.getElementById('library-page-search');
+    const pageFilter = document.getElementById('library-page-filter');
+    if (pageSearch && !pageSearch.dataset.bound) {
+        pageSearch.dataset.bound = '1';
+        pageSearch.addEventListener('input', renderLibraryPage);
+    }
+    if (pageFilter && !pageFilter.dataset.bound) {
+        pageFilter.dataset.bound = '1';
+        pageFilter.addEventListener('change', renderLibraryPage);
+    }
 }
 
 // --- NAVIGATION ---
@@ -788,6 +1333,7 @@ function switchNav(target) {
     // Call render functions dynamically
     if(target === 'home') renderHome();
     if(target === 'progress') renderProgress();
+    if(target === 'library') renderLibraryPage();
     if(target === 'supps') renderSupps();
 }
 
@@ -803,7 +1349,8 @@ function renderHome() {
     
     if(sessions.length > 0) {
         const last = sessions[sessions.length - 1];
-        document.getElementById('home-last-type').textContent = last.type;
+        const lastType = last.typeLabel || getTemplateById(last.type)?.label || last.type;
+        document.getElementById('home-last-type').textContent = lastType;
         document.getElementById('home-last-date').textContent = last.date;
     } else {
         document.getElementById('home-last-type').textContent = "None";
@@ -817,10 +1364,11 @@ function renderHome() {
         tbody.innerHTML = `<tr><td colspan="4" class="py-6 text-center text-zinc-500">No sessions recorded yet.</td></tr>`;
     }
     recent.forEach(s => {
+        const typeLabel = s.typeLabel || getTemplateById(s.type)?.label || s.type;
         tbody.innerHTML += `
             <tr class="border-b border-white/5 hover:bg-white/[0.05] transition-colors cursor-pointer" onclick="editSession(${s.startMs})">
                 <td class="py-4 px-3 md:px-6 whitespace-nowrap text-sm text-zinc-400">${s.date}</td>
-                <td class="py-4 px-3 md:px-6 whitespace-nowrap"><span class="bg-orange-500/10 text-orange-400 border border-orange-500/30 px-2 py-1 rounded font-label-caps tracking-widest text-xs">${s.type}</span></td>
+                <td class="py-4 px-3 md:px-6 whitespace-nowrap"><span class="bg-orange-500/10 text-orange-400 border border-orange-500/30 px-2 py-1 rounded font-label-caps tracking-widest text-xs">${typeLabel}</span></td>
                 <td class="py-4 px-3 md:px-6 text-right text-cyan-400 font-bold whitespace-nowrap text-sm">${s.totalVolume.toLocaleString()} kg</td>
                 <td class="py-4 px-2 md:px-6 text-center">
                     <button onclick="deleteSession(${s.startMs}, event)" class="text-zinc-600 hover:text-red-500 transition-colors p-2 active:scale-95">
@@ -848,52 +1396,40 @@ function initLogger() {
     const d = new Date();
     document.getElementById('wo-date').value = getLocalYMD(d);
     document.getElementById('wo-time').value = d.toTimeString().slice(0,5);
-}
-
-function normalizeExerciseTemplate(ex) {
-    const fallbackSets = Array.isArray(ex.sets) ? ex.sets.length : 0;
-    const parsedMax = Number(ex.maxSets);
-    const maxSets = Number.isFinite(parsedMax) && parsedMax > 0 ? parsedMax : Math.max(fallbackSets, 3);
-    return { name: ex.name, maxSets };
-}
-
-function buildExercisesFromTemplate(template) {
-    return template.map(ex => {
-        const normalized = normalizeExerciseTemplate(ex);
-        const emptySets = [];
-        for (let i = 0; i < normalized.maxSets; i++) emptySets.push({w: '', r: ''});
-        return { name: normalized.name, maxSets: normalized.maxSets, sets: emptySets };
-    });
-}
-
-function getLatestTemplateByType(type) {
-    const latestByType = [...sessions]
-        .filter(s => s.type === type && Array.isArray(s.exercises) && s.exercises.length > 0)
-        .sort((a, b) => (b.startMs || 0) - (a.startMs || 0))[0];
-    return latestByType ? latestByType.exercises : PRESETS[type];
+    rebuildTemplateSelector();
+    const select = document.getElementById('wo-type');
+    if (select && !select.dataset.bound) {
+        select.dataset.bound = '1';
+        select.addEventListener('change', loadTemplateDraftFromSelection);
+    }
+    loadTemplateDraftFromSelection();
 }
 
 function startWorkout() {
     initAudio(); // Initialize audio context on user interaction
-    const type = document.getElementById('wo-type').value;
+    const templateId = document.getElementById('wo-type').value;
+    const template = getTemplateById(templateId);
     const date = document.getElementById('wo-date').value;
     const time = document.getElementById('wo-time').value;
     const bw = document.getElementById('wo-bw').value;
     
     document.getElementById('btn-delete-session').classList.add('hidden');
 
-    const existingForSelectedDay = sessions.find(s => s.type === type && s.date === date);
+    const existingForSelectedDay = sessions.find(s => s.type === templateId && s.date === date);
     if (existingForSelectedDay) {
         editSession(existingForSelectedDay.startMs);
         return;
     }
 
-    const templateExercises = getLatestTemplateByType(type);
+    if (!woTemplateDraft.length) loadTemplateDraftFromSelection();
+    const templateExercises = cloneTemplateExercises(woTemplateDraft);
     
     woState = {
-        type, date, time, bw,
+        type: templateId,
+        typeLabel: template?.label || templateId,
+        date, time, bw,
         startMs: Date.now(),
-        exercises: buildExercisesFromTemplate(templateExercises),
+        exercises: templateExercises,
         currExIdx: 0,
         totalVolume: 0, totalSets: 0
     };
@@ -933,8 +1469,26 @@ function renderWOExercises() {
     document.getElementById('wo-total-volume').textContent = totalVol.toLocaleString() + ' kg';
 }
 
+function renderRPEPickerHTML(sIdx, selectedRPE) {
+    const options = Array.from({ length: 10 }, (_, i) => i + 1);
+    return `
+        <div class="flex items-center gap-2 flex-wrap mt-2">
+            <span class="text-[9px] text-zinc-500 font-label-caps uppercase tracking-wider">RPE</span>
+            ${options.map(rpe => `
+                <button type="button" onclick="setSetRPE(${sIdx}, ${rpe})" title="${RPE_LABELS[rpe]}" class="w-6 h-6 rounded-md text-[10px] font-bold transition-all border ${
+                    Number(selectedRPE) === rpe
+                        ? 'bg-orange-500 text-black border-orange-400 shadow-[0_0_10px_rgba(255,140,0,0.5)]'
+                        : 'bg-zinc-900 text-zinc-400 border-white/10 hover:border-orange-400 hover:text-orange-300'
+                }">${rpe}</button>
+            `).join('')}
+            <span class="text-[9px] text-zinc-500">${selectedRPE ? RPE_LABELS[selectedRPE] : 'Tap a value'}</span>
+        </div>
+    `;
+}
+
 function renderWOSets() {
-    const ex = woState.exercises[woState.currExIdx];
+    const ex = enrichExerciseMeta(woState.exercises[woState.currExIdx]);
+    woState.exercises[woState.currExIdx] = ex;
     document.getElementById('wo-current-ex-name').textContent = ex.name;
     
     // Calculate hints
@@ -967,9 +1521,22 @@ function renderWOSets() {
     const hintEl = document.getElementById('wo-ex-hint');
     if (hintEl) {
         if (maxWeight > 0) {
-            hintEl.innerHTML = `<span class="text-orange-500">PR: ${maxWeight}kg x ${maxWeightReps}</span> <span class="mx-2 opacity-30">|</span> <span>LAST: ${lastLogged}kg x ${lastLoggedReps}</span>`;
+            hintEl.innerHTML = `<span class="text-orange-500">PR: ${maxWeight}kg x ${maxWeightReps}</span> <span class="mx-2 opacity-30">|</span> <span>LAST: ${lastLogged}kg x ${lastLoggedReps}</span> <span class="mx-2 opacity-30">|</span> <span>TARGET: ${ex.reps}</span>`;
         } else {
-            hintEl.innerHTML = "No previous data.";
+            hintEl.innerHTML = `No previous data • Target reps ${ex.reps}`;
+        }
+    }
+
+    const incomingEl = document.getElementById('wo-pr-incoming');
+    if (incomingEl) {
+        const best = prRecords[ex.name]?.volume || 0;
+        const currentBest = ex.sets.reduce((m, set) => Math.max(m, (Number(set.w) || 0) * (Number(set.r) || 0)), 0);
+        if (best > 0 && currentBest >= Math.round(best * 0.9) && currentBest < best) {
+            incomingEl.classList.remove('hidden');
+            incomingEl.textContent = `PR incoming • ${best - currentBest} volume away`;
+        } else {
+            incomingEl.classList.add('hidden');
+            incomingEl.textContent = '';
         }
     }
     
@@ -981,28 +1548,28 @@ function renderWOSets() {
     }
     
     ex.sets.forEach((set, sIdx) => {
-        const vol = (set.w * set.r) || 0;
+        const vol = (Number(set.w) || 0) * (Number(set.r) || 0);
         area.innerHTML += `
-            <div class="flex items-center gap-2 md:gap-3 bg-black/50 p-3 md:p-4 rounded-xl border border-white/5">
-                <div class="bg-zinc-800 text-zinc-400 font-label-caps w-7 h-7 md:w-8 md:h-8 rounded-full flex items-center justify-center font-bold text-sm md:text-base flex-shrink-0">${sIdx+1}</div>
-                
-                <div class="flex-1 flex gap-2">
-                    <div class="relative w-full">
-                        <span class="absolute left-2 md:left-3 top-1/2 -translate-y-1/2 text-[10px] md:text-xs text-zinc-600">KG</span>
-                        <input type="number" step="0.5" value="${set.w || ''}" onchange="updateSet(${sIdx}, 'w', this.value)" class="w-full bg-zinc-900 border border-white/10 text-white text-right font-data-display text-lg md:text-xl rounded-lg py-2 pr-2 pl-7 md:pl-8 focus:border-orange-500 outline-none">
+            <div class="bg-black/50 p-3 md:p-4 rounded-xl border border-white/5">
+                <div class="flex items-center gap-2 md:gap-3">
+                    <div class="bg-zinc-800 text-zinc-400 font-label-caps w-7 h-7 md:w-8 md:h-8 rounded-full flex items-center justify-center font-bold text-sm md:text-base flex-shrink-0">${sIdx+1}</div>
+                    <div class="flex-1 flex gap-2">
+                        <div class="relative w-full">
+                            <span class="absolute left-2 md:left-3 top-1/2 -translate-y-1/2 text-[10px] md:text-xs text-zinc-600">KG</span>
+                            <input type="number" step="0.5" value="${set.w || ''}" onchange="updateSet(${sIdx}, 'w', this.value)" class="w-full bg-zinc-900 border border-white/10 text-white text-right font-data-display text-lg md:text-xl rounded-lg py-2 pr-2 pl-7 md:pl-8 focus:border-orange-500 outline-none">
+                        </div>
+                        <div class="relative w-full">
+                            <span class="absolute left-2 md:left-3 top-1/2 -translate-y-1/2 text-[10px] md:text-xs text-zinc-600">REP</span>
+                            <input type="number" value="${set.r || ''}" onchange="updateSet(${sIdx}, 'r', this.value)" class="w-full bg-zinc-900 border border-white/10 text-white text-right font-data-display text-lg md:text-xl rounded-lg py-2 pr-2 pl-8 md:pl-10 focus:border-cyan-500 outline-none">
+                        </div>
                     </div>
-                    <div class="relative w-full">
-                        <span class="absolute left-2 md:left-3 top-1/2 -translate-y-1/2 text-[10px] md:text-xs text-zinc-600">REP</span>
-                        <input type="number" value="${set.r || ''}" onchange="updateSet(${sIdx}, 'r', this.value)" class="w-full bg-zinc-900 border border-white/10 text-white text-right font-data-display text-lg md:text-xl rounded-lg py-2 pr-2 pl-8 md:pl-10 focus:border-cyan-500 outline-none">
+                    <div class="w-12 md:w-16 text-right flex-shrink-0">
+                        <div class="text-[9px] md:text-[10px] text-zinc-500 font-label-caps">VOL</div>
+                        <div class="text-cyan-400 font-bold text-sm md:text-base">${vol}</div>
                     </div>
+                    <button onclick="delSet(${sIdx})" class="text-red-500/50 hover:text-red-500 material-symbols-outlined transition-colors flex-shrink-0 text-[20px] md:text-[24px]">delete</button>
                 </div>
-                
-                <div class="w-12 md:w-16 text-right flex-shrink-0">
-                    <div class="text-[9px] md:text-[10px] text-zinc-500 font-label-caps">VOL</div>
-                    <div class="text-cyan-400 font-bold text-sm md:text-base">${vol}</div>
-                </div>
-                
-                <button onclick="delSet(${sIdx})" class="text-red-500/50 hover:text-red-500 material-symbols-outlined transition-colors flex-shrink-0 text-[20px] md:text-[24px]">delete</button>
+                ${renderRPEPickerHTML(sIdx, set.rpe)}
             </div>
         `;
     });
@@ -1015,12 +1582,13 @@ function addSet() {
         alert("Maximum sets reached for this exercise.");
         return;
     }
-    let defW = '', defR = '';
+    let defW = '', defR = '', defRPE = null;
     if(ex.sets.length > 0) { 
         defW = ex.sets[ex.sets.length-1].w; 
         defR = ex.sets[ex.sets.length-1].r; 
+        defRPE = ex.sets[ex.sets.length-1].rpe || null;
     }
-    ex.sets.push({w: defW, r: defR});
+    ex.sets.push({w: defW, r: defR, rpe: defRPE});
     renderWOSets(); renderWOExercises();
 }
 
@@ -1029,11 +1597,63 @@ function updateSet(sIdx, field, val) {
     ex.sets[sIdx][field] = parseFloat(val) || 0;
     renderWOSets(); renderWOExercises();
     
+    detectAndCelebratePR(ex, sIdx);
+
     // Trigger timer if reps are logged
     if(field === 'r' && val > 0) {
         // Simple logic: 90s for compounds (first 2 exercises usually), 60s for isolation
         const restTime = woState.currExIdx < 2 ? 90 : 60;
         startTimer(restTime);
+    }
+}
+
+function setSetRPE(sIdx, rpe) {
+    const ex = woState.exercises[woState.currExIdx];
+    if (!ex || !ex.sets[sIdx]) return;
+    ex.sets[sIdx].rpe = Number(rpe);
+    renderWOSets();
+    renderWOExercises();
+}
+
+function hidePRCelebration() {
+    const overlay = document.getElementById('wo-pr-celebration');
+    if (!overlay) return;
+    overlay.classList.add('hidden');
+    if (prCelebrateTimeout) {
+        clearTimeout(prCelebrateTimeout);
+        prCelebrateTimeout = null;
+    }
+}
+
+function detectAndCelebratePR(ex, sIdx) {
+    if (!ex || woState?.isEditing) return;
+    const set = ex.sets[sIdx];
+    const weight = Number(set?.w) || 0;
+    const reps = Number(set?.r) || 0;
+    const volume = weight * reps;
+    if (!weight || !reps || !volume) return;
+
+    const prev = prRecords[ex.name];
+    if (!prev || volume > Number(prev.volume || 0)) {
+        const gain = prev ? volume - Number(prev.volume || 0) : volume;
+        prRecords[ex.name] = {
+            exercise: ex.name,
+            volume,
+            weight,
+            reps,
+            date: woState?.date || getLocalYMD(new Date())
+        };
+        localStorage.setItem('kinetic_pr_records', JSON.stringify(prRecords));
+        renderLibraryPage();
+
+        const msg = document.getElementById('wo-pr-message');
+        const overlay = document.getElementById('wo-pr-celebration');
+        if (msg && overlay) {
+            msg.textContent = `New PR on ${ex.name}! 🏆 +${gain} volume`;
+            overlay.classList.remove('hidden');
+            if (prCelebrateTimeout) clearTimeout(prCelebrateTimeout);
+            prCelebrateTimeout = setTimeout(hidePRCelebration, 3000);
+        }
     }
 }
 
@@ -1047,6 +1667,8 @@ function editSession(startMs) {
     if(sIdx === -1) return;
     
     woState = JSON.parse(JSON.stringify(sessions[sIdx]));
+    woState.typeLabel = woState.typeLabel || getTemplateById(woState.type)?.label || woState.type;
+    woState.exercises = (woState.exercises || []).map(enrichExerciseMeta);
     woState.isEditing = true;
     woState.editIndex = sIdx;
     
@@ -1087,13 +1709,22 @@ function finishWorkout() {
     
     let tSets = 0;
     let tVol = 0;
+    let rpeSum = 0;
+    let rpeCount = 0;
     woState.exercises.forEach(ex => {
         const validSets = ex.sets.filter(s => s.w > 0 && s.r > 0);
         tSets += validSets.length;
-        validSets.forEach(s => tVol += s.w * s.r);
+        validSets.forEach(s => {
+            tVol += s.w * s.r;
+            if (s.rpe) {
+                rpeSum += Number(s.rpe);
+                rpeCount += 1;
+            }
+        });
     });
     woState.totalSets = tSets;
     woState.totalVolume = tVol;
+    woState.avgRPE = rpeCount ? Number((rpeSum / rpeCount).toFixed(2)) : null;
     
     if(!woState.isEditing) {
         woState.duration = Math.round((Date.now() - woState.startMs)/60000) || 1;
@@ -1247,9 +1878,38 @@ function renderProgress() {
             plugins: { legend: { display: false }, title: { display: true, text: 'Sets per Session', color: '#fff' } }
         }
     });
+
+    // Avg RPE Chart
+    const avgRpeData = sorted.map(s => (s.avgRPE !== undefined && s.avgRPE !== null) ? Number(s.avgRPE) : null);
+    if (charts.rpe) charts.rpe.destroy();
+    charts.rpe = new Chart(document.getElementById('chart-rpe'), {
+        type: 'line',
+        data: {
+            labels: dates,
+            datasets: [{
+                label: 'Average RPE',
+                data: avgRpeData,
+                borderColor: '#fbbf24',
+                backgroundColor: 'rgba(251,191,36,0.1)',
+                fill: true,
+                tension: 0.35,
+                pointBackgroundColor: '#f59e0b',
+                spanGaps: true
+            }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { display: false }, title: { display: true, text: 'Average RPE per Session', color: '#fff' } },
+            scales: { y: { min: 1, max: 10, ticks: { stepSize: 1 } } }
+        }
+    });
     
     // Type Doughnut
-    const types = {}; sorted.forEach(s => { types[s.type] = (types[s.type]||0) + s.totalVolume; });
+    const types = {};
+    sorted.forEach(s => {
+        const typeLabel = s.typeLabel || getTemplateById(s.type)?.label || s.type;
+        types[typeLabel] = (types[typeLabel] || 0) + s.totalVolume;
+    });
     if(charts.type) charts.type.destroy();
     charts.type = new Chart(document.getElementById('chart-doughnut'), {
         type: 'doughnut',
@@ -1489,12 +2149,13 @@ function setWater(n) {
 // --- DATA CENTER / EXPORTS ---
 function exportCSV() {
     if(sessions.length === 0) return alert("No data to export!");
-    let csv = "Date,Type,Duration_Min,Bodyweight_KG,Exercise,Set_Number,Weight_KG,Reps,Volume_KG\n";
+    let csv = "Date,Template,Duration_Min,Bodyweight_KG,Exercise,Set_Number,Weight_KG,Reps,RPE,Volume_KG\n";
     sessions.forEach(s => {
+        const typeLabel = s.typeLabel || getTemplateById(s.type)?.label || s.type;
         s.exercises.forEach(ex => {
             ex.sets.forEach((set, idx) => {
                 if(set.w > 0 && set.r > 0) {
-                    csv += `${s.date},${s.type},${s.duration},${s.bw||''},"${ex.name}",${idx+1},${set.w},${set.r},${set.w*set.r}\n`;
+                    csv += `${s.date},"${typeLabel}",${s.duration},${s.bw||''},"${ex.name}",${idx+1},${set.w},${set.r},${set.rpe || ''},${set.w*set.r}\n`;
                 }
             });
         });
@@ -1511,30 +2172,33 @@ function exportXLSX() {
     const wb = XLSX.utils.book_new();
     
     // Sheet 1: Summary
-    const sumData = sessions.map(s => ({ Date: s.date, Split: s.type, BW_kg: s.bw, Total_Vol_kg: s.totalVolume, Sets: s.totalSets, Duration_m: s.duration }));
+    const sumData = sessions.map(s => ({ Date: s.date, Template: s.typeLabel || getTemplateById(s.type)?.label || s.type, BW_kg: s.bw, Total_Vol_kg: s.totalVolume, Sets: s.totalSets, Duration_m: s.duration, Avg_RPE: s.avgRPE ?? '' }));
     XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(sumData), "Summary");
     
     // Sheet 2: All Sets
     const allSets = [];
     sessions.forEach(s => s.exercises.forEach(ex => ex.sets.forEach((set, i) => {
         if(set.w>0 && set.r>0) {
-            allSets.push({ Date: s.date, Split: s.type, Exercise: ex.name, Set: i+1, Weight: set.w, Reps: set.r, Vol: set.w*set.r });
+            allSets.push({ Date: s.date, Template: s.typeLabel || getTemplateById(s.type)?.label || s.type, Exercise: ex.name, Set: i+1, Weight: set.w, Reps: set.r, RPE: set.rpe ?? '', Vol: set.w*set.r });
         }
     })));
     XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(allSets), "All_Sets");
     
     // Sheet 3-X: By Type
-    const types = [...new Set(sessions.map(s=>s.type))];
+    const types = [...new Set(sessions.map(s => s.typeLabel || getTemplateById(s.type)?.label || s.type))];
     types.forEach(t => {
-        const typeSets = allSets.filter(x => x.Split === t);
-        if(typeSets.length > 0) XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(typeSets), t);
+        const typeSets = allSets.filter(x => x.Template === t);
+        if(typeSets.length > 0) {
+            const sheetName = t.replace(/[\\/*?:[\]]/g, '-').slice(0, 31);
+            XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(typeSets), sheetName);
+        }
     });
     
     XLSX.writeFile(wb, 'Kinetic_Elite_Backup.xlsx');
 }
 
 function exportJSON() {
-    const data = JSON.stringify({sessions, supps}, null, 2);
+    const data = JSON.stringify({sessions, supps, customTemplates, prRecords}, null, 2);
     const blob = new Blob([data], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a'); a.href = url; a.download = 'Kinetic_Full_Backup.json'; a.click();
@@ -1550,8 +2214,12 @@ function importJSON() {
             if(data.sessions) {
                 sessions = data.sessions; 
                 supps = data.supps || {};
+                customTemplates = data.customTemplates || [];
+                prRecords = data.prRecords || {};
                 localStorage.setItem('kinetic_sessions', JSON.stringify(sessions));
                 localStorage.setItem('kinetic_supps', JSON.stringify(supps));
+                localStorage.setItem('kinetic_custom_templates', JSON.stringify(customTemplates));
+                localStorage.setItem('kinetic_pr_records', JSON.stringify(prRecords));
                 alert("Data Successfully Restored!");
                 location.reload();
             } else {
@@ -1566,6 +2234,8 @@ function clearAllData() {
     if(confirm("WARNING: This will permanently delete ALL local data. Are you absolutely sure?")) {
         localStorage.removeItem('kinetic_sessions');
         localStorage.removeItem('kinetic_supps');
+        localStorage.removeItem('kinetic_custom_templates');
+        localStorage.removeItem('kinetic_pr_records');
         alert("System completely wiped.");
         location.reload();
     }
@@ -1584,7 +2254,7 @@ function syncToCloud() {
         method: 'POST',
         mode: 'no-cors',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'backup', data: {sessions, supps} })
+        body: JSON.stringify({ action: 'backup', data: {sessions, supps, customTemplates, prRecords} })
     }).then(() => {
         if(statusEl) statusEl.textContent = "LAST PUSH: " + new Date().toLocaleTimeString();
     }).catch(e => {
@@ -1610,8 +2280,12 @@ function pullFromCloud() {
         if (data && data.sessions) {
             sessions = data.sessions;
             supps = data.supps || {};
+            customTemplates = data.customTemplates || [];
+            prRecords = data.prRecords || {};
             localStorage.setItem('kinetic_sessions', JSON.stringify(sessions));
             localStorage.setItem('kinetic_supps', JSON.stringify(supps));
+            localStorage.setItem('kinetic_custom_templates', JSON.stringify(customTemplates));
+            localStorage.setItem('kinetic_pr_records', JSON.stringify(prRecords));
             if(statusEl) statusEl.textContent = "DATA RESTORED SUCCESSFULLY! RELOADING...";
             setTimeout(() => location.reload(), 1000);
         } else {
@@ -1626,7 +2300,10 @@ function pullFromCloud() {
 
 // --- BOOTSTRAP ---
 document.addEventListener('DOMContentLoaded', () => {
+    hydratePRRecordsFromSessions();
     initLogger();
+    bindLibraryInputs();
+    renderLibraryPage();
     switchNav('home');
     
     const savedWebhook = localStorage.getItem('kinetic_webhook_url');
@@ -1912,7 +2589,7 @@ renderWOSets = function() {
     // Update session type label
     const typeLabel = document.getElementById('wo-session-type-label');
     if (typeLabel && woState) {
-        typeLabel.textContent = woState.type || '';
+        typeLabel.textContent = woState.typeLabel || getTemplateById(woState.type)?.label || woState.type || '';
     }
 };
 
@@ -1929,8 +2606,10 @@ startWorkout = function() {
     woTotalPauseMs = 0;
     
     // Initialize notes in exercises
+    woState.exercises = woState.exercises.map(enrichExerciseMeta);
     woState.exercises.forEach(ex => {
         if (!ex.notes) ex.notes = '';
+        ex.sets = ex.sets.map(s => ({ w: Number(s.w) || 0, r: Number(s.r) || 0, rpe: s.rpe ? Number(s.rpe) : null }));
     });
     
     updateContextLabels();
