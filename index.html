@@ -244,6 +244,9 @@ tailwind.config = {
                 </div>
             </div>
             
+            <!-- RECOVERY ALERTS SECTION -->
+            <div id="recovery-alerts-container" class="mt-8 space-y-3"></div>
+            
             <div class="mt-10">
                 <h3 class="font-h2 text-2xl text-on-surface mb-6">Recent Log</h3>
                 <div class="glass-panel rounded-xl overflow-hidden">
@@ -1247,6 +1250,8 @@ let customTemplates = JSON.parse(localStorage.getItem('kinetic_custom_templates'
 let prRecords = JSON.parse(localStorage.getItem('kinetic_pr_records') || '{}');
 let supps = JSON.parse(localStorage.getItem('kinetic_supps') || '{}');
 let woState = null;
+let timerRestStart = 0;
+let timerRestTarget = 0;
 let timerInt = null;
 let woTemplateDraft = [];
 let exerciseLibraryContext = { mode: 'browse', index: null };
@@ -1745,6 +1750,34 @@ function renderHome() {
             </tr>
         `;
     });
+    
+    // Render recovery alerts if last session exists
+    if (sessions.length > 0) {
+        const lastSession = sessions[sessions.length - 1];
+        const muscleRecovery = {};
+        
+        (lastSession.exercises || []).forEach(ex => {
+            const primary = ex.primary || getExerciseMetaByName(ex.name)?.primary || 'Unknown';
+            const vol = (ex.sets || []).reduce((sum, s) => sum + ((s.w || 0) * (s.r || 0)), 0);
+            const isCompound = (ex.sets || []).some(s => (s.w || 0) > 40);
+            const avgRPE = lastSession.avgRPE || 6;
+
+            let baseHours = isCompound ? 60 : 36;
+            if (avgRPE >= 8) baseHours += 12;
+            if (avgRPE >= 9) baseHours += 12;
+            if (vol > 3000) baseHours += 8;
+
+            if (!muscleRecovery[primary] || muscleRecovery[primary] < baseHours) {
+                muscleRecovery[primary] = baseHours;
+            }
+        });
+        
+        const sessionTime = new Date(lastSession.date + 'T' + (lastSession.time || '12:00'));
+        const now = new Date();
+        const hoursSince = (now - sessionTime) / 3600000;
+        
+        renderRecoveryAlerts(muscleRecovery, hoursSince);
+    }
 }
 
 function deleteSession(startMs, event) {
@@ -1955,7 +1988,7 @@ function addSet() {
         defR = ex.sets[ex.sets.length-1].r; 
         defRPE = ex.sets[ex.sets.length-1].rpe || null;
     }
-    ex.sets.push({w: defW, r: defR, rpe: defRPE});
+    ex.sets.push({w: defW, r: defR, rpe: defRPE, restMs: 0});
     renderWOSets(); renderWOExercises();
 }
 
@@ -1970,6 +2003,8 @@ function updateSet(sIdx, field, val) {
     if(field === 'r' && val > 0) {
         // Simple logic: 90s for compounds (first 2 exercises usually), 60s for isolation
         const restTime = woState.currExIdx < 2 ? 90 : 60;
+        timerRestStart = Date.now();
+        timerRestTarget = restTime;
         startTimer(restTime);
     }
 }
@@ -2207,6 +2242,21 @@ function closeTimer() {
     const overlay = document.getElementById('timer-overlay');
     overlay.classList.add('hidden');
     overlay.classList.remove('flex');
+    
+    // Record actual rest time to current set
+    if (woState && timerRestStart > 0) {
+        const actualRestMs = Date.now() - timerRestStart;
+        const ex = woState.exercises[woState.currExIdx];
+        if (ex && ex.sets.length > 0) {
+            const lastSet = ex.sets[ex.sets.length - 1];
+            if (lastSet && lastSet.r > 0) {
+                lastSet.restMs = actualRestMs;
+                if (!ex.restTimes) ex.restTimes = [];
+                ex.restTimes.push(actualRestMs);
+            }
+        }
+        timerRestStart = 0;
+    }
 }
 
 // --- PROGRESS ANALYTICS ---
@@ -3290,6 +3340,52 @@ function renderRecovery() {
     }
 
     container.innerHTML = html;
+    
+    // Also render home dashboard alerts
+    renderRecoveryAlerts(muscleRecovery, hoursSince);
+}
+
+function renderRecoveryAlerts(muscleRecovery, hoursSince) {
+    const container = document.getElementById('recovery-alerts-container');
+    if (!container) return;
+    
+    const readyMuscles = Object.entries(muscleRecovery).filter(([_, h]) => hoursSince >= h).map(([m]) => m);
+    const almostReady = Object.entries(muscleRecovery)
+        .filter(([_, h]) => hoursSince >= h * 0.8 && hoursSince < h)
+        .map(([m, h]) => ({muscle: m, remaining: Math.round(h - hoursSince)}))
+        .sort((a, b) => a.remaining - b.remaining);
+    
+    let html = '';
+    
+    if (readyMuscles.length) {
+        html += `
+            <div class="glass-panel p-4 rounded-xl border border-green-500/30 bg-green-500/5 animate-slide-up">
+                <div class="flex items-start gap-3">
+                    <span class="material-symbols-outlined text-green-400 text-xl">check_circle</span>
+                    <div class="flex-1">
+                        <h4 class="font-label-caps text-xs text-green-400 uppercase tracking-widest">READY TO TRAIN</h4>
+                        <p class="text-sm text-zinc-300 mt-1">${readyMuscles.slice(0, 2).join(', ')}${readyMuscles.length > 2 ? ` + ${readyMuscles.length - 2} more` : ''}</p>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+    
+    if (almostReady.length) {
+        html += `
+            <div class="glass-panel p-4 rounded-xl border border-amber-500/30 bg-amber-500/5 animate-slide-up">
+                <div class="flex items-start gap-3">
+                    <span class="material-symbols-outlined text-amber-400 text-xl">schedule</span>
+                    <div class="flex-1">
+                        <h4 class="font-label-caps text-xs text-amber-400 uppercase tracking-widest">ALMOST READY</h4>
+                        <p class="text-sm text-zinc-300 mt-1">${almostReady[0].muscle} in ~${almostReady[0].remaining}h</p>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+    
+    container.innerHTML = html;
 }
 
 // --- 1RM ESTIMATOR ---
@@ -3406,26 +3502,109 @@ function renderOneRMTrendChart(exName, formula) {
 function renderRestAnalytics() {
     const container = document.getElementById('rest-analytics-content');
     if (!container) return;
+    
+    if (!sessions.length) {
+        container.innerHTML = '<p class="text-zinc-500 text-sm">No rest data yet. Rest times are tracked automatically during workouts.</p>';
+        return;
+    }
 
-    // We don't have actual rest timer logs stored per-set, so we show what we can derive
-    container.innerHTML = `
-        <div class="text-[10px] text-zinc-500 mb-2">Rest data is tracked from the in-session rest timer. Summary based on session patterns.</div>
-        <div class="grid grid-cols-3 gap-3">
-            <div class="bg-black/40 rounded-lg p-3 border border-white/10 text-center">
-                <div class="font-data-display text-lg text-cyan-400" id="rest-avg">~90s</div>
-                <div class="text-[9px] text-zinc-500 font-label-caps">Avg Rest</div>
+    // Aggregate all rest times from all sessions
+    let allRestTimes = [];
+    let exerciseRestMap = {};
+    let sessionRestData = [];
+    
+    sessions.forEach(session => {
+        let sessionRests = [];
+        let shortRests = [], longRests = [];
+        let totalVol = 0;
+        
+        (session.exercises || []).forEach(ex => {
+            if (ex.restTimes && Array.isArray(ex.restTimes)) {
+                sessionRests = sessionRests.concat(ex.restTimes);
+                allRestTimes = allRestTimes.concat(ex.restTimes);
+                
+                // Per-exercise rest average
+                if (!exerciseRestMap[ex.name]) exerciseRestMap[ex.name] = [];
+                exerciseRestMap[ex.name] = exerciseRestMap[ex.name].concat(ex.restTimes);
+            }
+            
+            // Calculate volume for "rushed session" detection
+            (ex.sets || []).forEach(set => {
+                totalVol += (set.w || 0) * (set.r || 0);
+            });
+        });
+        
+        if (sessionRests.length) {
+            const avgRest = sessionRests.reduce((a, b) => a + b, 0) / sessionRests.length;
+            sessionRestData.push({
+                date: session.date,
+                avgRest: avgRest,
+                count: sessionRests.length,
+                minRest: Math.min(...sessionRests),
+                maxRest: Math.max(...sessionRests),
+                volume: totalVol
+            });
+        }
+    });
+    
+    let html = '<div class="space-y-4">';
+    
+    // Summary cards
+    if (allRestTimes.length) {
+        const avgRest = allRestTimes.reduce((a, b) => a + b, 0) / allRestTimes.length;
+        const minRest = Math.min(...allRestTimes);
+        const maxRest = Math.max(...allRestTimes);
+        const minLast30days = sessionRestData.slice(-30).flatMap(s => s.avgRest).reduce((a, b) => a + b, 0) / Math.max(sessionRestData.slice(-30).length, 1);
+        
+        html += `
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                <div class="bg-cyan-500/10 p-3 rounded-lg border border-cyan-500/30">
+                    <div class="text-[9px] text-zinc-500 font-label-caps mb-1">Avg Rest</div>
+                    <div class="font-data-display text-lg text-cyan-400">${Math.round(avgRest / 1000)}s</div>
+                </div>
+                <div class="bg-green-500/10 p-3 rounded-lg border border-green-500/30">
+                    <div class="text-[9px] text-zinc-500 font-label-caps mb-1">Shortest</div>
+                    <div class="font-data-display text-lg text-green-400">${Math.round(minRest / 1000)}s</div>
+                </div>
+                <div class="bg-orange-500/10 p-3 rounded-lg border border-orange-500/30">
+                    <div class="text-[9px] text-zinc-500 font-label-caps mb-1">Longest</div>
+                    <div class="font-data-display text-lg text-orange-400">${Math.round(maxRest / 1000)}s</div>
+                </div>
+                <div class="bg-amber-500/10 p-3 rounded-lg border border-amber-500/30">
+                    <div class="text-[9px] text-zinc-500 font-label-caps mb-1">30d Avg</div>
+                    <div class="font-data-display text-lg text-amber-400">${Math.round(minLast30days / 1000)}s</div>
+                </div>
             </div>
-            <div class="bg-black/40 rounded-lg p-3 border border-white/10 text-center">
-                <div class="font-data-display text-lg text-orange-400" id="rest-longest">~180s</div>
-                <div class="text-[9px] text-zinc-500 font-label-caps">Longest</div>
-            </div>
-            <div class="bg-black/40 rounded-lg p-3 border border-white/10 text-center">
-                <div class="font-data-display text-lg text-green-400" id="rest-shortest">~60s</div>
-                <div class="text-[9px] text-zinc-500 font-label-caps">Shortest</div>
-            </div>
-        </div>
-        <p class="text-[9px] text-zinc-600 mt-3 italic">Tip: Use the rest timer during workouts to build detailed rest analytics over time.</p>
-    `;
+        `;
+    }
+    
+    // Per-exercise rest averages
+    if (Object.keys(exerciseRestMap).length) {
+        html += `<div class="border-t border-white/10 pt-4"><h4 class="text-xs font-label-caps text-zinc-400 uppercase tracking-widest mb-2">Per-Exercise Rest Average</h4><div class="space-y-1 text-xs">`;
+        Object.entries(exerciseRestMap)
+            .map(([name, rests]) => ({name, avg: rests.reduce((a, b) => a + b, 0) / rests.length}))
+            .sort((a, b) => b.avg - a.avg)
+            .slice(0, 6)
+            .forEach(({name, avg}) => {
+                html += `<div class="flex justify-between text-zinc-400"><span>${name}</span><span class="text-cyan-400">${Math.round(avg / 1000)}s</span></div>`;
+            });
+        html += `</div></div>`;
+    }
+    
+    // Rushed session detection (recent sessions with low rest and high volume drop)
+    if (sessionRestData.length >= 2) {
+        const recent = sessionRestData.slice(-3);
+        const prevAvg = sessionRestData.slice(-7, -3).reduce((a, s) => a + s.avgRest, 0) / Math.max(sessionRestData.slice(-7, -3).length, 1);
+        
+        recent.forEach(s => {
+            if (s.avgRest < prevAvg * 0.7) {
+                html += `<div class="p-3 bg-red-500/10 border border-red-500/30 rounded-lg"><div class="text-[10px] text-red-300 font-label-caps">⚠ Rushed Session</div><div class="text-xs text-zinc-400 mt-1">${s.date}: Low rest detected (${Math.round(s.avgRest/1000)}s avg)</div></div>`;
+            }
+        });
+    }
+    
+    html += '</div>';
+    container.innerHTML = html;
 }
 
 // --- CONSISTENCY CALENDAR ---
