@@ -289,14 +289,14 @@ tailwind.config = {
                 <div class="flex-1 overflow-hidden flex flex-col">
                     
                     <!-- Exercise Context - Previous (Top) -->
-                    <div id="wo-prev-context" class="px-4 pt-3 pb-2 text-center opacity-70 hover:opacity-100 transition-opacity cursor-pointer" onclick="prevExercise()">
+                    <div id="wo-prev-context" class="px-4 pt-2 pb-1 text-center opacity-70 hover:opacity-100 transition-opacity cursor-pointer flex-shrink-0" onclick="prevExercise()">
                         <div class="text-[10px] text-zinc-500 font-label-caps uppercase tracking-wider">← Previous Exercise</div>
                         <div id="wo-prev-ex-name" class="text-xs md:text-sm text-zinc-400 truncate">Warm-up</div>
                     </div>
                     
                     <!-- Center Card Area -->
-                    <div class="flex-1 overflow-y-auto px-3 md:px-6 py-4 md:py-6 flex items-center justify-center">
-                        <div id="wo-fullscreen-card" class="w-full max-w-lg glass-panel p-6 md:p-8 rounded-2xl flex flex-col gap-5 shadow-2xl transition-transform duration-300">
+                    <div class="flex-1 min-h-0 overflow-y-auto px-3 md:px-6 py-3 md:py-6 flex items-start md:items-center justify-center">
+                        <div id="wo-fullscreen-card" class="w-full max-w-lg mt-1 md:mt-0 glass-panel p-6 md:p-8 rounded-2xl flex flex-col gap-5 shadow-2xl transition-transform duration-300">
                             
                             <!-- Exercise Header -->
                             <div class="text-center border-b border-white/10 pb-5">
@@ -347,7 +347,7 @@ tailwind.config = {
                     </div>
                     
                     <!-- Exercise Context - Next (Bottom) -->
-                    <div id="wo-next-context" class="px-4 pb-3 pt-2 text-center opacity-70 hover:opacity-100 transition-opacity cursor-pointer" onclick="nextExercise()">
+                    <div id="wo-next-context" class="px-4 pb-2 pt-1 text-center opacity-70 hover:opacity-100 transition-opacity cursor-pointer flex-shrink-0" onclick="nextExercise()">
                         <div id="wo-next-ex-name" class="text-xs md:text-sm text-zinc-400 truncate">Leg Press</div>
                         <div class="text-[10px] text-zinc-500 font-label-caps uppercase tracking-wider">Next Exercise →</div>
                     </div>
@@ -850,6 +850,29 @@ function initLogger() {
     document.getElementById('wo-time').value = d.toTimeString().slice(0,5);
 }
 
+function normalizeExerciseTemplate(ex) {
+    const fallbackSets = Array.isArray(ex.sets) ? ex.sets.length : 0;
+    const parsedMax = Number(ex.maxSets);
+    const maxSets = Number.isFinite(parsedMax) && parsedMax > 0 ? parsedMax : Math.max(fallbackSets, 3);
+    return { name: ex.name, maxSets };
+}
+
+function buildExercisesFromTemplate(template) {
+    return template.map(ex => {
+        const normalized = normalizeExerciseTemplate(ex);
+        const emptySets = [];
+        for (let i = 0; i < normalized.maxSets; i++) emptySets.push({w: '', r: ''});
+        return { name: normalized.name, maxSets: normalized.maxSets, sets: emptySets };
+    });
+}
+
+function getLatestTemplateByType(type) {
+    const latestByType = [...sessions]
+        .filter(s => s.type === type && Array.isArray(s.exercises) && s.exercises.length > 0)
+        .sort((a, b) => (b.startMs || 0) - (a.startMs || 0))[0];
+    return latestByType ? latestByType.exercises : PRESETS[type];
+}
+
 function startWorkout() {
     initAudio(); // Initialize audio context on user interaction
     const type = document.getElementById('wo-type').value;
@@ -858,15 +881,19 @@ function startWorkout() {
     const bw = document.getElementById('wo-bw').value;
     
     document.getElementById('btn-delete-session').classList.add('hidden');
+
+    const existingForSelectedDay = sessions.find(s => s.type === type && s.date === date);
+    if (existingForSelectedDay) {
+        editSession(existingForSelectedDay.startMs);
+        return;
+    }
+
+    const templateExercises = getLatestTemplateByType(type);
     
     woState = {
         type, date, time, bw,
         startMs: Date.now(),
-        exercises: PRESETS[type].map(e => {
-            const emptySets = [];
-            for(let i=0; i<e.maxSets; i++) emptySets.push({w: '', r: ''});
-            return { name: e.name, maxSets: e.maxSets, sets: emptySets };
-        }),
+        exercises: buildExercisesFromTemplate(templateExercises),
         currExIdx: 0,
         totalVolume: 0, totalSets: 0
     };
@@ -1716,6 +1743,8 @@ function slideCard(direction) {
 
 // Update Previous/Next context labels
 function updateContextLabels() {
+    if (!woState || !woState.exercises || woState.exercises.length === 0) return;
+
     const prevExName = woState.currExIdx > 0 
         ? woState.exercises[woState.currExIdx - 1].name 
         : '---';
@@ -1734,17 +1763,25 @@ function updateContextLabels() {
     // Update button states with proper styling
     const prevBtn = document.getElementById('btn-prev-ex');
     const nextBtn = document.getElementById('btn-next-ex');
+    const prevContext = document.getElementById('wo-prev-context');
+    const nextContext = document.getElementById('wo-next-context');
+    const atFirst = woState.currExIdx === 0;
+    const atLast = woState.currExIdx === woState.exercises.length - 1;
     
-    prevBtn.disabled = woState.currExIdx === 0;
-    nextBtn.disabled = woState.currExIdx === woState.exercises.length - 1;
+    prevBtn.disabled = atFirst;
+    nextBtn.disabled = atLast;
+    prevContext.classList.toggle('invisible', atFirst);
+    prevContext.classList.toggle('pointer-events-none', atFirst);
+    nextContext.classList.toggle('invisible', atLast);
+    nextContext.classList.toggle('pointer-events-none', atLast);
     
-    if (woState.currExIdx === 0) {
+    if (atFirst) {
         prevBtn.classList.add('opacity-40');
     } else {
         prevBtn.classList.remove('opacity-40');
     }
     
-    if (woState.currExIdx === woState.exercises.length - 1) {
+    if (atLast) {
         nextBtn.classList.add('opacity-40');
     } else {
         nextBtn.classList.remove('opacity-40');
@@ -1883,6 +1920,8 @@ renderWOSets = function() {
 const originalStartWorkout = startWorkout;
 startWorkout = function() {
     originalStartWorkout();
+
+    if (!woState || !Array.isArray(woState.exercises)) return;
     
     // Initialize pause state
     woIsPaused = false;
