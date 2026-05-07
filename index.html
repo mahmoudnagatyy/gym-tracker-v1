@@ -2349,6 +2349,9 @@ function renderProgress() {
         }
     });
     
+    // Rest Trend Chart
+    renderRestTrendChart();
+    
     // Type Doughnut
     const types = {};
     sorted.forEach(s => {
@@ -3607,7 +3610,61 @@ function renderRestAnalytics() {
     container.innerHTML = html;
 }
 
-// --- CONSISTENCY CALENDAR ---
+// --- REST TREND CHART ---
+function renderRestTrendChart() {
+    const canvas = document.getElementById('chart-rest-trend');
+    if (!canvas || !sessions.length) return;
+    
+    const sorted = [...sessions].sort((a, b) => new Date(a.date) - new Date(b.date));
+    const dates = sorted.map(s => s.date.slice(5));
+    const restData = sorted.map(s => {
+        let totalRest = 0, count = 0;
+        (s.exercises || []).forEach(ex => {
+            if (ex.restTimes && Array.isArray(ex.restTimes)) {
+                totalRest += ex.restTimes.reduce((a, b) => a + b, 0);
+                count += ex.restTimes.length;
+            }
+        });
+        return count > 0 ? Math.round(totalRest / count / 1000) : null;
+    });
+    
+    if (charts.restTrend) charts.restTrend.destroy();
+    charts.restTrend = new Chart(canvas, {
+        type: 'line',
+        data: {
+            labels: dates,
+            datasets: [{
+                label: 'Avg Rest per Set (seconds)',
+                data: restData,
+                borderColor: '#00e3fd',
+                backgroundColor: 'rgba(0, 227, 253, 0.1)',
+                fill: true,
+                tension: 0.4,
+                pointBackgroundColor: '#00e3fd',
+                spanGaps: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                title: { display: true, text: 'Rest Time Trend (30 days)', color: '#fff' }
+            },
+            scales: {
+                y: {
+                    ticks: { color: '#71717a', font: { size: 9 } },
+                    grid: { color: 'rgba(255,255,255,0.05)' }
+                },
+                x: {
+                    ticks: { color: '#71717a', font: { size: 9 } },
+                    grid: { color: 'rgba(255,255,255,0.05)' }
+                }
+            }
+        }
+    });
+}
+
 function renderConsistencyCalendar() {
     const container = document.getElementById('consistency-calendar');
     if (!container) return;
