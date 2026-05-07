@@ -438,16 +438,21 @@ tailwind.config = {
                 </div>
                 
                 <!-- MOBILE STICKY FINISH BUTTON -->
-                <div class="md:hidden fixed bottom-20 left-0 right-0 z-40 px-4 pb-3 bg-gradient-to-t from-surface-container to-transparent pointer-events-none">
-                    <button onclick="finishWorkout()" class="w-full min-h-14 bg-gradient-to-r from-cyan-500 to-cyan-400 hover:from-cyan-400 hover:to-cyan-300 text-black font-bold rounded-lg transition-all tracking-widest font-label-caps text-xs shadow-[0_0_15px_rgba(0,227,253,0.3)] hover:shadow-[0_0_20px_rgba(0,227,253,0.5)] flex items-center justify-center gap-2 pointer-events-auto active:scale-95">
-                        <span class="material-symbols-outlined text-sm">check_circle</span>
-                        <span>FINISH SESSION</span>
-                    </button>
-                </div>
-                
-                <!-- Session Paused Indicator (inline, no popup) -->
-                <div id="wo-paused-overlay" class="hidden fixed top-0 left-0 right-0 z-50 pointer-events-none">
-                    <div class="bg-amber-600/90 backdrop-blur-sm text-center py-2 animate-pulse">
+                <button onclick="finishWorkout()" class="md:hidden fixed bottom-20 left-4 right-4 z-40 min-h-14 bg-gradient-to-r from-cyan-500 to-cyan-400 hover:from-cyan-400 hover:to-cyan-300 text-black font-bold rounded-lg transition-all tracking-widest font-label-caps text-xs shadow-[0_0_15px_rgba(0,227,253,0.3)] hover:shadow-[0_0_20px_rgba(0,227,253,0.5)] flex items-center justify-center gap-2 active:scale-95">
+                    <span class="material-symbols-outlined text-sm">check_circle</span>
+                    <span>FINISH SESSION</span>
+                </button>
+
+
+
+
+
+
+
+
+
+
+
                         <span class="font-label-caps text-xs text-white tracking-widest">PAUSED — <span id="wo-paused-time" class="font-bold">00:00</span></span>
                     </div>
                 </div>
@@ -1260,6 +1265,7 @@ let customTemplates = JSON.parse(localStorage.getItem('kinetic_custom_templates'
 let prRecords = JSON.parse(localStorage.getItem('kinetic_pr_records') || '{}');
 let supps = JSON.parse(localStorage.getItem('kinetic_supps') || '{}');
 let woState = null;
+let woSessionTimerInterval = null;
 let timerRestStart = 0;
 let timerRestTarget = 0;
 let timerInt = null;
@@ -1847,6 +1853,11 @@ function startWorkout() {
     document.getElementById('workout-setup').classList.add('hidden');
     document.getElementById('workout-active').classList.remove('hidden');
     document.getElementById('workout-active').classList.add('flex');
+    
+    // Start session timer
+    if (woSessionTimerInterval) clearInterval(woSessionTimerInterval);
+    woSessionTimerInterval = setInterval(updateWOSessionTimer, 500);
+    updateWOSessionTimer();
     renderWOExercises();
     renderWOSets();
 }
@@ -1895,6 +1906,18 @@ function renderRPEPickerHTML(sIdx, selectedRPE) {
         </div>
     `;
 }
+function updateWOSessionTimer() {
+    if (!woState || !woState.startMs) return;
+    const elapsedMs = Date.now() - woState.startMs;
+    const totalSeconds = Math.floor(elapsedMs / 1000);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    const timerEl = document.getElementById('wo-live-timer');
+    if (timerEl) {
+        timerEl.textContent = `${String(minutes).padStart(2, '0')}: ${String(seconds).padStart(2, '0')}`;
+    }
+}
+
 
 function renderWOSets() {
     const ex = enrichExerciseMeta(woState.exercises[woState.currExIdx]);
@@ -2118,6 +2141,7 @@ function deleteSession() {
 
 function finishWorkout() {
     let tSets = 0;
+    if (woSessionTimerInterval) { clearInterval(woSessionTimerInterval); woSessionTimerInterval = null; }
     let tVol = 0;
     let rpeSum = 0;
     let rpeCount = 0;
@@ -2197,6 +2221,7 @@ function dismissSummary() {
 
 function closeWorkoutView() {
     document.getElementById('workout-active').classList.add('hidden');
+    if (woSessionTimerInterval) { clearInterval(woSessionTimerInterval); woSessionTimerInterval = null; }
     document.getElementById('workout-active').classList.remove('flex');
     document.getElementById('workout-setup').classList.remove('hidden');
     woState = null;
