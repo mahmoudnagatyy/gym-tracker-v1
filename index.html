@@ -1,3 +1,4 @@
+<!-- Cache Buster: 1778260980 -->
 <!DOCTYPE html>
 <html class="dark" lang="en">
 <head>
@@ -325,7 +326,7 @@ tailwind.config = {
                     <!-- Center: Timer Display -->
                     <div class="text-center flex-shrink-0 px-1">
                         <div class="text-[6px] md:text-[7px] text-zinc-400 font-label-caps uppercase tracking-wider">Time</div>
-                        <div id="wo-live-timer" class="text-base md:text-3xl font-bold text-orange-500 font-data-display tabular-nums whitespace-nowrap">00:00</div>
+                        <div id="wo-live-timer" class="text-sm md:text-3xl font-bold text-orange-500 font-data-display tabular-nums whitespace-nowrap">00:00</div>
                     </div>
                     
                     <!-- Right: Volume + Delete -->
@@ -2036,7 +2037,7 @@ function renderWOSets() {
         ${renderRPEPickerHTML(woCurrentSetIdx, set.rpe)}
 
         <div class="flex gap-2 mt-4">
-            <button onclick="prevSetView()" class="flex-1 py-2 px-3 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs font-label-caps rounded-lg transition-all border border-white/10 ${woCurrentSetIdx === 0 ? 'opacity-40 cursor-not-allowed' : ''}">
+            <button onclick="prevSetView()" class="flex-1 py-2 px-3 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs font-label-caps rounded-lg transition-all border border-white/10 disabled:opacity-50 disabled:cursor-not-allowed" ${woCurrentSetIdx === 0 ? 'disabled' : ''}>
                 ← Previous
             </button>
             <button onclick="delSet(${woCurrentSetIdx})" class="flex-1 py-2 px-3 bg-red-900/30 hover:bg-red-900/50 text-red-400 text-xs font-label-caps rounded-lg transition-all border border-red-500/30">
