@@ -368,7 +368,7 @@ tailwind.config = {
                             </div>
                             
                             <!-- Sets Display -->
-                            <div id="wo-sets-area" class="flex flex-col gap-3 min-h-[120px] max-h-[280px] overflow-y-auto pr-2">
+                            <div id="wo-sets-area" class="flex flex-col gap-3 min-h-[200px]">
                                 <div class="text-center text-zinc-600 py-8 font-medium italic">No sets logged yet</div>
                             </div>
                             
@@ -1272,6 +1272,7 @@ let timerInt = null;
 let woTemplateDraft = [];
 let exerciseLibraryContext = { mode: 'browse', index: null };
 let prCelebrateTimeout = null;
+let woCurrentSetIdx = 0; // Track which set we are viewing for current exercise
 
 const RPE_LABELS = {
     1: 'Very easy',
@@ -1853,6 +1854,7 @@ function startWorkout() {
     document.getElementById('workout-setup').classList.add('hidden');
     document.getElementById('workout-active').classList.remove('hidden');
     document.getElementById('workout-active').classList.add('flex');
+    woCurrentSetIdx = 0; // Reset set index on workout start
     
     // Start session timer
     if (woSessionTimerInterval) clearInterval(woSessionTimerInterval);
@@ -1954,9 +1956,9 @@ function renderWOSets() {
     const hintEl = document.getElementById('wo-ex-hint');
     if (hintEl) {
         if (maxWeight > 0) {
-            hintEl.innerHTML = `<span class="text-orange-500">PR: ${maxWeight}kg x ${maxWeightReps}</span> <span class="mx-2 opacity-30">|</span> <span>LAST: ${lastLogged}kg x ${lastLoggedReps}</span> <span class="mx-2 opacity-30">|</span> <span>TARGET: ${ex.reps}</span>`;
+            hintEl.innerHTML = `<span class="text-orange-500">PR: ${maxWeight}kg x ${maxWeightReps}</span> <span class="mx-2 opacity-30">|</span> <span>LAST: ${lastLogged}kg x ${lastLoggedReps}</span>`;
         } else {
-            hintEl.innerHTML = `No previous data • Target reps ${ex.reps}`;
+            hintEl.innerHTML = `No previous data • Target: ${ex.reps}`;
         }
     }
 
@@ -1972,41 +1974,85 @@ function renderWOSets() {
             incomingEl.textContent = '';
         }
     }
-    
+
+    // SET-BY-SET VIEW (show only current set)
+    woCurrentSetIdx = Math.min(woCurrentSetIdx, Math.max(0, ex.sets.length - 1));
     const area = document.getElementById('wo-sets-area');
     area.innerHTML = '';
     
-    if(ex.sets.length === 0) {
-        area.innerHTML = `<div class="text-center text-zinc-600 py-6 font-medium italic">No sets logged yet. Tap Add Set below.</div>`;
-    }
-    
-    ex.sets.forEach((set, sIdx) => {
-        const vol = (Number(set.w) || 0) * (Number(set.r) || 0);
-        area.innerHTML += `
-            <div class="bg-black/50 p-3 md:p-4 rounded-xl border border-white/5">
-                <div class="flex items-center gap-2 md:gap-3">
-                    <div class="bg-zinc-800 text-zinc-400 font-label-caps w-7 h-7 md:w-8 md:h-8 rounded-full flex items-center justify-center font-bold text-sm md:text-base flex-shrink-0">${sIdx+1}</div>
-                    <div class="flex-1 flex gap-2">
-                        <div class="relative w-full">
-                            <span class="absolute left-2 md:left-3 top-1/2 -translate-y-1/2 text-[10px] md:text-xs text-zinc-600">KG</span>
-                            <input type="number" step="0.5" value="${set.w || ''}" onchange="updateSet(${sIdx}, 'w', this.value)" class="w-full bg-zinc-900 border border-white/10 text-white text-right font-data-display text-lg md:text-xl rounded-lg py-2 pr-2 pl-7 md:pl-8 focus:border-orange-500 outline-none">
-                        </div>
-                        <div class="relative w-full">
-                            <span class="absolute left-2 md:left-3 top-1/2 -translate-y-1/2 text-[10px] md:text-xs text-zinc-600">REP</span>
-                            <input type="number" value="${set.r || ''}" onchange="updateSet(${sIdx}, 'r', this.value)" class="w-full bg-zinc-900 border border-white/10 text-white text-right font-data-display text-lg md:text-xl rounded-lg py-2 pr-2 pl-8 md:pl-10 focus:border-cyan-500 outline-none">
-                        </div>
-                    </div>
-                    <div class="w-12 md:w-16 text-right flex-shrink-0">
-                        <div class="text-[9px] md:text-[10px] text-zinc-500 font-label-caps">VOL</div>
-                        <div class="text-cyan-400 font-bold text-sm md:text-base">${vol}</div>
-                    </div>
-                    <button onclick="delSet(${sIdx})" class="text-red-500/50 hover:text-red-500 material-symbols-outlined transition-colors flex-shrink-0 text-[20px] md:text-[24px]">delete</button>
-                </div>
-                ${renderRPEPickerHTML(sIdx, set.rpe)}
+    if (ex.sets.length === 0) {
+        area.innerHTML = `
+            <div class="text-center text-zinc-600 py-8 font-medium italic">
+                <div class="text-sm">No sets logged yet</div>
+                <div class="text-xs mt-2">Tap "Add Set" to start logging</div>
             </div>
         `;
-    });
+        return;
+    }
+
+    const set = ex.sets[woCurrentSetIdx];
+    const vol = (Number(set.w) || 0) * (Number(set.r) || 0);
+    
+    // SET COUNTER + META INFO
+    area.innerHTML = `
+        <div class="text-center mb-4 pb-4 border-b border-white/10">
+            <div class="text-lg font-bold text-cyan-400 font-data-display">SET ${woCurrentSetIdx + 1} OF ${ex.maxSets}</div>
+            <div class="text-xs text-zinc-400 font-label-caps mt-2">Target: ${ex.reps} reps</div>
+            <div class="text-xs text-zinc-500 font-label-caps">Max sets: ${ex.maxSets}</div>
+        </div>
+    `;
+
+    // CURRENT SET INPUT
+    area.innerHTML += `
+        <div class="bg-black/50 p-4 rounded-xl border border-cyan-500/30 space-y-4">
+            <div class="flex gap-3">
+                <div class="flex-1">
+                    <div class="text-[9px] text-zinc-400 font-label-caps mb-2 uppercase tracking-wider">Weight (kg)</div>
+                    <input type="number" step="0.5" value="${set.w || ''}" onchange="updateSet(${woCurrentSetIdx}, 'w', this.value)" class="w-full bg-zinc-900 border border-white/10 text-white text-center font-data-display text-3xl rounded-lg py-3 focus:border-orange-500 outline-none">
+                </div>
+                <div class="flex-1">
+                    <div class="text-[9px] text-zinc-400 font-label-caps mb-2 uppercase tracking-wider">Reps</div>
+                    <input type="number" value="${set.r || ''}" onchange="updateSet(${woCurrentSetIdx}, 'r', this.value)" class="w-full bg-zinc-900 border border-white/10 text-white text-center font-data-display text-3xl rounded-lg py-3 focus:border-cyan-500 outline-none">
+                </div>
+            </div>
+            
+            <div class="text-center pt-2 border-t border-white/10">
+                <div class="text-xs text-zinc-400 font-label-caps uppercase">Volume</div>
+                <div class="text-2xl font-bold text-cyan-400 font-data-display">${vol} kg</div>
+            </div>
+        </div>
+
+        ${renderRPEPickerHTML(woCurrentSetIdx, set.rpe)}
+
+        <div class="flex gap-2 mt-4">
+            <button onclick="prevSetView()" class="flex-1 py-2 px-3 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs font-label-caps rounded-lg transition-all border border-white/10 ${woCurrentSetIdx === 0 ? 'opacity-40 cursor-not-allowed' : ''}">
+                ← Previous
+            </button>
+            <button onclick="delSet(${woCurrentSetIdx})" class="flex-1 py-2 px-3 bg-red-900/30 hover:bg-red-900/50 text-red-400 text-xs font-label-caps rounded-lg transition-all border border-red-500/30">
+                Delete
+            </button>
+            <button onclick="nextSetView()" class="flex-1 py-2 px-3 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs font-label-caps rounded-lg transition-all border border-white/10 ${woCurrentSetIdx === ex.sets.length - 1 ? 'opacity-40 cursor-not-allowed' : ''}">
+                Next →
+            </button>
+        </div>
+    `;
 }
+
+function nextSetView() {
+    const ex = woState.exercises[woState.currExIdx];
+    if (woCurrentSetIdx < ex.sets.length - 1) {
+        woCurrentSetIdx++;
+        renderWOSets();
+    }
+}
+
+function prevSetView() {
+    if (woCurrentSetIdx > 0) {
+        woCurrentSetIdx--;
+        renderWOSets();
+    }
+}
+
 
 function addSet() {
     initAudio();
@@ -2878,6 +2924,7 @@ function prevExercise() {
     if (woState.currExIdx > 0) {
         saveCurrentExerciseNotes();
         woState.currExIdx--;
+        woCurrentSetIdx = 0; // Reset to first set of new exercise
         renderWOSets();
         renderWOExercises();
         updateContextLabels();
@@ -2891,6 +2938,7 @@ function nextExercise() {
     if (woState.currExIdx < woState.exercises.length - 1) {
         saveCurrentExerciseNotes();
         woState.currExIdx++;
+        woCurrentSetIdx = 0; // Reset to first set of new exercise
         renderWOSets();
         renderWOExercises();
         updateContextLabels();
