@@ -323,9 +323,9 @@ tailwind.config = {
                     </div>
                     
                     <!-- Center: Timer Display -->
-                    <div class="text-center flex-shrink-0">
-                        <div class="text-[7px] text-zinc-400 font-label-caps uppercase tracking-wider">Time</div>
-                        <div id="wo-live-timer" class="text-lg md:text-3xl font-bold text-orange-500 font-data-display tabular-nums">00:00</div>
+                    <div class="text-center flex-shrink-0 px-1">
+                        <div class="text-[6px] md:text-[7px] text-zinc-400 font-label-caps uppercase tracking-wider">Time</div>
+                        <div id="wo-live-timer" class="text-base md:text-3xl font-bold text-orange-500 font-data-display tabular-nums whitespace-nowrap">00:00</div>
                     </div>
                     
                     <!-- Right: Volume + Delete -->
@@ -2042,9 +2042,10 @@ function renderWOSets() {
             <button onclick="delSet(${woCurrentSetIdx})" class="flex-1 py-2 px-3 bg-red-900/30 hover:bg-red-900/50 text-red-400 text-xs font-label-caps rounded-lg transition-all border border-red-500/30">
                 Delete
             </button>
-            <button onclick="nextSetView()" class="flex-1 py-2 px-3 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs font-label-caps rounded-lg transition-all border border-white/10 ${woCurrentSetIdx === ex.sets.length - 1 ? 'opacity-40 cursor-not-allowed' : ''}">
-                Next →
-            </button>
+            ${woCurrentSetIdx === ex.sets.length - 1 ? 
+                `<button onclick="nextExercise()" class="flex-1 py-2 px-3 bg-cyan-600/40 hover:bg-cyan-500/50 text-cyan-300 text-xs font-label-caps rounded-lg transition-all border border-cyan-400/40 font-bold">Next Exercise →</button>` :
+                `<button onclick="nextSetView()" class="flex-1 py-2 px-3 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs font-label-caps rounded-lg transition-all border border-white/10">Next Set →</button>`
+            }
         </div>
     `;
 }
