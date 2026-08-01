@@ -4,12 +4,12 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
-<title>KINETIC - Elite Performance</title>
+<title>AXIS — Strength, tracked</title>
 
 <!-- Google Fonts -->
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Lexend:wght@400;600;700;900&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet"/>
 
 <!-- Material Symbols -->
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
@@ -90,15 +90,29 @@ tailwind.config = {
 </script>
 
 <style>
-    body { background-color: #131313; color: #e5e2e1; }
+    :root { color-scheme: dark; }
+    html, body { min-height: 100%; background-color: #0c1016; }
+    body { color: #e5e2e1; overflow-x: hidden; background-image: radial-gradient(circle at 82% -10%, rgba(0,227,253,.09), transparent 32rem), radial-gradient(circle at 8% 35%, rgba(255,140,0,.05), transparent 28rem); background-attachment: fixed; }
+    button, input, select, textarea { -webkit-tap-highlight-color: transparent; }
+    input, select, textarea { font-size: 16px; }
+    .safe-bottom { padding-bottom: max(1rem, env(safe-area-inset-bottom)); }
+    .safe-top { padding-top: env(safe-area-inset-top); }
+    /* The active session owns the screen; keep the app navigation beneath it. */
+    #workout-active { z-index: 80; padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom); }
+    #wo-fullscreen-card { max-height: calc(100dvh - 13rem); overflow-y: auto; overscroll-behavior: contain; }
+    #wo-upcoming-preview { width: min(100%, 32rem); }
+    .section-heading { letter-spacing: -0.03em; }
+    .content-shell { max-width: 72rem; }
+    .mission-card { box-shadow: 0 18px 50px rgba(0, 227, 253, 0.06); }
     .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
     .material-symbols-outlined.fill { font-variation-settings: 'FILL' 1; }
     
     .glass-panel { 
-        background: rgba(30, 30, 30, 0.6); 
+        background: rgba(25, 29, 36, 0.78);
         backdrop-filter: blur(12px); 
         -webkit-backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.1); 
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 12px 32px rgba(0,0,0,.14);
     }
     
     ::-webkit-scrollbar { width: 6px; height: 6px; }
@@ -146,6 +160,208 @@ tailwind.config = {
     /* Heatmap body */
     .muscle-zone { transition: fill 0.3s ease, opacity 0.3s ease; cursor: pointer; }
     .muscle-zone:hover { opacity: 0.8; filter: brightness(1.2); }
+
+    @media (max-width: 767px) {
+        body { padding-bottom: calc(5rem + env(safe-area-inset-bottom)); }
+        main { width: 100%; min-width: 0; }
+        main > .px-4 { padding-left: 1rem; padding-right: 1rem; }
+        main > .px-4 { gap: 1.25rem; }
+        .view-section > header { margin-bottom: 1rem !important; }
+        .view-section > header h2 { font-size: 1.75rem !important; line-height: 1.1; }
+        .view-section > header p { font-size: .9rem; margin-top: .25rem; }
+        .glass-panel { border-radius: 1rem; }
+        .glass-panel:hover { transform: none; box-shadow: none; }
+        #view-home .grid > .glass-panel { height: 7.5rem; padding: 1rem !important; }
+        #view-home .mt-10 { margin-top: 1.75rem; }
+        #view-home .mt-10 h3 { font-size: 1.25rem; margin-bottom: 1rem; }
+        #home-mission-card { padding: 1rem !important; }
+        #home-mission-card h3 { font-size: 1.2rem; }
+        .view-section { min-width: 0; }
+        #workout-active { height: 100dvh; min-height: 100dvh; }
+        #workout-active > .flex-1 { min-height: 0; }
+        #wo-mobile-session-tools { box-shadow: 0 8px 18px rgba(0,0,0,.16); }
+        #wo-fullscreen-card { padding: 1rem; gap: 1rem; max-height: calc(100dvh - 15rem); }
+        #wo-fullscreen-card h2 { font-size: clamp(1.4rem, 7vw, 2rem); line-height: 1.1; }
+        #wo-sets-area { min-height: 0; }
+        #wo-sets-area input { min-height: 3.25rem; }
+        #wo-upcoming-preview { margin: 0 auto; }
+        #wo-day-view-sheet, #exercise-library-sheet { padding-bottom: env(safe-area-inset-bottom); }
+    }
+</style>
+<style id="axis-design-system">
+    :root {
+        --axis-bg: #0b0f19;
+        --axis-bg-soft: #101726;
+        --axis-surface: #151b2d;
+        --axis-card: #1e263b;
+        --axis-card-raised: #252f49;
+        --axis-primary: #5b8cff;
+        --axis-primary-strong: #7aa3ff;
+        --axis-secondary: #8b5cf6;
+        --axis-success: #22c55e;
+        --axis-warning: #f59e0b;
+        --axis-danger: #ef4444;
+        --axis-text: #f8fafc;
+        --axis-muted: #a9b2c7;
+        --axis-subtle: #74809a;
+        --axis-line: rgba(169, 178, 199, .14);
+        --axis-focus: rgba(91, 140, 255, .42);
+        --axis-radius: 20px;
+        --axis-radius-sm: 12px;
+        --axis-shadow: 0 18px 50px rgba(0, 0, 0, .24);
+    }
+
+    html, body { background: var(--axis-bg) !important; color: var(--axis-text) !important; font-family: 'Inter', sans-serif !important; }
+    body { background-image: radial-gradient(circle at 78% -12%, rgba(91,140,255,.14), transparent 34rem), radial-gradient(circle at -10% 38%, rgba(139,92,246,.09), transparent 30rem) !important; }
+    h1, h2, h3, h4, h5, h6, .font-h1, .font-h2 { font-family: 'Manrope', sans-serif !important; letter-spacing: -.025em; }
+    .font-label-caps { font-family: 'Plus Jakarta Sans', sans-serif !important; }
+    .font-data-display { font-family: 'Manrope', sans-serif !important; font-variant-numeric: tabular-nums; }
+
+    /* Re-map legacy utility classes to the new AXIS system so business markup stays untouched. */
+    .bg-zinc-950 { background-color: var(--axis-bg) !important; }
+    .bg-zinc-900 { background-color: var(--axis-surface) !important; }
+    .bg-zinc-800 { background-color: var(--axis-card) !important; }
+    .bg-surface, .bg-surface-dim { background-color: var(--axis-bg) !important; }
+    .bg-surface-container-low, .bg-surface-container { background-color: var(--axis-surface) !important; }
+    .bg-surface-container-high, .bg-surface-container-highest { background-color: var(--axis-card) !important; }
+    .text-white, .text-on-surface { color: var(--axis-text) !important; }
+    .text-zinc-100, .text-zinc-200, .text-zinc-300 { color: var(--axis-text) !important; }
+    .text-zinc-400, .text-zinc-500 { color: var(--axis-muted) !important; }
+    .text-zinc-600, .text-zinc-700 { color: var(--axis-subtle) !important; }
+    .text-orange-500, .text-orange-400, .text-orange-300 { color: var(--axis-primary) !important; }
+    .text-cyan-500, .text-cyan-400, .text-cyan-300, .text-cyan-200 { color: var(--axis-secondary) !important; }
+    .text-green-500, .text-green-400, .text-green-300 { color: var(--axis-success) !important; }
+    .text-amber-500, .text-amber-400, .text-amber-300 { color: var(--axis-warning) !important; }
+    .bg-orange-500 { background-color: var(--axis-primary) !important; color: #fff !important; }
+    .bg-orange-500\/10, .bg-orange-500\/\[0\.1\] { background-color: rgba(91,140,255,.12) !important; }
+    .bg-cyan-500, .bg-cyan-400 { background-color: var(--axis-secondary) !important; color: #fff !important; }
+    .bg-cyan-500\/10, .bg-cyan-500\/\[0\.06\] { background-color: rgba(139,92,246,.13) !important; }
+    .bg-green-500, .bg-green-600 { background-color: var(--axis-success) !important; }
+    .bg-red-500, .bg-red-600 { background-color: var(--axis-danger) !important; }
+    .from-orange-500 { --tw-gradient-from: var(--axis-primary) !important; }
+    .to-orange-400, .to-orange-500 { --tw-gradient-to: var(--axis-primary-strong) !important; }
+    .from-cyan-500 { --tw-gradient-from: var(--axis-secondary) !important; }
+    .to-cyan-400, .to-cyan-300 { --tw-gradient-to: #a78bfa !important; }
+    .border-orange-500, .border-orange-500\/30, .border-orange-500\/50 { border-color: rgba(91,140,255,.45) !important; }
+    .border-cyan-500\/20, .border-cyan-500\/30, .border-cyan-500\/40, .border-cyan-400\/30 { border-color: rgba(139,92,246,.42) !important; }
+    .border-white\/5, .border-white\/10, .border-white\/15, .border-white\/20 { border-color: var(--axis-line) !important; }
+
+    .glass-panel {
+        background: linear-gradient(145deg, rgba(30,38,59,.96), rgba(21,27,45,.96)) !important;
+        border: 1px solid var(--axis-line) !important;
+        border-radius: var(--axis-radius) !important;
+        box-shadow: var(--axis-shadow) !important;
+        backdrop-filter: none !important;
+    }
+    .glass-panel:hover { transform: translateY(-3px); box-shadow: 0 24px 60px rgba(0,0,0,.34) !important; }
+    .view-section > header { margin-bottom: 2rem !important; }
+    .view-section > header h2 { font-size: clamp(2rem, 4vw, 3.25rem) !important; color: var(--axis-text) !important; }
+    .view-section > header p { color: var(--axis-muted) !important; }
+    .content-shell { max-width: 78rem !important; }
+
+    button, input, select, textarea { font-family: 'Inter', sans-serif !important; }
+    button { min-height: 44px; border-radius: var(--axis-radius-sm); transition: transform .18s ease, background-color .18s ease, border-color .18s ease, box-shadow .18s ease, color .18s ease; }
+    button:active { transform: scale(.97); }
+    button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 3px solid var(--axis-focus) !important; outline-offset: 2px; }
+    input, select, textarea { color: var(--axis-text) !important; background: var(--axis-surface) !important; border: 1px solid var(--axis-line) !important; border-radius: var(--axis-radius-sm) !important; box-shadow: none !important; }
+    input::placeholder, textarea::placeholder { color: var(--axis-subtle) !important; }
+    input:focus, select:focus, textarea:focus { border-color: var(--axis-primary) !important; }
+
+    body > nav:first-of-type { background: var(--axis-bg) !important; border-color: var(--axis-line) !important; width: 16rem !important; padding: 1.5rem !important; }
+    #nav-web { width: 100% !important; padding: 0 !important; background: transparent !important; border: 0 !important; }
+    #nav-web { display: flex !important; flex-direction: column !important; }
+    #nav-web [data-target="workout"] { order: 1; }
+    #nav-web [data-target="home"] { order: 2; }
+    #nav-web [data-target="progress"] { order: 3; }
+    #nav-web [data-target="library"] { order: 4; }
+    #nav-web [data-target="supps"] { order: 5; }
+    #nav-web [data-target="export"] { order: 6; margin-top: auto !important; }
+    nav .nav-btn { color: var(--axis-muted) !important; border: 1px solid transparent; border-radius: 14px !important; padding: .85rem 1rem !important; }
+    nav .nav-btn:hover { background: rgba(91,140,255,.1) !important; color: var(--axis-text) !important; }
+    nav .nav-btn.bg-orange-500\/10, nav .nav-btn[style*="orange"] { background: rgba(91,140,255,.14) !important; color: var(--axis-primary-strong) !important; border-color: rgba(91,140,255,.24) !important; }
+    body > header { background: rgba(11,15,25,.94) !important; border-color: var(--axis-line) !important; }
+    #nav-mobile { background: rgba(11,15,25,.98) !important; border-color: var(--axis-line) !important; height: 5.25rem !important; padding-bottom: env(safe-area-inset-bottom) !important; }
+    #nav-mobile .nav-btn-mob { color: var(--axis-subtle) !important; border-radius: 14px !important; }
+    #nav-mobile .nav-btn-mob:hover, #nav-mobile .nav-btn-mob.text-orange-500 { color: var(--axis-primary-strong) !important; }
+    #nav-mobile [data-target="workout"] { order: 1; }
+    #nav-mobile [data-target="home"] { order: 2; }
+    #nav-mobile [data-target="progress"] { order: 3; }
+    #nav-mobile [data-target="library"] { order: 4; }
+    #nav-mobile [data-target="supps"] { order: 5; }
+    #nav-mobile [data-target="export"] { order: 6; }
+
+    #view-home.active { display: flex !important; flex-direction: column; gap: 1.5rem; }
+    #view-home.active > header { order: 1; margin-bottom: 0 !important; }
+    #view-home.active > #home-mission-card { order: 2; margin-bottom: 0 !important; }
+    #view-home.active > #notification-alerts-container { order: 3; }
+    #view-home.active > .mb-6.glass-panel { order: 4; margin-bottom: 0 !important; }
+    #view-home.active > .grid { order: 5; }
+    #view-home.active > #recovery-alerts-container { order: 6; }
+    #view-home.active > .mt-10 { order: 7; margin-top: 0 !important; }
+
+    #home-mission-card { background: linear-gradient(135deg, rgba(91,140,255,.18), rgba(30,38,59,.98) 48%, rgba(139,92,246,.16)) !important; border-color: rgba(122,163,255,.28) !important; box-shadow: 0 24px 70px rgba(91,140,255,.1) !important; }
+    #home-mission-card .bg-cyan-400\/15 { background: rgba(91,140,255,.2) !important; }
+    #home-mission-card .bg-orange-500\/10 { background: rgba(139,92,246,.18) !important; }
+    #home-mission-card .text-cyan-300, #home-mission-card .text-cyan-200 { color: var(--axis-primary-strong) !important; }
+    #home-mission-card .bg-gradient-to-r { background-image: linear-gradient(90deg, var(--axis-primary), var(--axis-secondary)) !important; }
+
+    #view-home .grid > .glass-panel { min-height: 9rem; }
+    #home-recent-table tr { border-color: var(--axis-line) !important; }
+    #home-recent-table tr:hover { background: rgba(91,140,255,.07) !important; }
+    #home-recent-table td { color: var(--axis-muted); }
+
+    #workout-active { z-index: 90 !important; background: var(--axis-bg) !important; background-image: radial-gradient(circle at 50% 0%, rgba(91,140,255,.13), transparent 32rem) !important; }
+    #workout-active > div:first-child { background: rgba(21,27,45,.96) !important; border-color: var(--axis-line) !important; }
+    #wo-fullscreen-card { background: linear-gradient(145deg, var(--axis-card-raised), var(--axis-card)) !important; border: 1px solid rgba(122,163,255,.18) !important; border-radius: 28px !important; box-shadow: 0 30px 80px rgba(0,0,0,.35) !important; }
+    #wo-current-ex-name { color: var(--axis-text) !important; }
+    #wo-upcoming-modal { z-index: 100 !important; background: rgba(7,10,18,.82) !important; }
+    #wo-upcoming-modal-card { background: linear-gradient(145deg, var(--axis-card-raised), var(--axis-card)) !important; border-color: rgba(122,163,255,.35) !important; box-shadow: 0 28px 80px rgba(0,0,0,.58) !important; }
+    #wo-day-view-drawer { z-index: 100 !important; background: rgba(7,10,18,.82) !important; }
+    #wo-day-view-sheet { z-index: 101 !important; background: var(--axis-card) !important; border-color: rgba(122,163,255,.3) !important; }
+    #wo-mobile-exercise-nav { background: rgba(21,27,45,.98) !important; border-color: var(--axis-line) !important; }
+    #wo-mobile-session-tools { background: var(--axis-surface) !important; border-color: var(--axis-line) !important; }
+    #wo-sets-area input { background: var(--axis-bg-soft) !important; border-color: var(--axis-line) !important; }
+    #wo-sets-area input:focus { border-color: var(--axis-primary) !important; box-shadow: 0 0 0 4px rgba(91,140,255,.12) !important; }
+
+    #view-progress .glass-panel, #view-library .glass-panel, #view-supps .glass-panel, #view-export .glass-panel { border-radius: var(--axis-radius) !important; }
+    #view-progress canvas, #view-supps canvas { max-width: 100%; }
+    #timer-overlay { background: var(--axis-card) !important; border-color: rgba(139,92,246,.4) !important; box-shadow: 0 24px 70px rgba(0,0,0,.55) !important; }
+    #timer-circle { stroke: var(--axis-secondary) !important; }
+    body.workout-session-open #nav-mobile { display: none !important; }
+
+    @media (max-width: 767px) {
+        body { padding-bottom: calc(5.25rem + env(safe-area-inset-bottom)) !important; }
+        main { padding-top: 5rem !important; }
+        main > .content-shell { padding: 0 1rem !important; gap: 1.5rem !important; }
+        .view-section > header { margin-bottom: 1.25rem !important; }
+        .view-section > header h2 { font-size: 2rem !important; }
+        .glass-panel { border-radius: 18px !important; box-shadow: 0 12px 32px rgba(0,0,0,.18) !important; }
+        #home-recent-table tr { display: grid; grid-template-columns: 1fr auto; gap: .35rem .75rem; padding: 1rem; }
+        #home-recent-table td { padding: 0 !important; white-space: normal; }
+        #home-recent-table td:nth-child(3) { grid-column: 2; grid-row: 1 / span 2; align-self: center; }
+        #home-recent-table td:nth-child(4) { display: none; }
+        #home-recent-table td:nth-child(2) span { font-size: .65rem; }
+        #workout-active { padding-bottom: env(safe-area-inset-bottom) !important; }
+        #workout-active > .flex-1 { overflow: hidden !important; }
+        #workout-active > .flex-1 > .flex-1 { padding: .5rem .75rem 0 !important; align-items: stretch !important; justify-content: flex-start !important; }
+        #wo-prev-context, #wo-next-context, #wo-upcoming-preview { display: none !important; }
+        #wo-fullscreen-card { width: 100% !important; max-width: none !important; height: calc(100dvh - 17.75rem) !important; max-height: none !important; min-height: 0 !important; margin: .5rem 0 0 !important; padding: 1rem !important; gap: .75rem !important; overflow-y: auto !important; }
+        #wo-fullscreen-card > div:first-child { order: 1; padding-bottom: .75rem !important; }
+        #wo-fullscreen-card > #btn-add-set { order: 2; flex: 0 0 auto; }
+        #wo-fullscreen-card > #wo-sets-area { order: 3; }
+        #wo-fullscreen-card > div:first-child h2 { font-size: 1.65rem !important; }
+        #wo-sets-area { min-height: 0 !important; flex: 0 0 auto !important; }
+        #wo-sets-area > div:first-child { margin-bottom: .5rem !important; padding-bottom: .65rem !important; }
+        #wo-sets-area .bg-black\/50 { padding: .75rem !important; }
+        #wo-sets-area .text-3xl { font-size: 1.65rem !important; }
+        #btn-pause-training { display: none !important; }
+        #wo-mobile-exercise-nav { bottom: calc(4.75rem + env(safe-area-inset-bottom)) !important; }
+        #wo-mobile-finish { bottom: calc(.75rem + env(safe-area-inset-bottom)) !important; }
+        #wo-upcoming-modal { padding: .75rem !important; }
+        #wo-upcoming-modal-card { border-radius: 24px !important; padding: 1.25rem !important; }
+        #wo-upcoming-modal-card p { font-size: .9rem !important; line-height: 1.5; }
+        #wo-day-view-sheet { max-height: 88dvh !important; }
+    }
 </style>
 </head>
 <body class="min-h-screen flex antialiased">
@@ -153,46 +369,46 @@ tailwind.config = {
 <!-- SideNavBar (WEB) -->
 <nav class="hidden md:flex h-screen w-64 fixed left-0 top-0 z-40 bg-zinc-950 border-r border-white/10 flex-col py-6 px-4 gap-2">
     <div class="mb-8 px-2 cursor-pointer" onclick="switchNav('home')">
-        <h1 class="font-h1 text-2xl font-black text-orange-500 tracking-tighter">KINETIC</h1>
-        <p class="font-label-caps text-[10px] font-bold tracking-widest text-zinc-500 mt-1">ELITE PERFORMANCE</p>
+        <h1 class="font-h1 text-2xl font-black text-orange-500 tracking-tighter">AXIS</h1>
+        <p class="font-label-caps text-[10px] font-bold tracking-widest text-zinc-500 mt-1">STRENGTH, TRACKED</p>
     </div>
     <div class="flex flex-col gap-2 w-full" id="nav-web">
         <button data-target="home" class="nav-btn flex items-center gap-3 px-4 py-3 rounded-lg w-full text-left font-h2 text-sm font-medium transition-all duration-200 text-zinc-500 hover:bg-white/5 hover:text-zinc-100">
-            <span class="material-symbols-outlined">home_storage</span><span>Home</span>
+            <span class="material-symbols-outlined">today</span><span>Today</span>
         </button>
         <button data-target="workout" class="nav-btn flex items-center gap-3 px-4 py-3 rounded-lg w-full text-left font-h2 text-sm font-medium transition-all duration-200 text-zinc-500 hover:bg-white/5 hover:text-zinc-100">
-            <span class="material-symbols-outlined">fitness_center</span><span>Workout Logger</span>
+            <span class="material-symbols-outlined">bolt</span><span>Train</span>
         </button>
         <button data-target="progress" class="nav-btn flex items-center gap-3 px-4 py-3 rounded-lg w-full text-left font-h2 text-sm font-medium transition-all duration-200 text-zinc-500 hover:bg-white/5 hover:text-zinc-100">
-            <span class="material-symbols-outlined">monitoring</span><span>Progress Analytics</span>
+            <span class="material-symbols-outlined">insights</span><span>Insights</span>
         </button>
         <button data-target="library" class="nav-btn flex items-center gap-3 px-4 py-3 rounded-lg w-full text-left font-h2 text-sm font-medium transition-all duration-200 text-zinc-500 hover:bg-white/5 hover:text-zinc-100">
-            <span class="material-symbols-outlined">menu_book</span><span>Exercise Library</span>
+            <span class="material-symbols-outlined">grid_view</span><span>Moves</span>
         </button>
         <button data-target="supps" class="nav-btn flex items-center gap-3 px-4 py-3 rounded-lg w-full text-left font-h2 text-sm font-medium transition-all duration-200 text-zinc-500 hover:bg-white/5 hover:text-zinc-100">
-            <span class="material-symbols-outlined">pill</span><span>Wellness & Supps</span>
+            <span class="material-symbols-outlined">recovery</span><span>Recover</span>
         </button>
         <button data-target="export" class="nav-btn mt-auto flex items-center gap-3 px-4 py-3 rounded-lg w-full text-left font-h2 text-sm font-medium transition-all duration-200 text-zinc-500 hover:bg-white/5 hover:text-zinc-100">
-            <span class="material-symbols-outlined">ios_share</span><span>Data Center</span>
+            <span class="material-symbols-outlined">inventory_2</span><span>Vault</span>
         </button>
     </div>
 </nav>
 
 <!-- TopAppBar (MOBILE) -->
 <header class="md:hidden fixed top-0 w-full z-50 border-b border-white/10 bg-zinc-950/80 backdrop-blur-xl flex justify-between items-center px-5 h-16">
-    <div class="font-h1 tracking-tight text-2xl font-black text-orange-500 tracking-tighter">KINETIC</div>
+    <button onclick="switchNav('home')" aria-label="Go to Today" class="font-h1 tracking-tight text-2xl font-black text-orange-500 tracking-tighter bg-transparent border-0 p-0 min-h-0">AXIS</button>
 </header>
 
 <!-- Main Canvas -->
 <main class="flex-1 md:ml-64 w-full min-h-screen pt-20 pb-28 md:pt-8 md:pb-8 relative z-10">
-    <div class="px-4 md:px-8 max-w-7xl mx-auto space-y-8">
+    <div class="content-shell px-4 md:px-8 max-w-7xl mx-auto space-y-8">
         
         <!-- HOME SECTION -->
         <section id="view-home" class="view-section active">
             <header class="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
                 <div>
-                    <h2 class="font-h1 text-4xl text-on-surface font-bold">Dashboard</h2>
-                    <p class="font-body-lg text-zinc-400">Overview of your training metrics.</p>
+                    <h2 class="font-h1 text-4xl text-on-surface font-bold">Today</h2>
+                    <p class="font-body-lg text-zinc-400">Your training command center.</p>
                 </div>
                 <button onclick="switchNav('workout')" class="bg-orange-500 text-black font-bold py-3 px-6 rounded-lg hover:bg-orange-400 transition-all active:scale-95 shadow-[0_0_15px_rgba(255,140,0,0.4)] flex items-center justify-center gap-2">
                     <span class="material-symbols-outlined">add_circle</span> START WORKOUT
@@ -209,11 +425,47 @@ tailwind.config = {
                     <option value="All">All Programs</option>
                     <option value="Anterior/Posterior">Anterior / Posterior</option>
                     <option value="PPL">Push Pull Legs</option>
+                    <option value="Push/Pull">Push / Pull</option>
+                    <option value="Bro Split">Bro Split</option>
                     <option value="Upper/Lower">Upper / Lower</option>
                     <option value="Pro Split">Pro Split</option>
                     <option value="Custom">Custom</option>
                 </select>
             </div>
+
+            <!-- GAMIFIED PROGRESS CARD -->
+            <section id="home-mission-card" class="mission-card mb-6 rounded-2xl border border-cyan-400/20 bg-gradient-to-br from-cyan-500/10 via-surface-container to-orange-500/10 p-5 md:p-6 overflow-hidden relative">
+                <div class="absolute -right-16 -top-20 h-48 w-48 rounded-full bg-cyan-400/10 blur-3xl pointer-events-none"></div>
+                <div class="relative z-10 flex flex-col gap-5">
+                    <div class="flex items-start justify-between gap-3">
+                        <div>
+                            <div class="font-label-caps text-[10px] text-cyan-300 uppercase tracking-[0.2em]">Training mission</div>
+                            <h3 id="game-mission-title" class="mt-1 font-h1 text-xl md:text-2xl font-bold text-white">Build momentum</h3>
+                            <p id="game-mission-subtitle" class="mt-1 text-xs text-zinc-400">Complete a workout to earn XP.</p>
+                        </div>
+                        <div class="flex items-center gap-2 rounded-full border border-orange-400/30 bg-orange-500/10 px-3 py-1.5">
+                            <span class="material-symbols-outlined text-orange-300 text-base">local_fire_department</span>
+                            <span id="game-streak" class="font-data-display text-sm text-orange-200">0 day streak</span>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-[auto_1fr_auto] items-center gap-3">
+                        <div class="h-14 w-14 rounded-2xl border border-cyan-300/30 bg-cyan-400/15 flex flex-col items-center justify-center">
+                            <span class="text-[9px] text-cyan-200 font-label-caps uppercase">Level</span>
+                            <span id="game-level" class="font-data-display text-xl font-bold text-white">1</span>
+                        </div>
+                        <div class="min-w-0">
+                            <div class="flex items-center justify-between gap-2 text-[10px] font-label-caps uppercase tracking-wider">
+                                <span class="text-zinc-400">XP progress</span><span id="game-xp-label" class="text-cyan-300">0 / 500 XP</span>
+                            </div>
+                            <div class="mt-2 h-2.5 rounded-full bg-black/40 overflow-hidden"><div id="game-xp-bar" class="h-full rounded-full bg-gradient-to-r from-cyan-400 to-orange-400 transition-all duration-500" style="width:0%"></div></div>
+                        </div>
+                        <div class="text-right"><div class="text-[9px] text-zinc-500 font-label-caps uppercase">Quest</div><div id="game-quest-status" class="mt-1 text-xs text-white font-semibold">0 / 1</div></div>
+                    </div>
+                    <div id="game-badges" class="flex flex-wrap gap-2"></div>
+                </div>
+            </section>
+
+            <div id="notification-alerts-container" class="space-y-3"></div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div onclick="switchNav('progress')" class="glass-panel p-6 rounded-xl flex flex-col justify-between h-40 cursor-pointer hover:border-orange-500/50 transition-colors animate-slide-up stagger-1">
@@ -272,7 +524,7 @@ tailwind.config = {
         <!-- WORKOUT LOGGER SECTION -->
         <section id="view-workout" class="view-section">
             <header class="mb-8">
-                <h2 class="font-h1 text-4xl text-on-surface font-bold">Workout Logger</h2>
+                <h2 class="font-h1 text-4xl text-on-surface font-bold">Train</h2>
             </header>
             
             <div id="workout-setup" class="glass-panel p-6 rounded-xl max-w-lg mx-auto md:mx-0 shadow-lg relative z-20">
@@ -335,9 +587,23 @@ tailwind.config = {
                             <div class="text-[7px] md:text-[8px] text-zinc-400 font-label-caps uppercase tracking-wider">Vol</div>
                             <div id="wo-total-volume" class="text-xs md:text-lg font-bold text-cyan-400 font-data-display">0 kg</div>
                         </div>
-                        <button onclick="deleteSession()" id="btn-delete-session" class="hidden p-2 rounded-lg hover:bg-red-500/20 transition-all flex-shrink-0" title="Delete session">
+                        <button onclick="deleteActiveSession()" id="btn-delete-session" class="hidden p-2 rounded-lg hover:bg-red-500/20 transition-all flex-shrink-0" title="Delete session">
                             <span class="material-symbols-outlined text-red-500 text-lg">delete</span>
                         </button>
+                    </div>
+                </div>
+
+                <!-- QUICK SESSION CONTROLS: always reachable on mobile -->
+                <div id="wo-mobile-session-tools" class="md:hidden flex items-center gap-2 px-3 py-2 bg-surface-container-low border-b border-white/10 flex-shrink-0">
+                    <button type="button" onclick="toggleDayViewDrawer()" class="flex-1 min-h-10 rounded-xl border border-white/15 bg-white/[0.04] text-zinc-200 font-label-caps text-[10px] font-bold flex items-center justify-center gap-1 active:scale-95">
+                        <span class="material-symbols-outlined text-base">view_list</span> PLAN
+                    </button>
+                    <button type="button" onclick="previewUpcomingExercise()" id="wo-preview-next-top" class="flex-[1.35] min-h-10 rounded-xl border border-cyan-400/30 bg-cyan-500/10 text-cyan-300 font-label-caps text-[10px] font-bold flex items-center justify-center gap-1 active:scale-95">
+                        <span class="material-symbols-outlined text-base">visibility</span> PREVIEW NEXT
+                    </button>
+                    <div class="flex-1 min-w-0 text-right">
+                        <div id="wo-remaining-summary" class="text-[10px] text-zinc-300 font-semibold truncate">Session plan loading</div>
+                        <div class="text-[8px] text-zinc-500 font-label-caps uppercase tracking-wider">remaining</div>
                     </div>
                 </div>
                 
@@ -411,6 +677,15 @@ tailwind.config = {
                         <div id="wo-next-ex-name" class="text-xs md:text-sm text-zinc-400 truncate">Leg Press</div>
                         <div class="text-[10px] text-zinc-500 font-label-caps uppercase tracking-wider">Next Exercise →</div>
                     </div>
+                    <button id="wo-upcoming-preview" type="button" onclick="previewUpcomingExercise()" class="mx-auto mb-2 px-3 py-2 text-left rounded-xl border border-cyan-500/25 bg-cyan-500/[0.06] hover:bg-cyan-500/10 transition-colors flex items-center gap-3 flex-shrink-0">
+                        <span class="material-symbols-outlined text-cyan-400 text-lg">skip_next</span>
+                        <span class="min-w-0 flex-1">
+                            <span class="block text-[9px] text-cyan-400 font-label-caps uppercase tracking-widest">Up next</span>
+                            <span id="wo-upcoming-preview-name" class="block text-xs text-zinc-200 font-semibold truncate">Leg Press</span>
+                            <span id="wo-upcoming-preview-meta" class="block text-[10px] text-zinc-500 truncate">3 sets · target 10 reps</span>
+                        </span>
+                        <span class="material-symbols-outlined text-zinc-500 text-base">arrow_forward</span>
+                    </button>
                 </div>
                 
                 <!-- BOTTOM NAVIGATION -->
@@ -437,12 +712,49 @@ tailwind.config = {
                         <span>FINISH</span>
                     </button>
                 </div>
+
+                <!-- MOBILE EXERCISE NAVIGATION -->
+                <div id="wo-mobile-exercise-nav" class="md:hidden fixed left-3 right-3 z-40 flex items-center gap-2 p-2 rounded-2xl border border-white/10 bg-zinc-950/95 backdrop-blur-xl shadow-2xl" style="bottom: calc(9.5rem + env(safe-area-inset-bottom));">
+                    <button onclick="prevExercise()" id="btn-prev-ex-mobile" class="flex-1 min-h-12 rounded-xl bg-surface-container-high border border-white/15 text-white font-label-caps text-[11px] font-bold flex items-center justify-center gap-1 active:scale-95 disabled:opacity-35" aria-label="Previous exercise">
+                        <span class="material-symbols-outlined text-lg">arrow_back</span><span>PREV</span>
+                    </button>
+                    <div class="min-w-[4.5rem] text-center">
+                        <div class="text-[8px] text-zinc-500 font-label-caps uppercase tracking-wider">Exercise</div>
+                        <div id="wo-exercise-counter-mobile" class="text-base font-bold text-cyan-400 font-data-display">1 / 8</div>
+                    </div>
+                    <button onclick="nextExercise()" id="btn-next-ex-mobile" class="flex-1 min-h-12 rounded-xl bg-cyan-500/15 border border-cyan-400/30 text-cyan-300 font-label-caps text-[11px] font-bold flex items-center justify-center gap-1 active:scale-95 disabled:opacity-35" aria-label="Next exercise">
+                        <span>NEXT</span><span class="material-symbols-outlined text-lg">arrow_forward</span>
+                    </button>
+                </div>
                 
                 <!-- MOBILE STICKY FINISH BUTTON -->
-                <button onclick="finishWorkout()" class="md:hidden fixed bottom-20 left-4 right-4 z-40 min-h-14 bg-gradient-to-r from-cyan-500 to-cyan-400 hover:from-cyan-400 hover:to-cyan-300 text-black font-bold rounded-lg transition-all tracking-widest font-label-caps text-xs shadow-[0_0_15px_rgba(0,227,253,0.3)] hover:shadow-[0_0_20px_rgba(0,227,253,0.5)] flex items-center justify-center gap-2 active:scale-95">
+                <button id="wo-mobile-finish" onclick="finishWorkout()" class="md:hidden fixed bottom-20 left-4 right-4 z-40 min-h-14 bg-gradient-to-r from-cyan-500 to-cyan-400 hover:from-cyan-400 hover:to-cyan-300 text-black font-bold rounded-lg transition-all tracking-widest font-label-caps text-xs shadow-[0_0_15px_rgba(0,227,253,0.3)] hover:shadow-[0_0_20px_rgba(0,227,253,0.5)] flex items-center justify-center gap-2 active:scale-95">
                     <span class="material-symbols-outlined text-sm">check_circle</span>
                     <span>FINISH SESSION</span>
                 </button>
+
+                <!-- UPCOMING EXERCISE PREVIEW -->
+                <div id="wo-upcoming-modal" class="hidden fixed inset-0 z-[65] bg-black/65 backdrop-blur-sm flex items-end justify-center p-3" onclick="closeUpcomingPreview()">
+                    <div id="wo-upcoming-modal-card" class="w-full max-w-lg rounded-3xl border border-cyan-400/25 bg-gradient-to-b from-surface-container-high to-surface-container p-5 shadow-2xl" onclick="event.stopPropagation()">
+                        <div class="flex items-start justify-between gap-3">
+                            <div>
+                                <div class="text-[10px] text-cyan-400 font-label-caps uppercase tracking-widest">Upcoming exercise</div>
+                                <h3 id="wo-upcoming-modal-name" class="mt-1 font-h1 text-2xl text-white font-bold">Next exercise</h3>
+                            </div>
+                            <button type="button" onclick="closeUpcomingPreview()" class="p-2 rounded-lg text-zinc-400 hover:text-white hover:bg-white/10" aria-label="Close preview"><span class="material-symbols-outlined">close</span></button>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2 mt-5">
+                            <div class="rounded-xl bg-black/30 border border-white/10 p-3"><div class="text-[9px] text-zinc-500 font-label-caps uppercase">Target</div><div id="wo-upcoming-modal-target" class="mt-1 text-sm text-white font-semibold">—</div></div>
+                            <div class="rounded-xl bg-black/30 border border-white/10 p-3"><div class="text-[9px] text-zinc-500 font-label-caps uppercase">Sets</div><div id="wo-upcoming-modal-sets" class="mt-1 text-sm text-white font-semibold">—</div></div>
+                            <div class="rounded-xl bg-black/30 border border-white/10 p-3"><div class="text-[9px] text-zinc-500 font-label-caps uppercase">Logged</div><div id="wo-upcoming-modal-logged" class="mt-1 text-sm text-white font-semibold">—</div></div>
+                        </div>
+                        <p class="mt-4 text-sm text-zinc-400">Preview the next movement now. Your current exercise stays open until you choose to move on.</p>
+                        <div class="flex gap-2 mt-5">
+                            <button type="button" onclick="closeUpcomingPreview()" class="flex-1 min-h-12 rounded-xl border border-white/15 text-zinc-300 font-label-caps text-xs font-bold">KEEP CURRENT</button>
+                            <button type="button" onclick="closeUpcomingPreview(); nextExercise()" class="flex-1 min-h-12 rounded-xl bg-cyan-500 text-black font-label-caps text-xs font-bold">START NEXT</button>
+                        </div>
+                    </div>
+                </div>
 
 
 
@@ -469,14 +781,14 @@ tailwind.config = {
             </div>
             
             <!-- DAY VIEW SHEET - Enhanced and more visible -->
-            <div id="wo-day-view-drawer" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-40 transition-opacity duration-300" onclick="closeDayViewDrawer()"></div>
-            <div id="wo-day-view-sheet" class="hidden fixed bottom-0 left-0 right-0 bg-gradient-to-t from-surface-container to-surface-container-low rounded-t-3xl z-40 max-h-[90vh] overflow-hidden transition-transform duration-300 translate-y-full shadow-2xl border-t border-cyan-500/20">
+            <div id="wo-day-view-drawer" class="hidden fixed inset-0 bg-black/65 backdrop-blur-sm z-[60] transition-opacity duration-300" onclick="closeDayViewDrawer()"></div>
+            <div id="wo-day-view-sheet" class="hidden fixed bottom-0 left-0 right-0 bg-gradient-to-t from-surface-container to-surface-container-low rounded-t-3xl z-[61] max-h-[90vh] overflow-hidden transition-transform duration-300 translate-y-full shadow-2xl border-t border-cyan-500/20">
                 
                 <!-- Sheet Header -->
                 <div class="sticky top-0 bg-surface-container border-b border-white/10 p-4 md:p-6 flex items-center justify-between z-10">
                     <div>
                         <h3 class="font-h1 text-xl md:text-2xl text-on-surface font-bold">Today's Workout</h3>
-                        <p class="text-[11px] text-zinc-500 font-label-caps uppercase tracking-wider mt-1">All Exercises</p>
+                        <p id="wo-day-view-subtitle" class="text-[11px] text-zinc-500 font-label-caps uppercase tracking-wider mt-1">All Exercises</p>
                     </div>
                     <button onclick="closeDayViewDrawer()" class="p-2 rounded-lg hover:bg-red-500/20 transition-all">
                         <span class="material-symbols-outlined text-white hover:text-red-500">close</span>
@@ -499,7 +811,7 @@ tailwind.config = {
             <div id="exercise-library-sheet" class="hidden fixed inset-x-0 bottom-0 z-[76] max-h-[88vh] bg-gradient-to-t from-surface-container to-surface-container-low rounded-t-3xl border-t border-cyan-500/20 shadow-2xl translate-y-full transition-transform duration-300 overflow-hidden">
                 <div class="sticky top-0 bg-surface-container border-b border-white/10 p-4 flex items-center justify-between gap-2">
                     <div class="min-w-0">
-                        <h3 class="font-h1 text-xl text-on-surface font-bold truncate">Exercise Library</h3>
+                        <h3 class="font-h1 text-xl text-on-surface font-bold truncate">Moves</h3>
                         <p id="exercise-library-subtitle" class="text-[10px] text-zinc-500 font-label-caps uppercase tracking-wider">Browse all exercises</p>
                     </div>
                     <button onclick="closeExerciseLibrary()" class="p-2 rounded-lg hover:bg-red-500/20 transition-all">
@@ -544,7 +856,7 @@ tailwind.config = {
         <!-- EXERCISE LIBRARY SECTION -->
         <section id="view-library" class="view-section">
             <header class="mb-8">
-                <h2 class="font-h1 text-4xl text-on-surface font-bold">Exercise Library</h2>
+                <h2 class="font-h1 text-4xl text-on-surface font-bold">Moves</h2>
                 <p class="text-zinc-400 font-body-lg mt-2">Browse movements, swap intelligently, and track all-time PRs.</p>
             </header>
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -565,7 +877,7 @@ tailwind.config = {
         <!-- PROGRESS SECTION - ANALYTICS DASHBOARD -->
         <section id="view-progress" class="view-section">
             <header class="mb-8">
-                <h2 class="font-h1 text-4xl text-on-surface font-bold">Performance Dashboard</h2>
+                <h2 class="font-h1 text-4xl text-on-surface font-bold">Insights</h2>
                 <p class="font-body-lg text-zinc-400 mt-1">Advanced analytics powered by your training data.</p>
             </header>
 
@@ -598,7 +910,7 @@ tailwind.config = {
                 <div id="fatigue-section" class="collapsible-content open">
                     <div class="flex items-center gap-4">
                         <div class="flex-1 h-3 bg-zinc-800 rounded-full overflow-hidden">
-                            <div id="fatigue-bar" class="h-full rounded-full transition-all duration-700" style="width: 0%; background: linear-gradient(90deg, #4ae183, #ffb77d, #ff6b6b);"></div>
+                            <div id="fatigue-bar" class="h-full rounded-full transition-all duration-700" style="width: 0%; background: linear-gradient(90deg, #22c55e, #5b8cff, #ef4444);"></div>
                         </div>
                         <span id="fatigue-label" class="font-label-caps text-xs text-green-400 tracking-wider">Recovered</span>
                     </div>
@@ -781,7 +1093,7 @@ tailwind.config = {
         <!-- SUPPLEMENTS SECTION -->
         <section id="view-supps" class="view-section">
             <header class="mb-8">
-                <h2 class="font-h1 text-4xl text-on-surface font-bold">Wellness & Supps</h2>
+                <h2 class="font-h1 text-4xl text-on-surface font-bold">Recover</h2>
             </header>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-20">
                 <!-- Supps Checklist -->
@@ -820,6 +1132,38 @@ tailwind.config = {
                     </div>
                 </div>
             </div>
+
+            <!-- Reminder Center -->
+            <div class="glass-panel p-6 rounded-xl mt-6 shadow-lg relative z-20" id="notification-center">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
+                    <div>
+                        <h3 class="font-label-caps text-xs text-zinc-400 uppercase tracking-widest">Reminder Center</h3>
+                        <p class="text-sm text-zinc-500 mt-1">Keep training, creatine, and recovery on your radar.</p>
+                    </div>
+                    <button id="notification-permission-btn" onclick="requestNotificationPermission()" class="min-h-[44px] border border-cyan-500/40 text-cyan-300 px-4 py-2 rounded-lg text-xs font-label-caps uppercase tracking-wider hover:bg-cyan-500/10 transition-all">Enable browser alerts</button>
+                </div>
+                <div class="space-y-3" id="notification-settings-list">
+                    <div class="flex items-center gap-3 p-3 rounded-xl bg-black/30 border border-white/5" data-reminder-row="workout">
+                        <span class="material-symbols-outlined text-orange-400">fitness_center</span>
+                        <div class="flex-1 min-w-0"><div class="font-semibold text-white">Workout reminder</div><div class="text-xs text-zinc-500">Time to start your next session</div></div>
+                        <input type="time" id="notify-workout-time" onchange="saveNotificationSettings()" class="w-28 text-sm px-2 py-2">
+                        <input type="checkbox" id="notify-workout-enabled" onchange="saveNotificationSettings()" class="w-5 h-5" aria-label="Enable workout reminder">
+                    </div>
+                    <div class="flex items-center gap-3 p-3 rounded-xl bg-black/30 border border-white/5" data-reminder-row="creatine">
+                        <span class="material-symbols-outlined text-violet-400">medication</span>
+                        <div class="flex-1 min-w-0"><div class="font-semibold text-white">Creatine reminder</div><div class="text-xs text-zinc-500">Log your daily 5g dose</div></div>
+                        <input type="time" id="notify-creatine-time" onchange="saveNotificationSettings()" class="w-28 text-sm px-2 py-2">
+                        <input type="checkbox" id="notify-creatine-enabled" onchange="saveNotificationSettings()" class="w-5 h-5" aria-label="Enable creatine reminder">
+                    </div>
+                    <div class="flex items-center gap-3 p-3 rounded-xl bg-black/30 border border-white/5" data-reminder-row="recovery">
+                        <span class="material-symbols-outlined text-green-400">self_improvement</span>
+                        <div class="flex-1 min-w-0"><div class="font-semibold text-white">Recovery check-in</div><div class="text-xs text-zinc-500">Review hydration and muscle readiness</div></div>
+                        <input type="time" id="notify-recovery-time" onchange="saveNotificationSettings()" class="w-28 text-sm px-2 py-2">
+                        <input type="checkbox" id="notify-recovery-enabled" onchange="saveNotificationSettings()" class="w-5 h-5" aria-label="Enable recovery reminder">
+                    </div>
+                </div>
+                <div id="notification-status" class="text-xs text-zinc-500 mt-4"></div>
+            </div>
             
             <!-- Streak -->
             <div class="glass-panel p-6 rounded-xl mt-6 shadow-lg relative z-20">
@@ -833,7 +1177,7 @@ tailwind.config = {
         <!-- EXPORT SECTION -->
         <section id="view-export" class="view-section">
             <header class="mb-8">
-                <h2 class="font-h1 text-4xl text-on-surface font-bold">Data Center</h2>
+                <h2 class="font-h1 text-4xl text-on-surface font-bold">Vault</h2>
             </header>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-20">
                 <!-- Cloud Sync -->
@@ -894,51 +1238,51 @@ tailwind.config = {
 <!-- BottomNavBar (MOBILE) -->
 <nav class="md:hidden fixed bottom-0 left-0 w-full z-50 bg-zinc-950/95 backdrop-blur-xl border-t border-white/10 flex justify-around items-center h-20 pb-safe shadow-[0_-5px_20px_rgba(0,0,0,0.5)]" id="nav-mobile">
     <button data-target="home" class="nav-btn-mob flex flex-col items-center justify-center w-full h-full text-zinc-500 hover:text-orange-500 transition-colors gap-1 pt-1">
-        <span class="material-symbols-outlined text-[24px]">home_storage</span><span class="font-h2 text-[10px] font-bold">Home</span>
+        <span class="material-symbols-outlined text-[24px]">today</span><span class="font-h2 text-[10px] font-bold">Today</span>
     </button>
     <button data-target="workout" class="nav-btn-mob flex flex-col items-center justify-center w-full h-full text-zinc-500 hover:text-orange-500 transition-colors gap-1 pt-1">
-        <span class="material-symbols-outlined text-[24px]">fitness_center</span><span class="font-h2 text-[10px] font-bold">Log</span>
+        <span class="material-symbols-outlined text-[24px]">bolt</span><span class="font-h2 text-[10px] font-bold">Train</span>
     </button>
     <button data-target="progress" class="nav-btn-mob flex flex-col items-center justify-center w-full h-full text-zinc-500 hover:text-orange-500 transition-colors gap-1 pt-1">
-        <span class="material-symbols-outlined text-[24px]">monitoring</span><span class="font-h2 text-[10px] font-bold">Stats</span>
+        <span class="material-symbols-outlined text-[24px]">insights</span><span class="font-h2 text-[10px] font-bold">Insights</span>
     </button>
     <button data-target="library" class="nav-btn-mob flex flex-col items-center justify-center w-full h-full text-zinc-500 hover:text-orange-500 transition-colors gap-1 pt-1">
-        <span class="material-symbols-outlined text-[24px]">menu_book</span><span class="font-h2 text-[10px] font-bold">Library</span>
+        <span class="material-symbols-outlined text-[24px]">grid_view</span><span class="font-h2 text-[10px] font-bold">Moves</span>
     </button>
     <button data-target="supps" class="nav-btn-mob flex flex-col items-center justify-center w-full h-full text-zinc-500 hover:text-orange-500 transition-colors gap-1 pt-1">
-        <span class="material-symbols-outlined text-[24px]">pill</span><span class="font-h2 text-[10px] font-bold">Supps</span>
+        <span class="material-symbols-outlined text-[24px]">recovery</span><span class="font-h2 text-[10px] font-bold">Recover</span>
     </button>
     <button data-target="export" class="nav-btn-mob flex flex-col items-center justify-center w-full h-full text-zinc-500 hover:text-orange-500 transition-colors gap-1 pt-1">
-        <span class="material-symbols-outlined text-[24px]">ios_share</span><span class="font-h2 text-[10px] font-bold">More</span>
+        <span class="material-symbols-outlined text-[24px]">inventory_2</span><span class="font-h2 text-[10px] font-bold">Vault</span>
     </button>
 </nav>
 
 <!-- Timer Overlay -->
-<div id="timer-overlay" class="hidden fixed bottom-4 left-1/2 -translate-x-1/2 w-[90vw] max-w-[500px] z-[100] glass-panel rounded-2xl p-4 md:p-6 border border-[#00E5FF]/20 shadow-[0_10px_40px_rgba(0,0,0,0.8)] bg-[#121212]/95 backdrop-blur-xl flex items-center justify-between gap-4 md:gap-6">
+<div id="timer-overlay" class="hidden fixed bottom-4 left-1/2 -translate-x-1/2 w-[90vw] max-w-[500px] z-[100] glass-panel rounded-2xl p-4 md:p-6 border border-[#8B5CF6]/20 shadow-[0_10px_40px_rgba(0,0,0,0.8)] bg-[#1E263B]/95 backdrop-blur-xl flex items-center justify-between gap-4 md:gap-6">
     <!-- Left: Label -->
     <div class="flex flex-col items-center justify-center text-center w-12 md:w-16">
-        <span class="material-symbols-outlined text-[#00E5FF] mb-1 text-[24px] md:text-[28px]">timer</span>
+        <span class="material-symbols-outlined text-[#8B5CF6] mb-1 text-[24px] md:text-[28px]">timer</span>
         <h4 class="font-label-caps text-[8px] md:text-[10px] text-zinc-400 uppercase tracking-widest leading-tight">Rest<br>Timer</h4>
     </div>
     
     <!-- Middle: Circle -->
     <div class="relative w-20 h-20 md:w-28 md:h-28 flex-shrink-0">
         <svg class="w-full h-full transform -rotate-90 drop-shadow-[0_0_12px_rgba(0,229,255,0.6)]" viewBox="0 0 100 100">
-            <circle cx="50" cy="50" fill="none" r="45" stroke="#2A2A2A" stroke-width="6"></circle>
-            <circle id="timer-circle" class="transition-all duration-[100ms] ease-linear" cx="50" cy="50" fill="none" r="45" stroke="#00E5FF" stroke-dasharray="283" stroke-dashoffset="0" stroke-width="6"></circle>
+            <circle cx="50" cy="50" fill="none" r="45" stroke="#252f49" stroke-width="6"></circle>
+            <circle id="timer-circle" class="transition-all duration-[100ms] ease-linear" cx="50" cy="50" fill="none" r="45" stroke="#8b5cf6" stroke-dasharray="283" stroke-dashoffset="0" stroke-width="6"></circle>
         </svg>
         <div class="absolute inset-0 flex flex-col items-center justify-center">
-            <span id="timer-text" class="font-data-display text-xl md:text-3xl font-bold text-[#00E5FF] leading-none">01:30</span>
+            <span id="timer-text" class="font-data-display text-xl md:text-3xl font-bold text-[#8B5CF6] leading-none">01:30</span>
             <span class="font-label-caps text-[6px] md:text-[8px] text-zinc-500 mt-1 md:mt-2">REMAINING</span>
         </div>
     </div>
     
     <!-- Right: Buttons -->
     <div class="flex flex-col gap-2 flex-1 min-w-0">
-        <button onclick="closeTimer()" class="py-2 px-2 md:px-4 border border-[#00E5FF]/30 text-[#00E5FF] hover:bg-[#00E5FF]/10 rounded-lg font-label-caps text-[10px] md:text-xs transition-all active:scale-95 flex items-center justify-center gap-1 w-full bg-[#00E5FF]/5 whitespace-nowrap">
+        <button onclick="closeTimer()" class="py-2 px-2 md:px-4 border border-[#8B5CF6]/30 text-[#8B5CF6] hover:bg-[#8B5CF6]/10 rounded-lg font-label-caps text-[10px] md:text-xs transition-all active:scale-95 flex items-center justify-center gap-1 w-full bg-[#8B5CF6]/5 whitespace-nowrap">
             <span class="material-symbols-outlined text-[16px] md:text-[20px]">skip_next</span> SKIP
         </button>
-        <button onclick="addTimerTime()" class="py-2 px-2 md:px-4 border border-[#00E5FF]/30 text-[#00E5FF] hover:bg-[#00E5FF]/10 rounded-lg font-label-caps text-[10px] md:text-xs transition-all active:scale-95 flex items-center justify-center gap-1 w-full bg-[#00E5FF]/5 whitespace-nowrap">
+        <button onclick="addTimerTime()" class="py-2 px-2 md:px-4 border border-[#8B5CF6]/30 text-[#8B5CF6] hover:bg-[#8B5CF6]/10 rounded-lg font-label-caps text-[10px] md:text-xs transition-all active:scale-95 flex items-center justify-center gap-1 w-full bg-[#8B5CF6]/5 whitespace-nowrap">
             <span class="material-symbols-outlined text-[16px] md:text-[20px]">add</span> 15S
         </button>
     </div>
@@ -988,6 +1332,7 @@ const EXERCISE_LIBRARY = [
     { name: 'Incline Dumbbell Curl', primary: 'Biceps', secondary: 'Forearms' },
     { name: 'Hammer Curl', primary: 'Biceps', secondary: 'Forearms' },
     { name: 'Back Squat', primary: 'Quads', secondary: 'Glutes' },
+    { name: 'Deadlift', primary: 'Back', secondary: 'Hamstrings' },
     { name: 'Front Squat', primary: 'Quads', secondary: 'Core' },
     { name: 'Leg Press', primary: 'Quads', secondary: 'Glutes' },
     { name: 'Walking Lunge', primary: 'Quads', secondary: 'Glutes' },
@@ -1073,6 +1418,81 @@ const BUILTIN_TEMPLATES = [
             { name: 'Seated / Lying Leg Curl', sets: 4, reps: '10-12', primary: 'Hamstrings', secondary: 'Calves' },
             { name: 'Romanian Deadlift', sets: 3, reps: '8-10', primary: 'Hamstrings', secondary: 'Glutes' },
             { name: 'Calf Raise', sets: 3, reps: '12-15', primary: 'Calves', secondary: 'Hamstrings' }
+        ]
+    },
+    {
+        id: 'PUSH-PULL-PUSH', label: 'Push / Pull • Push', family: 'Push/Pull', day: 'Push',
+        exercises: [
+            { name: 'Barbell Bench Press', sets: 4, reps: '6-8', primary: 'Chest', secondary: 'Triceps' },
+            { name: 'Incline Dumbbell Press', sets: 3, reps: '8-10', primary: 'Chest', secondary: 'Shoulders' },
+            { name: 'Overhead Press', sets: 3, reps: '6-8', primary: 'Shoulders', secondary: 'Triceps' },
+            { name: 'Lateral Raise', sets: 3, reps: '12-15', primary: 'Shoulders', secondary: 'Traps' },
+            { name: 'Cable Fly', sets: 3, reps: '12-15', primary: 'Chest', secondary: 'Shoulders' },
+            { name: 'Tricep Pushdown', sets: 3, reps: '10-12', primary: 'Triceps', secondary: 'Forearms' }
+        ]
+    },
+    {
+        id: 'PUSH-PULL-PULL', label: 'Push / Pull • Pull', family: 'Push/Pull', day: 'Pull',
+        exercises: [
+            { name: 'Pull-Up', sets: 4, reps: '6-10', primary: 'Back', secondary: 'Biceps' },
+            { name: 'Lat Pulldown', sets: 3, reps: '8-12', primary: 'Back', secondary: 'Biceps' },
+            { name: 'Chest Supported Row', sets: 3, reps: '8-10', primary: 'Back', secondary: 'Biceps' },
+            { name: 'Single-Arm Dumbbell Row', sets: 3, reps: '10-12', primary: 'Back', secondary: 'Biceps' },
+            { name: 'Face Pull', sets: 3, reps: '12-15', primary: 'Upper Back', secondary: 'Shoulders' },
+            { name: 'Barbell Curl', sets: 3, reps: '8-12', primary: 'Biceps', secondary: 'Forearms' },
+            { name: 'Hammer Curl', sets: 2, reps: '12-15', primary: 'Biceps', secondary: 'Forearms' }
+        ]
+    },
+    {
+        id: 'BRO-CHEST', label: 'Bro Split • Chest', family: 'Bro Split', day: 'Chest',
+        exercises: [
+            { name: 'Barbell Bench Press', sets: 4, reps: '5-8', primary: 'Chest', secondary: 'Triceps' },
+            { name: 'Incline Dumbbell Press', sets: 4, reps: '8-10', primary: 'Chest', secondary: 'Shoulders' },
+            { name: 'Machine Chest Press', sets: 3, reps: '10-12', primary: 'Chest', secondary: 'Triceps' },
+            { name: 'Cable Fly', sets: 3, reps: '12-15', primary: 'Chest', secondary: 'Shoulders' },
+            { name: 'Chest Dips', sets: 3, reps: '8-12', primary: 'Chest', secondary: 'Triceps' }
+        ]
+    },
+    {
+        id: 'BRO-BACK', label: 'Bro Split • Back', family: 'Bro Split', day: 'Back',
+        exercises: [
+            { name: 'Deadlift', sets: 3, reps: '4-6', primary: 'Back', secondary: 'Hamstrings' },
+            { name: 'Pull-Up', sets: 4, reps: '6-10', primary: 'Back', secondary: 'Biceps' },
+            { name: 'Lat Pulldown', sets: 3, reps: '8-12', primary: 'Back', secondary: 'Biceps' },
+            { name: 'Chest Supported Row', sets: 4, reps: '8-10', primary: 'Back', secondary: 'Biceps' },
+            { name: 'Face Pull', sets: 3, reps: '12-15', primary: 'Upper Back', secondary: 'Shoulders' }
+        ]
+    },
+    {
+        id: 'BRO-SHOULDERS', label: 'Bro Split • Shoulders', family: 'Bro Split', day: 'Shoulders',
+        exercises: [
+            { name: 'Overhead Press', sets: 4, reps: '6-8', primary: 'Shoulders', secondary: 'Triceps' },
+            { name: 'Arnold Press', sets: 3, reps: '8-10', primary: 'Shoulders', secondary: 'Triceps' },
+            { name: 'Lateral Raise', sets: 4, reps: '12-15', primary: 'Shoulders', secondary: 'Traps' },
+            { name: 'Rear Delt Fly', sets: 4, reps: '12-15', primary: 'Shoulders', secondary: 'Upper Back' },
+            { name: 'Face Pull', sets: 3, reps: '12-15', primary: 'Upper Back', secondary: 'Shoulders' }
+        ]
+    },
+    {
+        id: 'BRO-ARMS', label: 'Bro Split • Arms', family: 'Bro Split', day: 'Arms',
+        exercises: [
+            { name: 'Barbell Curl', sets: 4, reps: '8-12', primary: 'Biceps', secondary: 'Forearms' },
+            { name: 'Incline Dumbbell Curl', sets: 3, reps: '10-12', primary: 'Biceps', secondary: 'Forearms' },
+            { name: 'Hammer Curl', sets: 3, reps: '12-15', primary: 'Biceps', secondary: 'Forearms' },
+            { name: 'Skull Crusher', sets: 4, reps: '8-12', primary: 'Triceps', secondary: 'Forearms' },
+            { name: 'Tricep Pushdown', sets: 3, reps: '10-12', primary: 'Triceps', secondary: 'Forearms' },
+            { name: 'Overhead Tricep Extension', sets: 3, reps: '10-12', primary: 'Triceps', secondary: 'Shoulders' }
+        ]
+    },
+    {
+        id: 'BRO-LEGS', label: 'Bro Split • Legs', family: 'Bro Split', day: 'Legs',
+        exercises: [
+            { name: 'Back Squat', sets: 4, reps: '5-8', primary: 'Quads', secondary: 'Glutes' },
+            { name: 'Leg Press', sets: 4, reps: '10-12', primary: 'Quads', secondary: 'Glutes' },
+            { name: 'Romanian Deadlift', sets: 4, reps: '8-10', primary: 'Hamstrings', secondary: 'Glutes' },
+            { name: 'Leg Extension', sets: 3, reps: '12-15', primary: 'Quads', secondary: 'Hip Flexors' },
+            { name: 'Leg Curl', sets: 3, reps: '12-15', primary: 'Hamstrings', secondary: 'Calves' },
+            { name: 'Standing Calf Raise', sets: 4, reps: '12-15', primary: 'Calves', secondary: 'Hamstrings' }
         ]
     },
     {
@@ -1251,7 +1671,32 @@ const PRELOADED_SESSIONS = [
     }
 ];
 
-let sessions = JSON.parse(localStorage.getItem('kinetic_sessions') || 'null');
+// --- SAFETY HELPERS ---
+// HTML-escape any value before injecting it into innerHTML (defends stored-XSS
+// from user-supplied exercise names, labels, and custom templates).
+function esc(v) {
+    return String(v == null ? '' : v)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+// Safe JSON.parse for localStorage: never throws, returns fallback on corrupt data.
+function safeParse(key, fallback) {
+    try {
+        const raw = localStorage.getItem(key);
+        if (raw == null) return fallback;
+        const val = JSON.parse(raw);
+        return (val == null ? fallback : val);
+    } catch (e) {
+        console.warn('safeParse: corrupt data for', key, e);
+        return fallback;
+    }
+}
+
+let sessions = safeParse('kinetic_sessions', null);
+if (!Array.isArray(sessions)) sessions = null;
 if(!sessions) {
     sessions = PRELOADED_SESSIONS;
     localStorage.setItem('kinetic_sessions', JSON.stringify(sessions));
@@ -1262,9 +1707,51 @@ if(!sessions) {
         localStorage.setItem('kinetic_sessions', JSON.stringify(sessions));
     }
 }
-let customTemplates = JSON.parse(localStorage.getItem('kinetic_custom_templates') || '[]');
-let prRecords = JSON.parse(localStorage.getItem('kinetic_pr_records') || '{}');
-let supps = JSON.parse(localStorage.getItem('kinetic_supps') || '{}');
+
+// Normalize legacy/local backups once on load so older sessions remain editable.
+function normalizeSessionData(session) {
+    const normalized = session || {};
+    normalized.startMs = Number(normalized.startMs) || new Date(`${normalized.date || getLocalYMD(new Date())}T${normalized.time || '12:00'}`).getTime();
+    normalized.totalVolume = Number(normalized.totalVolume) || 0;
+    normalized.totalSets = Number(normalized.totalSets) || 0;
+    normalized.exercises = Array.isArray(normalized.exercises) ? normalized.exercises : [];
+    normalized.exercises = normalized.exercises.map(ex => ({
+        ...ex,
+        name: ex.name || 'Exercise',
+        maxSets: Number(ex.maxSets || ex.sets?.length || 1),
+        sets: (Array.isArray(ex.sets) ? ex.sets : []).map(set => ({
+            ...set,
+            w: Number(set.w) || 0,
+            r: Number(set.r) || 0,
+            rpe: set.rpe ? Number(set.rpe) : null
+        }))
+    }));
+    return normalized;
+}
+
+sessions = sessions.map(normalizeSessionData);
+localStorage.setItem('kinetic_sessions', JSON.stringify(sessions));
+let customTemplates = safeParse('kinetic_custom_templates', []);
+if (!Array.isArray(customTemplates)) customTemplates = [];
+let prRecords = safeParse('kinetic_pr_records', {});
+if (typeof prRecords !== 'object' || prRecords === null) prRecords = {};
+let supps = safeParse('kinetic_supps', {});
+if (typeof supps !== 'object' || supps === null) supps = {};
+let gameState = safeParse('kinetic_game_state', { bonusXp: 0, badges: [] });
+if (!gameState || typeof gameState !== 'object') gameState = { bonusXp: 0, badges: [] };
+gameState.bonusXp = Number(gameState.bonusXp) || 0;
+gameState.badges = Array.isArray(gameState.badges) ? gameState.badges : [];
+let notificationSettings = safeParse('kinetic_notification_settings', {
+    workout: { enabled: true, time: '18:00' },
+    creatine: { enabled: true, time: '09:00' },
+    recovery: { enabled: true, time: '21:00' }
+});
+if (!notificationSettings || typeof notificationSettings !== 'object') notificationSettings = {};
+['workout', 'creatine', 'recovery'].forEach(kind => {
+    if (!notificationSettings[kind] || typeof notificationSettings[kind] !== 'object') notificationSettings[kind] = {};
+    notificationSettings[kind].enabled = notificationSettings[kind].enabled !== false;
+    notificationSettings[kind].time = /^\d{2}:\d{2}$/.test(notificationSettings[kind].time || '') ? notificationSettings[kind].time : ({ workout: '18:00', creatine: '09:00', recovery: '21:00' }[kind]);
+});
 let woState = null;
 let woSessionTimerInterval = null;
 let timerRestStart = 0;
@@ -1736,6 +2223,8 @@ function renderHome() {
     document.getElementById('home-total-sessions').textContent = sessions.length;
     let totV = sessions.reduce((s, x) => s + x.totalVolume, 0);
     document.getElementById('home-total-volume').textContent = totV.toLocaleString();
+    renderGamification();
+    renderNotifications();
     
     if(sessions.length > 0) {
         const last = sessions[sessions.length - 1];
@@ -1798,6 +2287,87 @@ function renderHome() {
     }
 }
 
+function getSessionDateKeys() {
+    return new Set(sessions.map(s => s.date).filter(Boolean));
+}
+
+function getTrainingStreak() {
+    const dates = getSessionDateKeys();
+    const today = new Date();
+    const todayKey = getLocalYMD(today);
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+    if (!dates.has(todayKey) && !dates.has(getLocalYMD(yesterday))) return 0;
+
+    let streak = 0;
+    const cursor = new Date(dates.has(todayKey) ? today : yesterday);
+    while (dates.has(getLocalYMD(cursor))) {
+        streak += 1;
+        cursor.setDate(cursor.getDate() - 1);
+    }
+    return streak;
+}
+
+function getGamificationStats() {
+    const workoutXp = sessions.reduce((total, session) => {
+        const setsXp = Math.min(100, Number(session.totalSets || 0) * 5);
+        const volumeXp = Math.min(100, Math.round(Number(session.totalVolume || 0) / 1000) * 10);
+        return total + 100 + setsXp + volumeXp;
+    }, 0);
+    const totalXp = workoutXp + Number(gameState.bonusXp || 0);
+    const level = Math.floor(totalXp / 500) + 1;
+    return { totalXp, level, currentXp: totalXp % 500, nextLevelXp: 500, streak: getTrainingStreak() };
+}
+
+function persistGameState() {
+    localStorage.setItem('kinetic_game_state', JSON.stringify(gameState));
+}
+
+function awardWorkoutXP(session) {
+    const streak = getTrainingStreak();
+    gameState.bonusXp += 25;
+    if (streak >= 3 && !gameState.badges.includes('streak-3')) {
+        gameState.badges.push('streak-3');
+        gameState.bonusXp += 50;
+    }
+    if (sessions.length >= 5 && !gameState.badges.includes('sessions-5')) {
+        gameState.badges.push('sessions-5');
+        gameState.bonusXp += 100;
+    }
+    if (Number(session.totalVolume || 0) >= 10000 && !gameState.badges.includes('volume-10k')) {
+        gameState.badges.push('volume-10k');
+        gameState.bonusXp += 100;
+    }
+    persistGameState();
+}
+
+function renderGamification() {
+    const levelEl = document.getElementById('game-level');
+    if (!levelEl) return;
+    const stats = getGamificationStats();
+    const todayKey = getLocalYMD(new Date());
+    const questDone = sessions.some(s => s.date === todayKey);
+    const progress = Math.min(100, Math.round((stats.currentXp / stats.nextLevelXp) * 100));
+    const streakText = `${stats.streak} day${stats.streak === 1 ? '' : 's'} streak`;
+    const badges = [
+        sessions.length >= 1 ? ['first', 'FIRST MISSION'] : null,
+        gameState.badges.includes('streak-3') ? ['streak-3', '3-DAY STREAK'] : null,
+        gameState.badges.includes('sessions-5') ? ['sessions-5', '5 SESSIONS'] : null,
+        gameState.badges.includes('volume-10k') ? ['volume-10k', '10K VOLUME'] : null
+    ].filter(Boolean);
+
+    levelEl.textContent = stats.level;
+    document.getElementById('game-streak').textContent = streakText;
+    document.getElementById('game-xp-label').textContent = `${stats.currentXp} / ${stats.nextLevelXp} XP`;
+    document.getElementById('game-xp-bar').style.width = `${progress}%`;
+    document.getElementById('game-quest-status').textContent = questDone ? '1 / 1' : '0 / 1';
+    document.getElementById('game-mission-title').textContent = questDone ? 'Mission complete' : (stats.streak >= 3 ? 'Keep the streak alive' : 'Build momentum');
+    document.getElementById('game-mission-subtitle').textContent = questDone ? 'Today’s workout is logged. Come back tomorrow for the next bonus.' : 'Complete today’s workout to earn XP and keep your streak alive.';
+    document.getElementById('game-badges').innerHTML = badges.length
+        ? badges.map(([, label]) => `<span class="rounded-full border border-amber-300/25 bg-amber-300/10 px-2.5 py-1 text-[9px] font-label-caps tracking-wider text-amber-200"><span class="material-symbols-outlined align-text-bottom text-xs mr-1">emoji_events</span>${label}</span>`).join('')
+        : '<span class="text-[10px] text-zinc-500 font-label-caps">Complete your first mission to unlock badges.</span>';
+}
+
 function deleteSession(startMs, event) {
     if(event) event.stopPropagation();
     if(!confirm("Are you sure you want to completely delete this session? This action cannot be undone.")) return;
@@ -1855,6 +2425,7 @@ function startWorkout() {
     document.getElementById('workout-setup').classList.add('hidden');
     document.getElementById('workout-active').classList.remove('hidden');
     document.getElementById('workout-active').classList.add('flex');
+    document.body.classList.add('workout-session-open');
     woCurrentSetIdx = 0; // Reset set index on workout start
     
     // Start session timer
@@ -1891,6 +2462,26 @@ function renderWOExercises() {
     
     woState.totalVolume = totalVol;
     document.getElementById('wo-total-volume').textContent = totalVol.toLocaleString() + ' kg';
+    renderWorkoutProgress();
+}
+
+function renderWorkoutProgress() {
+    if (!woState || !Array.isArray(woState.exercises)) return;
+    const plannedSets = woState.exercises.reduce((sum, ex) => sum + Number(ex.maxSets || ex.sets?.length || 0), 0);
+    const completedSets = woState.exercises.reduce((sum, ex) => sum + (ex.sets || []).filter(s => Number(s.w) > 0 && Number(s.r) > 0).length, 0);
+    const remainingSets = Math.max(0, plannedSets - completedSets);
+    const completedExercises = woState.exercises.filter(ex => {
+        const planned = Number(ex.maxSets || ex.sets?.length || 0);
+        const done = (ex.sets || []).filter(s => Number(s.w) > 0 && Number(s.r) > 0).length;
+        return planned > 0 && done >= planned;
+    }).length;
+    const summary = document.getElementById('wo-remaining-summary');
+    if (summary) {
+        summary.textContent = `${completedExercises}/${woState.exercises.length} done · ${remainingSets} sets left`;
+        summary.title = `${completedExercises} exercises complete, ${remainingSets} sets remaining`;
+    }
+    const planSubtitle = document.getElementById('wo-day-view-subtitle');
+    if (planSubtitle) planSubtitle.textContent = `${completedExercises}/${woState.exercises.length} complete · ${remainingSets} sets left`;
 }
 
 function renderRPEPickerHTML(sIdx, selectedRPE) {
@@ -1917,7 +2508,7 @@ function updateWOSessionTimer() {
     const seconds = totalSeconds % 60;
     const timerEl = document.getElementById('wo-live-timer');
     if (timerEl) {
-        timerEl.textContent = `${String(minutes).padStart(2, '0')}: ${String(seconds).padStart(2, '0')}`;
+        timerEl.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
     }
 }
 
@@ -2020,11 +2611,11 @@ function renderWOSets() {
             <div class="flex gap-3">
                 <div class="flex-1">
                     <div class="text-[9px] text-zinc-400 font-label-caps mb-2 uppercase tracking-wider">Weight (kg)</div>
-                    <input type="number" step="0.5" value="${set.w || ''}" onchange="updateSet(${woCurrentSetIdx}, 'w', this.value)" class="w-full bg-zinc-900 border border-white/10 text-white text-center font-data-display text-3xl rounded-lg py-3 focus:border-orange-500 outline-none">
+                    <input id="wo-weight-input" type="number" step="0.5" value="${set.w || ''}" onchange="updateSet(${woCurrentSetIdx}, 'w', this.value)" class="w-full bg-zinc-900 border border-white/10 text-white text-center font-data-display text-3xl rounded-lg py-3 focus:border-orange-500 outline-none">
                 </div>
                 <div class="flex-1">
                     <div class="text-[9px] text-zinc-400 font-label-caps mb-2 uppercase tracking-wider">Reps</div>
-                    <input type="number" value="${set.r || ''}" onchange="updateSet(${woCurrentSetIdx}, 'r', this.value)" class="w-full bg-zinc-900 border border-white/10 text-white text-center font-data-display text-3xl rounded-lg py-3 focus:border-cyan-500 outline-none">
+                    <input id="wo-reps-input" type="number" value="${set.r || ''}" onchange="updateSet(${woCurrentSetIdx}, 'r', this.value)" class="w-full bg-zinc-900 border border-white/10 text-white text-center font-data-display text-3xl rounded-lg py-3 focus:border-cyan-500 outline-none">
                 </div>
             </div>
             
@@ -2160,15 +2751,18 @@ function editSession(startMs) {
     const sIdx = sessions.findIndex(x => x.startMs === startMs);
     if(sIdx === -1) return;
     
-    woState = JSON.parse(JSON.stringify(sessions[sIdx]));
+    woState = JSON.parse(JSON.stringify(sessions[sIdx])); // deep clone of a known-good in-app object
     woState.typeLabel = woState.typeLabel || getTemplateById(woState.type)?.label || woState.type;
     woState.exercises = (woState.exercises || []).map(enrichExerciseMeta);
     woState.isEditing = true;
     woState.editIndex = sIdx;
     
-    document.getElementById('edit-date').value = woState.date || '';
-    document.getElementById('edit-time').value = woState.time || '';
-    document.getElementById('edit-bw').value = woState.bw || '';
+    const dateField = document.getElementById('wo-date');
+    const timeField = document.getElementById('wo-time');
+    const bodyweightField = document.getElementById('wo-bw');
+    if (dateField) dateField.value = woState.date || '';
+    if (timeField) timeField.value = woState.time || '';
+    if (bodyweightField) bodyweightField.value = woState.bw ?? woState.bodyweight ?? '';
     
     document.getElementById('btn-delete-session').classList.remove('hidden');
     
@@ -2176,13 +2770,14 @@ function editSession(startMs) {
     document.getElementById('workout-setup').classList.add('hidden');
     document.getElementById('workout-active').classList.remove('hidden');
     document.getElementById('workout-active').classList.add('flex');
+    document.body.classList.add('workout-session-open');
     
     woState.currExIdx = 0;
     renderWOExercises();
     renderWOSets();
 }
 
-function deleteSession() {
+function deleteActiveSession() {
     if(!woState || !woState.isEditing) return;
     if(confirm('WARNING: Are you sure you want to permanently delete this session?')) {
         sessions.splice(woState.editIndex, 1);
@@ -2191,6 +2786,7 @@ function deleteSession() {
         document.getElementById('workout-active').classList.add('hidden');
         document.getElementById('workout-active').classList.remove('flex');
         document.getElementById('workout-setup').classList.remove('hidden');
+        document.body.classList.remove('workout-session-open');
         
         woState = null;
         switchNav('home');
@@ -2198,7 +2794,19 @@ function deleteSession() {
     }
 }
 
+function commitVisibleSetInput() {
+    if (!woState || !woState.exercises?.[woState.currExIdx]) return;
+    const set = woState.exercises[woState.currExIdx].sets?.[woCurrentSetIdx];
+    if (!set) return;
+    const weightInput = document.getElementById('wo-weight-input');
+    const repsInput = document.getElementById('wo-reps-input');
+    if (weightInput) set.w = parseFloat(weightInput.value) || 0;
+    if (repsInput) set.r = parseFloat(repsInput.value) || 0;
+}
+
 function finishWorkout() {
+    if (!woState || !Array.isArray(woState.exercises)) return;
+    commitVisibleSetInput();
     let tSets = 0;
     if (woSessionTimerInterval) { clearInterval(woSessionTimerInterval); woSessionTimerInterval = null; }
     let tVol = 0;
@@ -2224,6 +2832,7 @@ function finishWorkout() {
     }
 
     if(woState.totalVolume > 0) {
+        const wasEditing = Boolean(woState.isEditing);
         if(woState.isEditing) {
             const idx = woState.editIndex;
             delete woState.isEditing;
@@ -2231,23 +2840,24 @@ function finishWorkout() {
             sessions[idx] = woState;
         } else {
             sessions.push(woState);
+            awardWorkoutXP(woState);
         }
         localStorage.setItem('kinetic_sessions', JSON.stringify(sessions));
         syncToCloud();
-        showSessionSummary(woState);
+        showSessionSummary(woState, wasEditing);
     } else {
         closeWorkoutView();
     }
 }
 
-function showSessionSummary(session) {
+function showSessionSummary(session, wasEditing = false) {
     const overlay = document.createElement('div');
     overlay.id = 'wo-summary-overlay';
     overlay.className = 'fixed inset-0 z-[80] bg-surface/95 backdrop-blur-md flex items-center justify-center animate-fade-in';
     overlay.innerHTML = `
         <div class="text-center max-w-sm px-6">
             <span class="material-symbols-outlined text-6xl text-cyan-400 mb-4 block animate-bounce-in">check_circle</span>
-            <h2 class="font-h1 text-3xl text-on-surface font-bold mb-2">${session.isEditing ? 'Session Updated' : 'Mission Complete'}</h2>
+            <h2 class="font-h1 text-3xl text-on-surface font-bold mb-2">${wasEditing ? 'Session Updated' : 'Mission Complete'}</h2>
             <div class="grid grid-cols-3 gap-4 my-6">
                 <div class="bg-black/40 rounded-xl p-3 border border-white/10 animate-slide-up stagger-1">
                     <div class="font-data-display text-2xl text-orange-500">${session.totalVolume.toLocaleString()}</div>
@@ -2283,6 +2893,7 @@ function closeWorkoutView() {
     if (woSessionTimerInterval) { clearInterval(woSessionTimerInterval); woSessionTimerInterval = null; }
     document.getElementById('workout-active').classList.remove('flex');
     document.getElementById('workout-setup').classList.remove('hidden');
+    document.body.classList.remove('workout-session-open');
     woState = null;
     initLogger();
     switchNav('home');
@@ -2360,7 +2971,7 @@ function renderProgress() {
 
     renderAnalyticsDashboard();
 
-    Chart.defaults.color = '#94a3b8';
+    Chart.defaults.color = '#a9b2c7';
     Chart.defaults.font.family = "'Inter', sans-serif";
     Chart.defaults.borderColor = 'rgba(255,255,255,0.05)';
     
@@ -2380,7 +2991,7 @@ function renderProgress() {
         type: 'line',
         data: { 
             labels: dates.slice(dates.length - bws.length), 
-            datasets: [{ label: 'Bodyweight (kg)', data: bws, borderColor: '#ffb77d', backgroundColor: 'rgba(255, 183, 125, 0.1)', fill: true, tension: 0.4, pointBackgroundColor: '#ff8c00' }] 
+            datasets: [{ label: 'Bodyweight (kg)', data: bws, borderColor: '#5b8cff', backgroundColor: 'rgba(91, 140, 255, 0.1)', fill: true, tension: 0.4, pointBackgroundColor: '#7aa3ff' }]
         },
         options: { 
             responsive: true, maintainAspectRatio: false,
@@ -2395,7 +3006,7 @@ function renderProgress() {
         type: 'line',
         data: { 
             labels: dates, 
-            datasets: [{ label: 'Duration (mins)', data: durations, borderColor: '#4ae183', backgroundColor: 'rgba(74, 225, 131, 0.1)', fill: true, tension: 0.4, pointBackgroundColor: '#4ae183' }] 
+            datasets: [{ label: 'Duration (mins)', data: durations, borderColor: '#22c55e', backgroundColor: 'rgba(34, 197, 94, 0.1)', fill: true, tension: 0.4, pointBackgroundColor: '#22c55e' }]
         },
         options: { 
             responsive: true, maintainAspectRatio: false,
@@ -2410,7 +3021,7 @@ function renderProgress() {
         type: 'bar',
         data: { 
             labels: dates, 
-            datasets: [{ label: 'Total Sets', data: setsList, backgroundColor: '#ff8c00', borderRadius: 4 }] 
+            datasets: [{ label: 'Total Sets', data: setsList, backgroundColor: '#8b5cf6', borderRadius: 8 }]
         },
         options: { 
             responsive: true, maintainAspectRatio: false,
@@ -2428,8 +3039,8 @@ function renderProgress() {
             datasets: [{
                 label: 'Average RPE',
                 data: avgRpeData,
-                borderColor: '#fbbf24',
-                backgroundColor: 'rgba(251,191,36,0.1)',
+                borderColor: '#f59e0b',
+                backgroundColor: 'rgba(245,158,11,0.1)',
                 fill: true,
                 tension: 0.35,
                 pointBackgroundColor: '#f59e0b',
@@ -2457,7 +3068,7 @@ function renderProgress() {
         type: 'doughnut',
         data: { 
             labels: Object.keys(types), 
-            datasets: [{ data: Object.values(types), backgroundColor: ['#ff8c00', '#00e3fd', '#4ae183', '#ffb4ab'], borderWidth: 0 }] 
+            datasets: [{ data: Object.values(types), backgroundColor: ['#5b8cff', '#8b5cf6', '#22c55e', '#f59e0b'], borderWidth: 0 }]
         },
         options: { 
             responsive: true, maintainAspectRatio: false, cutout: '75%',
@@ -2535,11 +3146,11 @@ function renderExerciseTrendChart(exName) {
             datasets: [{ 
                 label: `Max Weight (kg)`, 
                 data: maxWeights, 
-                borderColor: '#00e3fd', 
-                backgroundColor: 'rgba(0, 227, 253, 0.1)', 
+                borderColor: '#8b5cf6',
+                backgroundColor: 'rgba(139, 92, 246, 0.1)',
                 fill: true, 
                 tension: 0.4, 
-                pointBackgroundColor: '#00e3fd',
+                pointBackgroundColor: '#a78bfa',
                 pointRadius: 4,
                 pointHoverRadius: 6
             }] 
@@ -2560,11 +3171,114 @@ function renderExerciseTrendChart(exName) {
     });
 }
 
+// --- REMINDERS ---
+const NOTIFICATION_META = {
+    workout: { title: 'Workout reminder', icon: 'fitness_center', color: 'orange', message: 'Your next session is waiting. Keep the streak alive.' },
+    creatine: { title: 'Creatine reminder', icon: 'medication', color: 'violet', message: 'Log your daily creatine dose in Recover.' },
+    recovery: { title: 'Recovery check-in', icon: 'self_improvement', color: 'green', message: 'Review hydration and see which muscles are ready.' }
+};
+
+function saveNotificationSettings() {
+    ['workout', 'creatine', 'recovery'].forEach(kind => {
+        const time = document.getElementById(`notify-${kind}-time`);
+        const enabled = document.getElementById(`notify-${kind}-enabled`);
+        if (time && enabled) notificationSettings[kind] = { time: time.value || '18:00', enabled: enabled.checked };
+    });
+    localStorage.setItem('kinetic_notification_settings', JSON.stringify(notificationSettings));
+    renderNotificationSettings();
+    renderNotifications();
+}
+
+function renderNotificationSettings() {
+    ['workout', 'creatine', 'recovery'].forEach(kind => {
+        const time = document.getElementById(`notify-${kind}-time`);
+        const enabled = document.getElementById(`notify-${kind}-enabled`);
+        if (time) time.value = notificationSettings[kind].time;
+        if (enabled) enabled.checked = notificationSettings[kind].enabled;
+    });
+    const permissionBtn = document.getElementById('notification-permission-btn');
+    const status = document.getElementById('notification-status');
+    if (permissionBtn && typeof Notification !== 'undefined') {
+        permissionBtn.textContent = Notification.permission === 'granted' ? 'Browser alerts enabled' : 'Enable browser alerts';
+        permissionBtn.disabled = Notification.permission === 'granted';
+    }
+    if (status) {
+        status.textContent = typeof Notification === 'undefined'
+            ? 'In-app reminders are active. Browser alerts are unavailable in this browser.'
+            : Notification.permission === 'granted'
+                ? 'Browser alerts are enabled. Keep this app open for scheduled reminders.'
+                : 'In-app reminders are always available. Enable browser alerts for timed notifications while the app is open.';
+    }
+}
+
+async function requestNotificationPermission() {
+    if (typeof Notification === 'undefined') return renderNotificationSettings();
+    try { await Notification.requestPermission(); } catch (e) { console.warn('Notification permission unavailable', e); }
+    renderNotificationSettings();
+}
+
+function getReminderDayKey(kind, dateKey = getLocalYMD(new Date())) {
+    return `${kind}:${dateKey}`;
+}
+
+function showReminder(kind) {
+    const meta = NOTIFICATION_META[kind];
+    if (!meta) return;
+    const today = getLocalYMD(new Date());
+    const fired = safeParse('kinetic_notification_fired', {});
+    fired[getReminderDayKey(kind, today)] = true;
+    localStorage.setItem('kinetic_notification_fired', JSON.stringify(fired));
+    if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+        try { new Notification(`AXIS · ${meta.title}`, { body: meta.message, tag: `axis-${kind}-${today}` }); } catch (e) { console.warn('Browser notification failed', e); }
+    }
+    renderNotifications();
+}
+
+function checkScheduledNotifications() {
+    const now = new Date();
+    const currentMinutes = now.getHours() * 60 + now.getMinutes();
+    const fired = safeParse('kinetic_notification_fired', {});
+    ['workout', 'creatine', 'recovery'].forEach(kind => {
+        const setting = notificationSettings[kind];
+        if (!setting.enabled) return;
+        const [hours, minutes] = setting.time.split(':').map(Number);
+        const scheduledMinutes = hours * 60 + minutes;
+        const key = getReminderDayKey(kind);
+        if (currentMinutes === scheduledMinutes && !fired[key]) showReminder(kind);
+    });
+}
+
+function renderNotifications() {
+    renderNotificationSettings();
+    const container = document.getElementById('notification-alerts-container');
+    if (!container) return;
+    const today = getLocalYMD(new Date());
+    const todaySession = sessions.some(s => s.date === today);
+    const todayCreatine = Boolean(supps[today]?.c);
+    const fired = safeParse('kinetic_notification_fired', {});
+    const items = [];
+    if (notificationSettings.workout.enabled && !todaySession) items.push({ kind: 'workout', detail: `Scheduled for ${notificationSettings.workout.time}` });
+    if (notificationSettings.creatine.enabled && !todayCreatine) items.push({ kind: 'creatine', detail: `Scheduled for ${notificationSettings.creatine.time}` });
+    if (notificationSettings.recovery.enabled) items.push({ kind: 'recovery', detail: `Check-in at ${notificationSettings.recovery.time}` });
+    if (!items.length) { container.innerHTML = ''; return; }
+    container.innerHTML = `
+        <div class="glass-panel p-4 rounded-xl border border-violet-500/25 bg-violet-500/5">
+            <div class="flex items-center gap-2 mb-3"><span class="material-symbols-outlined text-violet-300">notifications_active</span><h4 class="font-label-caps text-xs text-violet-300 uppercase tracking-widest">Today’s reminders</h4></div>
+            <div class="grid gap-2 md:grid-cols-3">${items.map(item => {
+                const meta = NOTIFICATION_META[item.kind];
+                const done = Boolean(fired[getReminderDayKey(item.kind, today)]);
+                return `<button type="button" onclick="showReminder('${item.kind}')" class="flex items-center gap-3 text-left p-3 rounded-lg bg-black/25 border border-white/5 hover:border-violet-400/40 transition-all ${done ? 'opacity-60' : ''}"><span class="material-symbols-outlined text-${meta.color}-400">${meta.icon}</span><span class="min-w-0"><span class="block text-sm text-white font-semibold">${meta.title}</span><span class="block text-xs text-zinc-500">${done ? 'Marked for today' : item.detail}</span></span></button>`;
+            }).join('')}</div>
+        </div>`;
+}
+
 // --- WELLNESS & SUPPS ---
 function renderSupps() {
     const today = getLocalYMD(new Date());
     if(!supps[today]) supps[today] = { c:false, m:false, o:false, water:0 };
     const t = supps[today];
+
+    renderNotificationSettings();
     
     document.getElementById('supp-creatine').checked = t.c;
     document.getElementById('supp-multi').checked = t.m;
@@ -2650,7 +3364,7 @@ function renderSupps() {
     if(charts.water) charts.water.destroy();
     charts.water = new Chart(document.getElementById('chart-water'), {
         type: 'bar',
-        data: { labels: wLabels, datasets: [{ label: 'Glasses', data: wData, backgroundColor: '#00e3fd', borderRadius: 4 }] },
+        data: { labels: wLabels, datasets: [{ label: 'Glasses', data: wData, backgroundColor: '#5b8cff', borderRadius: 8 }] },
         options: { 
             responsive: true, maintainAspectRatio: false, 
             scales:{ y:{ max:8, ticks:{ stepSize:2 } } },
@@ -2848,6 +3562,8 @@ document.addEventListener('DOMContentLoaded', () => {
     bindLibraryInputs();
     renderLibraryPage();
     switchNav('home');
+    renderNotifications();
+    checkScheduledNotifications();
     
     const savedWebhook = localStorage.getItem('kinetic_webhook_url');
     if(savedWebhook && document.getElementById('sync-webhook-url')) {
@@ -2866,6 +3582,7 @@ document.addEventListener('DOMContentLoaded', () => {
             timerEl.textContent = hrs > 0 ? `${hrs}:${mins}:${secs}` : `${mins}:${secs}`;
         }
     }, 1000);
+    setInterval(checkScheduledNotifications, 30000);
 });
 
 // --- FULLSCREEN WORKOUT UI FUNCTIONS ---
@@ -2987,15 +3704,33 @@ function updateContextLabels() {
     
     document.getElementById('wo-prev-ex-name').textContent = prevExName;
     document.getElementById('wo-next-ex-name').textContent = nextExName;
+
+    const upcomingButton = document.getElementById('wo-upcoming-preview');
+    const upcomingName = document.getElementById('wo-upcoming-preview-name');
+    const upcomingMeta = document.getElementById('wo-upcoming-preview-meta');
+    const upcoming = woState.exercises[woState.currExIdx + 1];
+    if (upcomingButton && upcomingName && upcomingMeta) {
+        upcomingButton.classList.toggle('hidden', !upcoming);
+        if (upcoming) {
+            const completed = (upcoming.sets || []).filter(s => Number(s.w) > 0 && Number(s.r) > 0).length;
+            upcomingName.textContent = upcoming.name || 'Next exercise';
+            upcomingMeta.textContent = `${completed}/${upcoming.maxSets || upcoming.sets?.length || 0} sets logged · target ${upcoming.reps || '—'} reps`;
+        }
+    }
     
     // Update exercise counter
     const current = woState.currExIdx + 1;
     const total = woState.exercises.length;
     document.getElementById('wo-exercise-counter').textContent = `${current} / ${total}`;
+    const mobileCounter = document.getElementById('wo-exercise-counter-mobile');
+    if (mobileCounter) mobileCounter.textContent = `${current} / ${total}`;
     
     // Update button states with proper styling
     const prevBtn = document.getElementById('btn-prev-ex');
     const nextBtn = document.getElementById('btn-next-ex');
+    const prevMobileBtn = document.getElementById('btn-prev-ex-mobile');
+    const nextMobileBtn = document.getElementById('btn-next-ex-mobile');
+    const previewTopBtn = document.getElementById('wo-preview-next-top');
     const prevContext = document.getElementById('wo-prev-context');
     const nextContext = document.getElementById('wo-next-context');
     const atFirst = woState.currExIdx === 0;
@@ -3003,6 +3738,15 @@ function updateContextLabels() {
     
     prevBtn.disabled = atFirst;
     nextBtn.disabled = atLast;
+    if (prevMobileBtn) prevMobileBtn.disabled = atFirst;
+    if (nextMobileBtn) nextMobileBtn.disabled = atLast;
+    if (previewTopBtn) {
+        previewTopBtn.disabled = atLast;
+        previewTopBtn.classList.toggle('opacity-40', atLast);
+        previewTopBtn.innerHTML = atLast
+            ? '<span class="material-symbols-outlined text-base">task_alt</span> SESSION DONE'
+            : '<span class="material-symbols-outlined text-base">visibility</span> PREVIEW NEXT';
+    }
     prevContext.classList.toggle('invisible', atFirst);
     prevContext.classList.toggle('pointer-events-none', atFirst);
     nextContext.classList.toggle('invisible', atLast);
@@ -3019,6 +3763,36 @@ function updateContextLabels() {
     } else {
         nextBtn.classList.remove('opacity-40');
     }
+}
+
+function previewUpcomingExercise() {
+    if (!woState || !woState.exercises) return;
+    const upcoming = woState.exercises[woState.currExIdx + 1];
+    if (!upcoming) {
+        const summary = document.getElementById('wo-remaining-summary');
+        if (summary) summary.textContent = 'All planned exercises complete';
+        return;
+    }
+
+    const modal = document.getElementById('wo-upcoming-modal');
+    const name = document.getElementById('wo-upcoming-modal-name');
+    const target = document.getElementById('wo-upcoming-modal-target');
+    const sets = document.getElementById('wo-upcoming-modal-sets');
+    const logged = document.getElementById('wo-upcoming-modal-logged');
+    if (!modal || !name || !target || !sets || !logged) return;
+
+    const maxSets = Number(upcoming.maxSets || upcoming.sets?.length || 0);
+    const completed = (upcoming.sets || []).filter(s => Number(s.w) > 0 && Number(s.r) > 0).length;
+    name.textContent = upcoming.name || 'Next exercise';
+    target.textContent = upcoming.reps || '—';
+    sets.textContent = String(maxSets);
+    logged.textContent = `${completed}/${maxSets}`;
+    modal.classList.remove('hidden');
+}
+
+function closeUpcomingPreview() {
+    const modal = document.getElementById('wo-upcoming-modal');
+    if (modal) modal.classList.add('hidden');
 }
 
 // Bottom Sheet Drawer - Toggle Day View
@@ -3588,12 +4362,12 @@ function renderOneRMTrendChart(exName, formula) {
             datasets: [{
                 label: '1RM Estimate',
                 data: dataPoints.map(d => d.value),
-                borderColor: '#ffb77d',
-                backgroundColor: 'rgba(255,183,125,0.1)',
-                fill: true, tension: 0.3, pointRadius: 4, pointBackgroundColor: '#ff8c00'
+                borderColor: '#5b8cff',
+                backgroundColor: 'rgba(91,140,255,0.1)',
+                fill: true, tension: 0.3, pointRadius: 4, pointBackgroundColor: '#7aa3ff'
             }]
         },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#71717a', font: { size: 9 } }, grid: { color: 'rgba(255,255,255,0.05)' } }, y: { ticks: { color: '#71717a', font: { size: 9 } }, grid: { color: 'rgba(255,255,255,0.05)' } } } }
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#74809a', font: { size: 9 } }, grid: { color: 'rgba(169,178,199,0.08)' } }, y: { ticks: { color: '#74809a', font: { size: 9 } }, grid: { color: 'rgba(169,178,199,0.08)' } } } }
     });
 }
 
@@ -3732,11 +4506,11 @@ function renderRestTrendChart() {
             datasets: [{
                 label: 'Avg Rest per Set (seconds)',
                 data: restData,
-                borderColor: '#00e3fd',
-                backgroundColor: 'rgba(0, 227, 253, 0.1)',
+                borderColor: '#8b5cf6',
+                backgroundColor: 'rgba(139, 92, 246, 0.1)',
                 fill: true,
                 tension: 0.4,
-                pointBackgroundColor: '#00e3fd',
+                pointBackgroundColor: '#a78bfa',
                 spanGaps: true
             }]
         },
@@ -3749,12 +4523,12 @@ function renderRestTrendChart() {
             },
             scales: {
                 y: {
-                    ticks: { color: '#71717a', font: { size: 9 } },
-                    grid: { color: 'rgba(255,255,255,0.05)' }
+                    ticks: { color: '#74809a', font: { size: 9 } },
+                    grid: { color: 'rgba(169,178,199,0.08)' }
                 },
                 x: {
-                    ticks: { color: '#71717a', font: { size: 9 } },
-                    grid: { color: 'rgba(255,255,255,0.05)' }
+                    ticks: { color: '#74809a', font: { size: 9 } },
+                    grid: { color: 'rgba(169,178,199,0.08)' }
                 }
             }
         }
@@ -3889,7 +4663,7 @@ function renderVolumeChart() {
         type: 'bar',
         data: {
             labels: weeks.map(w => w.label),
-            datasets: [{ label: 'Weekly Volume (kg)', data: weeks.map(w => w.vol), backgroundColor: '#00e3fd', borderRadius: 6 }]
+            datasets: [{ label: 'Weekly Volume (kg)', data: weeks.map(w => w.vol), backgroundColor: '#8b5cf6', borderRadius: 8 }]
         },
         options: {
             responsive: true, maintainAspectRatio: false,
