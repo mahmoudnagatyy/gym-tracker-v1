@@ -52,6 +52,17 @@ The workout logger supports:
 
 Progress dashboards include total sessions, volume, PRs, trends, and history. Recovery includes hydration, supplements, and optional workout, creatine, and recovery reminders.
 
+### Nutrition
+
+The Nutrition section provides a daily calorie bar and four interactive meal buckets:
+
+- Breakfast
+- Lunch
+- Dinner
+- Snack
+
+Tapping a meal preset adds its calories to the daily total. Each logged item has a remove control that deducts it from the calorie bar. The daily target can be changed with **Edit goal**, and entries persist locally by date.
+
 ### Membership and renewal
 
 The pricing page contains three client-facing options:

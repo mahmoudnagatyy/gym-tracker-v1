@@ -162,6 +162,35 @@ tailwind.config = {
     .muscle-zone { transition: fill 0.3s ease, opacity 0.3s ease; cursor: pointer; }
     .muscle-zone:hover { opacity: 0.8; filter: brightness(1.2); }
 
+    /* Insights dashboard: one visual system with stable alignment at every width. */
+    #view-progress { max-width: 72rem; margin-inline: auto; }
+    .insights-hero { display: flex; align-items: end; justify-content: space-between; gap: 1rem; padding: .25rem 0 1.25rem; border-bottom: 1px solid rgba(255,255,255,.08); }
+    .insights-period { display: inline-flex; align-items: center; gap: .5rem; flex: 0 0 auto; padding: .65rem .8rem; border: 1px solid rgba(0,227,253,.18); border-radius: .85rem; color: #a9b2c7; font-size: .7rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; background: rgba(0,227,253,.045); }
+    .insights-metric-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .75rem; }
+    .insight-metric { display: flex; align-items: center; gap: .8rem; min-height: 7.2rem; padding: 1rem; border: 1px solid rgba(255,255,255,.08); border-radius: 1.15rem; background: linear-gradient(145deg, rgba(25,35,57,.95), rgba(15,21,34,.92)); box-shadow: 0 12px 30px rgba(0,0,0,.16); }
+    .insight-metric-icon { display: grid; place-items: center; width: 2.5rem; height: 2.5rem; flex: 0 0 auto; border-radius: .8rem; }
+    .insight-metric-icon.cyan { color: #22d3ee; background: rgba(34,211,238,.1); }
+    .insight-metric-icon.violet { color: #a78bfa; background: rgba(167,139,250,.1); }
+    .insight-metric-icon.green { color: #4ade80; background: rgba(74,222,128,.1); }
+    .insight-metric-icon.amber { color: #fbbf24; background: rgba(251,191,36,.1); }
+    .insight-label, .insight-eyebrow { color: #93a2bb; font-size: .65rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+    .insight-value { margin-top: .2rem; color: #f8fafc; font-family: 'Space Grotesk', sans-serif; font-size: 1.7rem; font-weight: 700; line-height: 1; }
+    .insight-unit { margin-left: .3rem; color: #94a3b8; font-family: Inter, sans-serif; font-size: .7rem; font-weight: 600; }
+    .insight-caption { margin-top: .35rem; color: #64748b; font-size: .65rem; }
+    .insight-panel { padding: 1.25rem; border: 1px solid rgba(255,255,255,.08); border-radius: 1.25rem; background: linear-gradient(145deg, rgba(25,35,57,.96), rgba(13,19,31,.96)); box-shadow: 0 16px 40px rgba(0,0,0,.18); }
+    .insight-panel-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1.1rem; }
+    .insight-panel-head h3 { margin-top: .3rem; color: #f8fafc; font-size: 1.15rem; font-weight: 800; letter-spacing: -.02em; }
+    .fatigue-readout { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; }
+    .fatigue-status { color: #4ade80; font-size: .8rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+    .insight-controls { display: flex; align-items: center; gap: .65rem; flex-wrap: wrap; }
+    .insight-select, .insight-secondary-btn { min-height: 2.65rem; border: 1px solid rgba(255,255,255,.1); border-radius: .8rem; background: rgba(7,13,23,.72); color: #dbeafe; font-size: .75rem; font-weight: 700; }
+    .insight-select { padding: 0 .8rem; }
+    .insight-secondary-btn { display: inline-flex; align-items: center; gap: .4rem; padding: 0 .8rem; color: #a9b2c7; transition: border-color .2s ease, color .2s ease, background .2s ease; }
+    .insight-secondary-btn:hover { border-color: rgba(34,211,238,.45); color: #67e8f9; background: rgba(34,211,238,.06); }
+    .heatmap-layout { display: grid; grid-template-columns: minmax(12rem, 18rem) minmax(0, 1fr); align-items: center; gap: 2rem; }
+    .heatmap-figure { width: 100%; max-width: 18rem; margin-inline: auto; padding: .75rem; border: 1px solid rgba(255,255,255,.06); border-radius: 1rem; background: rgba(4,9,17,.42); }
+    .heatmap-summary { min-width: 0; }
+
     @media (max-width: 767px) {
         body { padding-bottom: calc(5rem + env(safe-area-inset-bottom)); }
         main { width: 100%; min-width: 0; }
@@ -178,6 +207,16 @@ tailwind.config = {
         #home-mission-card { padding: 1rem !important; }
         #home-mission-card h3 { font-size: 1.2rem; }
         .view-section { min-width: 0; }
+        #view-progress { max-width: none; }
+        .insights-hero { align-items: flex-start; flex-direction: column; padding-bottom: 1rem; }
+        .insights-period { align-self: flex-start; }
+        .insights-metric-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .6rem; }
+        .insight-metric { min-height: 6.5rem; padding: .8rem; gap: .6rem; }
+        .insight-metric-icon { width: 2.15rem; height: 2.15rem; }
+        .insight-value { font-size: 1.4rem; }
+        .insight-panel { padding: 1rem; border-radius: 1rem; }
+        .heatmap-layout { grid-template-columns: 1fr; gap: 1rem; }
+        .heatmap-figure { max-width: 15rem; }
         #workout-active { height: 100dvh; min-height: 100dvh; }
         #workout-active > .flex-1 { min-height: 0; }
         #wo-mobile-session-tools { box-shadow: 0 8px 18px rgba(0,0,0,.16); }
@@ -293,8 +332,7 @@ tailwind.config = {
     #nav-web [data-target="home"] { order: 2; }
     #nav-web [data-target="progress"] { order: 3; }
     #nav-web [data-target="library"] { order: 4; }
-    #nav-web [data-target="supps"] { order: 5; }
-    #nav-web [data-target="export"] { order: 6; margin-top: auto !important; }
+    #nav-web [data-target="export"] { order: 5; margin-top: auto !important; }
     nav .nav-btn { color: var(--axis-muted) !important; border: 1px solid transparent; border-radius: 14px !important; padding: .85rem 1rem !important; }
     nav .nav-btn:hover { background: rgba(91,140,255,.1) !important; color: var(--axis-text) !important; }
     nav .nav-btn.bg-orange-500\/10, nav .nav-btn[style*="orange"] { background: rgba(91,140,255,.14) !important; color: var(--axis-primary-strong) !important; border-color: rgba(91,140,255,.24) !important; }
@@ -307,17 +345,17 @@ tailwind.config = {
     #nav-mobile [data-target="home"] { order: 2; }
     #nav-mobile [data-target="progress"] { order: 3; }
     #nav-mobile [data-target="library"] { order: 4; }
-    #nav-mobile [data-target="supps"] { order: 5; }
-    #nav-mobile [data-target="export"] { order: 6; }
+    #nav-mobile [data-target="export"] { order: 5; }
 
     #view-home.active { display: flex !important; flex-direction: column; gap: 1.5rem; }
     #view-home.active > header { order: 1; margin-bottom: 0 !important; }
     #view-home.active > #home-mission-card { order: 2; margin-bottom: 0 !important; }
     #view-home.active > #notification-alerts-container { order: 3; }
-    #view-home.active > .mb-6.glass-panel { order: 4; margin-bottom: 0 !important; }
-    #view-home.active > .grid { order: 5; }
-    #view-home.active > #recovery-alerts-container { order: 6; }
-    #view-home.active > .mt-10 { order: 7; margin-top: 0 !important; }
+    #view-home.active > #home-consistency-card { order: 4; }
+    #view-home.active > .mb-6.glass-panel { order: 5; margin-bottom: 0 !important; }
+    #view-home.active > .grid { order: 6; }
+    #view-home.active > #recovery-alerts-container { order: 7; }
+    #view-home.active > .mt-10 { order: 8; margin-top: 0 !important; }
 
     #home-mission-card { background: linear-gradient(135deg, rgba(91,140,255,.18), rgba(30,38,59,.98) 48%, rgba(139,92,246,.16)) !important; border-color: rgba(122,163,255,.28) !important; box-shadow: 0 24px 70px rgba(91,140,255,.1) !important; }
     #home-mission-card .bg-cyan-400\/15 { background: rgba(91,140,255,.2) !important; }
@@ -343,8 +381,8 @@ tailwind.config = {
     #wo-sets-area input { background: var(--axis-bg-soft) !important; border-color: var(--axis-line) !important; }
     #wo-sets-area input:focus { border-color: var(--axis-primary) !important; box-shadow: 0 0 0 4px rgba(91,140,255,.12) !important; }
 
-    #view-progress .glass-panel, #view-library .glass-panel, #view-supps .glass-panel, #view-export .glass-panel { border-radius: var(--axis-radius) !important; }
-    #view-progress canvas, #view-supps canvas { max-width: 100%; }
+    #view-progress .glass-panel, #view-library .glass-panel, #view-export .glass-panel { border-radius: var(--axis-radius) !important; }
+    #view-progress canvas, #view-nutrition canvas { max-width: 100%; }
     #timer-overlay { background: var(--axis-card) !important; border-color: rgba(139,92,246,.4) !important; box-shadow: 0 24px 70px rgba(0,0,0,.55) !important; }
     #timer-circle { stroke: var(--axis-secondary) !important; }
     body.workout-session-open #nav-mobile { display: none !important; }
@@ -406,13 +444,13 @@ tailwind.config = {
             <span class="material-symbols-outlined">insights</span><span>Insights</span>
         </button>
         <button data-target="library" class="nav-btn flex items-center gap-3 px-4 py-3 rounded-lg w-full text-left font-h2 text-sm font-medium transition-all duration-200 text-zinc-500 hover:bg-white/5 hover:text-zinc-100">
-            <span class="material-symbols-outlined">grid_view</span><span>Moves</span>
+            <span class="material-symbols-outlined">menu_book</span><span>Library</span>
         </button>
-        <button data-target="supps" class="nav-btn flex items-center gap-3 px-4 py-3 rounded-lg w-full text-left font-h2 text-sm font-medium transition-all duration-200 text-zinc-500 hover:bg-white/5 hover:text-zinc-100">
-            <span class="material-symbols-outlined">recovery</span><span>Recover</span>
+        <button data-target="nutrition" class="nav-btn flex items-center gap-3 px-4 py-3 rounded-lg w-full text-left font-h2 text-sm font-medium transition-all duration-200 text-zinc-500 hover:bg-white/5 hover:text-zinc-100">
+            <span class="material-symbols-outlined">restaurant</span><span>Nutrition</span>
         </button>
         <button data-target="export" class="nav-btn mt-auto flex items-center gap-3 px-4 py-3 rounded-lg w-full text-left font-h2 text-sm font-medium transition-all duration-200 text-zinc-500 hover:bg-white/5 hover:text-zinc-100">
-            <span class="material-symbols-outlined">inventory_2</span><span>Vault</span>
+            <span class="material-symbols-outlined">settings</span><span>Settings</span>
         </button>
     </div>
 </nav>
@@ -457,57 +495,37 @@ tailwind.config = {
                             <div class="flex items-center justify-between"><span class="space-kicker font-label-caps text-[9px] uppercase font-bold">ACTIVE MEMBER</span><span class="rounded-full bg-emerald-400/15 px-2.5 py-1 text-[9px] font-bold uppercase tracking-wider text-emerald-300">Following</span></div>
                             <div class="mt-5"><div class="text-2xl font-black text-white">Mahmoud Nagaty</div><div class="mt-1 text-sm text-slate-400">23 years old · Intermediate</div></div>
                             <div class="mt-5 grid grid-cols-3 gap-2">
-                                <div class="space-stat rounded-xl p-3"><div class="text-[9px] uppercase tracking-wider text-slate-400">Goal</div><div class="mt-1 text-xs font-bold text-white">Muscle gain</div></div>
-                                <div class="space-stat rounded-xl p-3"><div class="text-[9px] uppercase tracking-wider text-slate-400">Phase</div><div class="mt-1 text-xs font-bold text-white">12 weeks</div></div>
-                                <div class="space-stat rounded-xl p-3"><div class="text-[9px] uppercase tracking-wider text-slate-400">ID</div><div class="mt-1 text-xs font-bold text-cyan-300">2106</div></div>
-                            </div>
-                        </div>
+                        <div class="space-stat rounded-xl p-3"><div class="text-[9px] uppercase tracking-wider text-slate-400">Goal</div><div class="mt-1 text-xs font-bold text-white">Muscle gain</div></div>
+                        <div class="space-stat rounded-xl p-3"><div class="text-[9px] uppercase tracking-wider text-slate-400">Phase</div><div class="mt-1 text-xs font-bold text-white">12 weeks</div></div>
+                        <div class="space-stat rounded-xl p-3"><div class="text-[9px] uppercase tracking-wider text-slate-400">ID</div><div class="mt-1 text-xs font-bold text-cyan-300">2106</div></div>
+                    </div>
+                    <div class="mt-4 grid grid-cols-2 gap-2"><div class="space-stat rounded-xl p-3"><div class="text-[9px] uppercase tracking-wider text-slate-400">Membership</div><div class="mt-1 text-xs font-bold text-emerald-300">Active · Nov 2026</div></div><div class="space-stat rounded-xl p-3"><div class="text-[9px] uppercase tracking-wider text-slate-400">Private coach</div><div class="mt-1 text-xs font-bold text-cyan-300">Hady · Sep 2026</div></div></div>
+                    <div class="mt-4 grid grid-cols-3 gap-2"><button type="button" onclick="editProfileMetrics()" class="space-stat rounded-xl p-3 text-left cursor-pointer hover:border-cyan-300/50 hover:bg-cyan-400/[.06] transition-all"><div class="text-[9px] uppercase tracking-wider text-slate-400">Starting weight</div><div id="profile-starting-weight" class="mt-1 text-xs font-bold text-white">75 kg</div></button><button type="button" onclick="editProfileMetrics()" class="space-stat rounded-xl p-3 text-left cursor-pointer hover:border-cyan-300/50 hover:bg-cyan-400/[.06] transition-all"><div class="text-[9px] uppercase tracking-wider text-slate-400">Target weight</div><div id="profile-target-weight" class="mt-1 text-xs font-bold text-white">80 kg</div></button><button type="button" onclick="editProfileMetrics()" class="space-stat rounded-xl p-3 text-left cursor-pointer hover:border-cyan-300/50 hover:bg-cyan-400/[.06] transition-all"><div class="text-[9px] uppercase tracking-wider text-slate-400">Height</div><div id="profile-height" class="mt-1 text-xs font-bold text-white">178 cm</div></button></div>
+                </div>
                     </div>
                 </div>
             </section>
 
-            <section class="mt-6 grid lg:grid-cols-[1fr_1fr] gap-6">
+            <section class="mt-6">
                 <div class="glass-panel rounded-3xl p-6 md:p-7">
                     <div class="flex items-start justify-between gap-4"><div><div class="space-kicker font-label-caps text-[10px] uppercase font-bold">MEMBER ID</div><h3 class="mt-2 text-2xl font-black text-white">Your Space Gym pass</h3><p class="mt-2 text-sm text-slate-400">Show this code at the gym or let your coach scan it to open your profile.</p></div><span class="material-symbols-outlined text-cyan-300 text-3xl">qr_code_2</span></div>
                     <div class="mt-6 grid sm:grid-cols-[180px_1fr] gap-5 items-center">
                         <div id="member-qr" class="space-qr rounded-2xl bg-white p-3 w-44 min-h-44 flex items-center justify-center" aria-label="Space Gym member QR code"></div>
-                        <div><div class="text-4xl font-black tracking-[.18em] text-cyan-300">2106</div><div class="mt-2 text-sm text-slate-400">Mahmoud Nagaty · Space Gym</div><button onclick="downloadMemberQR()" class="mt-5 min-h-11 rounded-xl border border-cyan-300/30 px-4 text-xs font-bold uppercase tracking-wider text-cyan-200 hover:bg-cyan-400/10 transition-all">Save QR pass</button></div>
+                        <div><div class="text-4xl font-black tracking-[.18em] text-cyan-300">2106</div><div class="mt-2 text-sm text-slate-400">Mahmoud Nagaty · Space Gym</div><div class="mt-4 space-y-2 text-sm"><div class="flex items-center justify-between gap-3"><span class="text-slate-400">Subscription</span><strong class="text-emerald-300">Active until Nov 2026</strong></div><div class="flex items-center justify-between gap-3"><span class="text-slate-400">Coach</span><strong class="text-cyan-200">Hady until Sep 2026</strong></div></div><div class="mt-5 flex flex-wrap gap-2"><button onclick="downloadMemberQR()" class="min-h-11 rounded-xl border border-cyan-300/30 px-4 text-xs font-bold uppercase tracking-wider text-cyan-200 hover:bg-cyan-400/10 transition-all">Save QR pass</button><button onclick="switchNav('pricing')" class="min-h-11 rounded-xl bg-cyan-400 px-4 text-xs font-black uppercase tracking-wider text-slate-950 hover:bg-cyan-300 transition-all">Renew</button></div></div>
                     </div>
-                </div>
-                <div class="glass-panel rounded-3xl p-6 md:p-7">
-                    <div class="space-kicker font-label-caps text-[10px] uppercase font-bold">WHY THIS WORKS</div><h3 class="mt-2 text-2xl font-black text-white">Train with clarity. Recover with intent.</h3>
-                    <div class="mt-6 space-y-4">
-                        <button onclick="switchNav('workout')" class="w-full text-left rounded-2xl border border-white/10 bg-white/[.03] p-4 hover:border-cyan-300/40 hover:bg-cyan-400/[.06] transition-all"><span class="text-cyan-300 font-black">01 · A clear next move</span><span class="block mt-1 text-sm text-slate-400">Your rotating Anterior / Posterior plan removes the daily guesswork.</span></button>
-                        <button onclick="switchNav('progress')" class="w-full text-left rounded-2xl border border-white/10 bg-white/[.03] p-4 hover:border-cyan-300/40 hover:bg-cyan-400/[.06] transition-all"><span class="text-cyan-300 font-black">02 · Proof of progress</span><span class="block mt-1 text-sm text-slate-400">Your coach can follow volume, sessions, PRs, and consistency.</span></button>
-                        <button onclick="switchNav('supps')" class="w-full text-left rounded-2xl border border-white/10 bg-white/[.03] p-4 hover:border-cyan-300/40 hover:bg-cyan-400/[.06] transition-all"><span class="text-cyan-300 font-black">03 · The full picture</span><span class="block mt-1 text-sm text-slate-400">Training, recovery, hydration, and reminders live together.</span></button>
-                    </div>
+                    <div class="mt-5 flex flex-col sm:flex-row gap-2"><button onclick="contactWhatsApp('I want to renew Mahmoud Nagaty’s Space Gym membership. Member ID 2106.')" class="min-h-11 flex-1 rounded-xl border border-emerald-300/30 px-4 text-xs font-bold uppercase tracking-wider text-emerald-200 hover:bg-emerald-400/10 transition-all">Ask on WhatsApp</button></div>
                 </div>
             </section>
 
-            <section class="mt-6 grid lg:grid-cols-[1.1fr_.9fr] gap-6">
-                <div class="space-profile rounded-3xl p-6 md:p-7">
-                    <div class="flex items-start justify-between gap-4"><div><div class="space-kicker font-label-caps text-[10px] uppercase font-bold">MEMBERSHIP</div><h3 class="mt-2 text-2xl font-black text-white">Active and supported.</h3></div><span class="rounded-full bg-emerald-400/15 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-emerald-300">Active</span></div>
-                    <div class="mt-6 grid sm:grid-cols-2 gap-3">
-                        <div class="space-stat rounded-2xl p-4"><div class="text-[10px] uppercase tracking-wider text-slate-400">Membership valid until</div><div class="mt-2 text-2xl font-black text-white">November 2026</div><div class="mt-1 text-xs text-slate-400">Space Gym access</div></div>
-                        <div class="space-stat rounded-2xl p-4"><div class="text-[10px] uppercase tracking-wider text-slate-400">Private coaching with</div><div class="mt-2 text-2xl font-black text-white">Coach Hady</div><div class="mt-1 text-xs text-slate-400">Plan support until September 2026</div></div>
-                    </div>
-                    <div class="mt-5 flex flex-col sm:flex-row gap-3"><button onclick="switchNav('pricing')" class="min-h-11 rounded-xl bg-cyan-400 px-4 text-xs font-black uppercase tracking-wider text-slate-950 hover:bg-cyan-300 transition-all">Renew membership</button><button onclick="contactWhatsApp('I want to renew Mahmoud Nagaty’s Space Gym membership.')" class="min-h-11 rounded-xl border border-emerald-300/30 px-4 text-xs font-bold uppercase tracking-wider text-emerald-200 hover:bg-emerald-400/10 transition-all">Ask on WhatsApp</button></div>
-                </div>
-                <div class="glass-panel rounded-3xl p-6 md:p-7">
-                    <div class="space-kicker font-label-caps text-[10px] uppercase font-bold">COACH CONNECTION</div><h3 class="mt-2 text-2xl font-black text-white">Keep the plan moving.</h3><p class="mt-2 text-sm leading-relaxed text-slate-400">Import Mahmoud’s existing Kinetic history so the dashboard starts with real progress instead of an empty screen.</p>
-                    <button onclick="openBackupImporter()" class="mt-6 min-h-11 w-full rounded-xl border border-cyan-300/30 bg-cyan-400/10 px-4 text-xs font-bold uppercase tracking-wider text-cyan-200 hover:bg-cyan-400/20 transition-all"><span class="material-symbols-outlined align-middle text-base mr-1">upload_file</span> Import Kinetic history</button>
-                    <button onclick="switchNav('export')" class="mt-3 min-h-11 w-full rounded-xl border border-white/10 px-4 text-xs font-bold uppercase tracking-wider text-slate-300 hover:bg-white/10 transition-all">Open data vault</button>
-                </div>
-            </section>
         </section>
 
         <!-- MEMBERSHIP PRICING -->
         <section id="view-pricing" class="view-section space-profile-page">
             <header class="mb-8"><div class="space-kicker font-label-caps text-[10px] uppercase font-bold">SPACE GYM · MEMBERSHIP</div><h2 class="mt-2 font-h1 text-4xl md:text-5xl text-white font-black">Choose how closely we coach.</h2><p class="mt-2 max-w-2xl text-slate-400">Simple options inspired by the value of structured plans, regular updates, and direct support.</p></header>
             <div class="grid lg:grid-cols-3 gap-5">
-                <article class="glass-panel rounded-3xl p-6"><div class="text-cyan-300 text-xs font-black uppercase tracking-widest">Gym access</div><h3 class="mt-3 text-2xl font-black text-white">Space Basic</h3><p class="mt-2 text-sm text-slate-400">Train with your member profile, rotating plan, history, and progress dashboard.</p><div class="mt-6 text-3xl font-black text-white">Renew membership</div><button onclick="contactWhatsApp('I want to renew the Space Gym membership for Mahmoud Nagaty.')" class="mt-6 min-h-12 w-full rounded-xl bg-cyan-400 text-xs font-black uppercase tracking-wider text-slate-950 hover:bg-cyan-300 transition-all">Request renewal</button></article>
-                <article class="space-profile rounded-3xl p-6 ring-1 ring-cyan-300/30"><div class="flex items-center justify-between"><div class="text-cyan-300 text-xs font-black uppercase tracking-widest">Recommended</div><span class="rounded-full bg-cyan-400/15 px-2 py-1 text-[9px] font-bold uppercase tracking-wider text-cyan-200">Most support</span></div><h3 class="mt-3 text-2xl font-black text-white">Private with Coach Hady</h3><p class="mt-2 text-sm text-slate-300">Personal plan adjustments, progress follow-up, and direct coach communication through September 2026.</p><div class="mt-6 text-3xl font-black text-white">Private plan</div><button onclick="contactWhatsApp('I want to continue Mahmoud Nagaty’s private plan with Coach Hady.')" class="mt-6 min-h-12 w-full rounded-xl bg-cyan-400 text-xs font-black uppercase tracking-wider text-slate-950 hover:bg-cyan-300 transition-all">Continue with Coach Hady</button></article>
-                <article class="glass-panel rounded-3xl p-6"><div class="text-cyan-300 text-xs font-black uppercase tracking-widest">Long-term</div><h3 class="mt-3 text-2xl font-black text-white">Performance phase</h3><p class="mt-2 text-sm text-slate-400">A longer training runway with scheduled reviews, updated exercises, and accountability.</p><div class="mt-6 text-3xl font-black text-white">Build your phase</div><button onclick="contactWhatsApp('I want to ask about a longer Space Gym performance phase.')" class="mt-6 min-h-12 w-full rounded-xl border border-cyan-300/30 text-xs font-bold uppercase tracking-wider text-cyan-200 hover:bg-cyan-400/10 transition-all">Ask for details</button></article>
+                <article class="glass-panel rounded-3xl p-6"><div class="text-cyan-300 text-xs font-black uppercase tracking-widest">Gym access</div><h3 class="mt-3 text-2xl font-black text-white">Space Basic</h3><p class="mt-2 text-sm text-slate-400">Train with your member profile, rotating plan, history, and progress dashboard.</p><div class="mt-6 text-3xl font-black text-white">3,000 <span class="text-base font-bold text-cyan-300">EGP</span></div><div class="mt-1 text-xs text-slate-500">Membership renewal</div><button onclick="contactWhatsApp('I want to renew the Space Gym membership for Mahmoud Nagaty for 3,000 EGP.')" class="mt-6 min-h-12 w-full rounded-xl bg-cyan-400 text-xs font-black uppercase tracking-wider text-slate-950 hover:bg-cyan-300 transition-all">Request renewal</button></article>
+                <article class="space-profile rounded-3xl p-6 ring-1 ring-cyan-300/30"><div class="flex items-center justify-between"><div class="text-cyan-300 text-xs font-black uppercase tracking-widest">Recommended</div><span class="rounded-full bg-cyan-400/15 px-2 py-1 text-[9px] font-bold uppercase tracking-wider text-cyan-200">Most support</span></div><h3 class="mt-3 text-2xl font-black text-white">Private with Coach Hady</h3><p class="mt-2 text-sm text-slate-300">Personal plan adjustments, progress follow-up, and direct coach communication through September 2026.</p><div class="mt-6 text-3xl font-black text-white">7,000 <span class="text-base font-bold text-cyan-300">EGP</span></div><div class="mt-1 text-xs text-slate-400">Private coaching plan</div><button onclick="contactWhatsApp('I want to continue Mahmoud Nagaty’s private plan with Coach Hady for 7,000 EGP.')" class="mt-6 min-h-12 w-full rounded-xl bg-cyan-400 text-xs font-black uppercase tracking-wider text-slate-950 hover:bg-cyan-300 transition-all">Continue with Coach Hady</button></article>
+                <article class="glass-panel rounded-3xl p-6"><div class="text-cyan-300 text-xs font-black uppercase tracking-widest">Long-term</div><h3 class="mt-3 text-2xl font-black text-white">Performance phase</h3><p class="mt-2 text-sm text-slate-400">A longer training runway with scheduled reviews, updated exercises, and accountability.</p><div class="mt-6 text-3xl font-black text-white">10,000 <span class="text-base font-bold text-cyan-300">EGP</span></div><div class="mt-1 text-xs text-slate-500">Extended performance plan</div><button onclick="contactWhatsApp('I want to ask about the 10,000 EGP Space Gym performance phase.')" class="mt-6 min-h-12 w-full rounded-xl border border-cyan-300/30 text-xs font-bold uppercase tracking-wider text-cyan-200 hover:bg-cyan-400/10 transition-all">Ask for details</button></article>
             </div>
             <div class="mt-6 glass-panel rounded-3xl p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4"><div><div class="text-lg font-black text-white">Need a quick answer?</div><p class="mt-1 text-sm text-slate-400">Message Space Gym directly and mention member ID 2106.</p></div><button onclick="contactWhatsApp('Hello Space Gym, I am Mahmoud Nagaty — member ID 2106. I want to ask about my plan.')" class="min-h-12 rounded-xl border border-emerald-300/30 px-5 text-xs font-black uppercase tracking-wider text-emerald-200 hover:bg-emerald-400/10 transition-all">Contact on WhatsApp ↗</button></div>
         </section>
@@ -563,6 +581,16 @@ tailwind.config = {
             </section>
 
             <div id="notification-alerts-container" class="space-y-3"></div>
+
+            <!-- WEEKLY CONSISTENCY -->
+            <section class="glass-panel p-5 md:p-6 rounded-2xl" id="home-consistency-card">
+                <div class="flex items-center justify-between gap-3 mb-4">
+                    <div><div class="space-kicker font-label-caps text-[10px] uppercase font-bold">YOUR RHYTHM</div><h3 class="mt-1 text-xl font-black text-white">7-Day Consistency</h3></div>
+                    <span class="material-symbols-outlined text-cyan-300">local_fire_department</span>
+                </div>
+                <div class="flex gap-2 justify-between" id="streak-grid"></div>
+                <p id="motivational-msg" class="mt-5 text-center text-cyan-300 italic font-medium font-body-lg text-base md:text-lg tracking-wide"></p>
+            </section>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div onclick="switchNav('progress')" class="glass-panel p-6 rounded-xl flex flex-col justify-between h-40 cursor-pointer hover:border-orange-500/50 transition-colors animate-slide-up stagger-1">
@@ -632,11 +660,11 @@ tailwind.config = {
                 </div>
                 <div class="mb-5">
                     <div class="flex items-center justify-between mb-3">
-                        <h3 class="text-xs text-zinc-400 uppercase tracking-widest font-label-caps">Template Exercises</h3>
-                        <button onclick="openExerciseLibrary('browse', null, null)" class="text-[10px] font-label-caps uppercase tracking-wider text-cyan-400 hover:text-cyan-300 transition-colors">Browse Library</button>
+                        <h3 class="text-xs text-zinc-400 uppercase tracking-widest font-label-caps">Coach Assigned Plan</h3>
+                        <button onclick="switchNav('library')" class="text-[10px] font-label-caps uppercase tracking-wider text-cyan-400 hover:text-cyan-300 transition-colors">View Library</button>
                     </div>
-                    <div id="wo-template-editor" class="max-h-64 overflow-y-auto space-y-2 pr-1"></div>
-                    <button onclick="saveCurrentTemplateAsCustom()" class="mt-3 w-full border border-cyan-500/40 text-cyan-400 font-label-caps text-xs tracking-wider py-2 rounded-lg hover:bg-cyan-500/10 transition-all">Save as Custom Template</button>
+                    <div class="rounded-xl border border-cyan-300/20 bg-cyan-400/[.06] p-4"><div class="flex items-center gap-3"><span class="material-symbols-outlined text-cyan-300">verified</span><div><div class="text-sm font-bold text-white">Assigned by Coach Hady</div><div class="mt-1 text-xs text-slate-400">The exercise details are available in Library and inside the active session.</div></div></div></div>
+                    <div id="wo-template-editor" class="hidden"></div>
                 </div>
                 <div class="grid grid-cols-2 gap-4 mb-5">
                     <div>
@@ -953,91 +981,120 @@ tailwind.config = {
         <!-- EXERCISE LIBRARY SECTION -->
         <section id="view-library" class="view-section">
             <header class="mb-8">
-                <h2 class="font-h1 text-4xl text-on-surface font-bold">Moves</h2>
-                <p class="text-zinc-400 font-body-lg mt-2">Browse movements, swap intelligently, and track all-time PRs.</p>
+                <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+                    <div><div class="space-kicker font-label-caps text-[10px] uppercase font-bold">COACH ASSIGNMENT · MAHMOUD 2106</div><h2 class="mt-2 font-h1 text-4xl text-on-surface font-bold">Library</h2><p class="text-zinc-400 font-body-lg mt-2">Your assigned movements, arranged as a coaching roadmap.</p></div>
+                    <button onclick="startAssignedPlan(getNextRotatingTemplateId())" class="min-h-11 rounded-xl bg-cyan-400 px-4 text-xs font-black uppercase tracking-wider text-slate-950 hover:bg-cyan-300 transition-all">Train the next day ↗</button>
+                </div>
             </header>
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div class="glass-panel p-5 rounded-xl lg:col-span-2">
-                    <div class="flex flex-col md:flex-row gap-3 mb-4">
-                        <input id="library-page-search" type="text" placeholder="Search by exercise..." class="flex-1 bg-zinc-900 border border-white/10 rounded-lg p-3 text-white focus:border-orange-500 outline-none"/>
-                        <select id="library-page-filter" class="md:w-52 bg-zinc-900 border border-white/10 rounded-lg p-3 text-white focus:border-cyan-500 outline-none"></select>
-                    </div>
-                    <div id="library-page-results" class="max-h-[70vh] overflow-y-auto space-y-2 pr-1"></div>
+                <div class="lg:col-span-2 space-y-5">
+                    <div id="assigned-plan-roadmap" class="grid grid-cols-2 md:grid-cols-4 gap-3"></div>
+                    <div id="assigned-plan-detail" class="glass-panel p-5 md:p-7 rounded-3xl min-h-[360px]"></div>
                 </div>
                 <div class="glass-panel p-5 rounded-xl">
-                    <h3 class="font-label-caps text-xs text-amber-300 uppercase tracking-wider mb-4">Hall of Fame</h3>
+                    <h3 class="font-label-caps text-xs text-amber-300 uppercase tracking-wider mb-4">Your PR wall</h3>
                     <div id="pr-hall-of-fame" class="space-y-2 max-h-[70vh] overflow-y-auto pr-1"></div>
                 </div>
             </div>
         </section>
-        
+
+        <!-- NUTRITION SECTION -->
+        <section id="view-nutrition" class="view-section">
+            <header class="mb-7 flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+                <div><div class="space-kicker font-label-caps text-[10px] uppercase font-bold">SPACE GYM · FUEL PLAN</div><h2 class="mt-2 font-h1 text-4xl md:text-5xl text-white font-black">Nutrition</h2><p class="mt-2 text-slate-400">Fuel today’s training with simple, visible choices.</p></div>
+                <div class="flex gap-2"><button onclick="resetNutritionDay()" class="min-h-11 rounded-xl border border-white/10 px-4 text-xs font-bold uppercase tracking-wider text-slate-300 hover:bg-white/10 transition-all">Reset today</button></div>
+            </header>
+            <section class="space-profile rounded-3xl p-5 md:p-7 mb-6">
+                <div class="flex items-start justify-between gap-4"><div><div class="space-kicker font-label-caps text-[10px] uppercase font-bold">DAILY CALORIE BAR</div><div class="mt-2 flex items-baseline gap-2"><span id="nutrition-consumed" class="text-4xl md:text-5xl font-black text-white">0</span><span class="text-slate-400">/ <span id="nutrition-target">2400</span> kcal</span></div></div><div class="text-right"><div class="text-[10px] uppercase tracking-wider text-slate-400">Remaining</div><div id="nutrition-remaining" class="mt-1 text-2xl font-black text-cyan-300">2400 kcal</div></div></div>
+                <div class="mt-5 h-5 rounded-full bg-black/40 overflow-hidden border border-white/10"><div id="nutrition-progress-bar" class="h-full rounded-full bg-gradient-to-r from-cyan-400 via-sky-400 to-emerald-400 transition-all duration-500" style="width:0%"></div></div>
+                <div class="mt-3 flex justify-between text-[10px] font-label-caps uppercase tracking-wider text-slate-500"><span>0 kcal</span><span id="nutrition-progress-label">0% of target</span><span>Goal: 2400 kcal</span></div>
+            </section>
+            <div id="nutrition-meals" class="grid md:grid-cols-2 gap-5"></div>
+            <section class="mt-6 glass-panel rounded-3xl p-5 md:p-7"><div class="flex items-start justify-between gap-4"><div><div class="space-kicker font-label-caps text-[10px] uppercase font-bold">DAILY STACK</div><h3 class="mt-2 text-2xl font-black text-white">Supplements</h3><p class="mt-1 text-sm text-slate-400">Tap each item when it is done. Your daily stack stays connected to the nutrition plan.</p></div><span class="material-symbols-outlined text-cyan-300 text-3xl">medication</span></div><div id="nutrition-supplement-grid" class="mt-5 grid grid-cols-2 md:grid-cols-4 gap-3"></div></section>
+            <section class="mt-6 glass-panel rounded-3xl p-5 md:p-7" id="nutrition-hydration">
+                <div class="flex items-center justify-between gap-3 mb-5"><div><div class="space-kicker font-label-caps text-[10px] uppercase font-bold">DAILY HYDRATION</div><h3 class="mt-1 text-2xl font-black text-white">Hydration tracker</h3><p class="mt-1 text-sm text-slate-400">Tap a glass to track water for today.</p></div><span class="text-cyan-300 font-bold bg-cyan-400/10 px-3 py-2 rounded-full text-sm" id="water-count-text">0 / 8</span></div>
+                <div class="grid grid-cols-4 gap-3 mb-6" id="water-grid"></div>
+                <div class="h-40 pt-4 border-t border-white/10"><canvas id="chart-water" height="120"></canvas></div>
+            </section>
+        </section>
+
+        <div id="meal-substitution-modal" class="hidden fixed inset-0 z-[75] bg-black/70 backdrop-blur-sm flex items-end justify-center p-3" onclick="closeMealSubstitution()">
+            <div class="w-full max-w-lg rounded-3xl border border-cyan-300/25 bg-gradient-to-b from-surface-container-high to-surface-container p-5 shadow-2xl" onclick="event.stopPropagation()">
+                <div class="flex items-start justify-between gap-3"><div><div class="space-kicker font-label-caps text-[10px] uppercase font-bold">MEAL SUBSTITUTION</div><h3 id="meal-substitution-title" class="mt-1 text-2xl font-black text-white">Choose a substitute</h3></div><button type="button" onclick="closeMealSubstitution()" class="min-h-11 min-w-11 rounded-xl text-slate-400 hover:bg-white/10" aria-label="Close substitution dialog"><span class="material-symbols-outlined">close</span></button></div>
+                <div id="meal-substitution-content" class="mt-5"></div>
+            </div>
+        </div>
+
         <!-- PROGRESS SECTION - ANALYTICS DASHBOARD -->
         <section id="view-progress" class="view-section">
-            <header class="mb-8">
-                <h2 class="font-h1 text-4xl text-on-surface font-bold">Insights</h2>
-                <p class="font-body-lg text-zinc-400 mt-1">Advanced analytics powered by your training data.</p>
+            <header class="insights-hero mb-7">
+                <div>
+                    <div class="space-kicker font-label-caps text-[10px] uppercase font-bold">SPACE GYM · PERFORMANCE LAB</div>
+                    <h2 class="mt-2 font-h1 text-4xl md:text-5xl text-white font-black tracking-tight">Insights</h2>
+                    <p class="mt-2 max-w-xl text-sm md:text-base text-slate-400">A clear read on your training rhythm, recovery, and progress.</p>
+                </div>
+                <div class="insights-period"><span class="material-symbols-outlined text-cyan-300">calendar_month</span><span>Last 30 days</span></div>
             </header>
 
             <!-- OVERVIEW CARDS -->
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
-                <div class="glass-panel p-4 rounded-xl animate-slide-up stagger-1">
-                    <div class="text-[9px] text-zinc-500 font-label-caps uppercase tracking-wider">Sessions (Month)</div>
-                    <div class="font-data-display text-2xl text-orange-500 mt-1" id="analytics-month-sessions">0</div>
+            <div class="insights-metric-grid mb-6">
+                <div class="insight-metric animate-slide-up stagger-1">
+                    <div class="insight-metric-icon cyan"><span class="material-symbols-outlined">fitness_center</span></div>
+                    <div><div class="insight-label">Sessions</div><div class="insight-value" id="analytics-month-sessions">0</div><div class="insight-caption">this month</div></div>
                 </div>
-                <div class="glass-panel p-4 rounded-xl animate-slide-up stagger-2">
-                    <div class="text-[9px] text-zinc-500 font-label-caps uppercase tracking-wider">Volume (Month)</div>
-                    <div class="font-data-display text-2xl text-cyan-400 mt-1" id="analytics-month-volume">0</div>
+                <div class="insight-metric animate-slide-up stagger-2">
+                    <div class="insight-metric-icon violet"><span class="material-symbols-outlined">monitor_weight</span></div>
+                    <div><div class="insight-label">Total volume</div><div class="insight-value" id="analytics-month-volume">0</div><div class="insight-caption">kg moved</div></div>
                 </div>
-                <div class="glass-panel p-4 rounded-xl animate-slide-up stagger-3">
-                    <div class="text-[9px] text-zinc-500 font-label-caps uppercase tracking-wider">Avg Duration</div>
-                    <div class="font-data-display text-2xl text-green-400 mt-1" id="analytics-avg-duration">0<span class="text-sm text-zinc-500 ml-1">min</span></div>
+                <div class="insight-metric animate-slide-up stagger-3">
+                    <div class="insight-metric-icon green"><span class="material-symbols-outlined">timer</span></div>
+                    <div><div class="insight-label">Avg duration</div><div class="insight-value" id="analytics-avg-duration">0<span class="insight-unit">min</span></div><div class="insight-caption">per session</div></div>
                 </div>
-                <div class="glass-panel p-4 rounded-xl animate-slide-up stagger-4">
-                    <div class="text-[9px] text-zinc-500 font-label-caps uppercase tracking-wider">Streak</div>
-                    <div class="font-data-display text-2xl text-amber-400 mt-1" id="analytics-streak">0<span class="text-sm text-zinc-500 ml-1">days</span></div>
+                <div class="insight-metric animate-slide-up stagger-4">
+                    <div class="insight-metric-icon amber"><span class="material-symbols-outlined">local_fire_department</span></div>
+                    <div><div class="insight-label">Streak</div><div class="insight-value" id="analytics-streak">0<span class="insight-unit">days</span></div><div class="insight-caption">keep it moving</div></div>
                 </div>
             </div>
 
             <!-- FATIGUE INDEX -->
-            <div class="glass-panel p-5 rounded-xl mb-8 animate-slide-up stagger-5">
-                <div class="flex items-center justify-between mb-3 cursor-pointer" onclick="toggleCollapsible('fatigue-section')">
-                    <h3 class="font-label-caps text-xs text-zinc-400 uppercase tracking-widest">Fatigue Index</h3>
-                    <span class="material-symbols-outlined text-zinc-500 text-sm collapsible-icon" data-target="fatigue-section">expand_less</span>
+            <div class="insight-panel mb-6 animate-slide-up stagger-5">
+                <div class="insight-panel-head cursor-pointer" onclick="toggleCollapsible('fatigue-section')">
+                    <div><div class="insight-eyebrow">Readiness check</div><h3>Fatigue index</h3></div>
+                    <span class="material-symbols-outlined text-slate-500 collapsible-icon" data-target="fatigue-section">expand_less</span>
                 </div>
                 <div id="fatigue-section" class="collapsible-content open">
-                    <div class="flex items-center gap-4">
-                        <div class="flex-1 h-3 bg-zinc-800 rounded-full overflow-hidden">
+                    <div class="fatigue-readout"><span id="fatigue-label" class="fatigue-status">Recovered</span><span class="text-xs text-slate-500">based on the last 7 days</span></div>
+                    <div class="flex items-center gap-3 mt-4">
+                        <div class="flex-1 h-3 bg-slate-900 rounded-full overflow-hidden">
                             <div id="fatigue-bar" class="h-full rounded-full transition-all duration-700" style="width: 0%; background: linear-gradient(90deg, #22c55e, #5b8cff, #ef4444);"></div>
                         </div>
-                        <span id="fatigue-label" class="font-label-caps text-xs text-green-400 tracking-wider">Recovered</span>
                     </div>
-                    <p id="fatigue-detail" class="text-[10px] text-zinc-500 mt-2">Based on frequency, volume, and RPE over the past 7 days.</p>
+                    <p id="fatigue-detail" class="mt-3 text-xs leading-5 text-slate-400">Based on frequency, volume, and RPE over the past 7 days.</p>
                 </div>
             </div>
 
             <!-- MUSCLE HEATMAP -->
-            <div class="glass-panel p-5 rounded-xl mb-8">
-                <div class="flex items-center justify-between mb-4 cursor-pointer" onclick="toggleCollapsible('heatmap-section')">
-                    <h3 class="font-label-caps text-xs text-zinc-400 uppercase tracking-widest">Muscle Heatmap</h3>
-                    <span class="material-symbols-outlined text-zinc-500 text-sm collapsible-icon" data-target="heatmap-section">expand_less</span>
+            <div class="insight-panel mb-6">
+                <div class="insight-panel-head cursor-pointer" onclick="toggleCollapsible('heatmap-section')">
+                    <div><div class="insight-eyebrow">Training balance</div><h3>Muscle heatmap</h3></div>
+                    <span class="material-symbols-outlined text-slate-500 collapsible-icon" data-target="heatmap-section">expand_less</span>
                 </div>
                 <div id="heatmap-section" class="collapsible-content open">
-                    <div class="flex items-center gap-3 mb-4">
-                        <select id="heatmap-scope" onchange="renderHeatmap()" class="bg-zinc-900 border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white focus:border-orange-500 outline-none">
+                    <div class="insight-controls mb-5">
+                        <select id="heatmap-scope" onchange="renderHeatmap()" class="insight-select">
                             <option value="week">This Week</option>
                             <option value="month">This Month</option>
                             <option value="all">All Time</option>
                         </select>
-                        <button onclick="toggleHeatmapView()" id="heatmap-flip-btn" class="px-3 py-1.5 border border-white/10 rounded-lg text-xs text-zinc-400 hover:text-orange-500 hover:border-orange-500/50 transition-all font-label-caps tracking-wider">
-                            <span class="material-symbols-outlined text-sm align-text-bottom">sync</span> Flip
+                        <button onclick="toggleHeatmapView()" id="heatmap-flip-btn" class="insight-secondary-btn">
+                            <span class="material-symbols-outlined text-sm">sync</span> Flip view
                         </button>
                     </div>
-                    <div class="flex flex-col gap-6">
-                        <div class="flex flex-col md:flex-row items-start md:items-center gap-4">
-                            <div id="heatmap-body" class="relative w-full md:w-56 flex-shrink-0"></div>
-                            <div id="heatmap-legend" class="w-full">
-                                <div id="heatmap-details" class="space-y-2 text-sm"></div>
-                            </div>
+                    <div class="heatmap-layout">
+                        <div id="heatmap-body" class="heatmap-figure"></div>
+                        <div id="heatmap-legend" class="heatmap-summary">
+                            <div class="insight-eyebrow">Muscle groups</div>
+                            <div id="heatmap-details" class="space-y-2 text-sm"></div>
                         </div>
                     </div>
                 </div>
@@ -1188,9 +1245,9 @@ tailwind.config = {
         </section>
 
         <!-- SUPPLEMENTS SECTION -->
-        <section id="view-supps" class="view-section">
+        <section id="view-supps" class="view-section" hidden aria-hidden="true">
             <header class="mb-8">
-                <h2 class="font-h1 text-4xl text-on-surface font-bold">Recover</h2>
+                <h2 class="font-h1 text-4xl text-on-surface font-bold">Supplements</h2>
             </header>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-20">
                 <!-- Supps Checklist -->
@@ -1216,66 +1273,31 @@ tailwind.config = {
                     </div>
                 </div>
                 
-                <!-- Water Tracker -->
-                <div class="glass-panel p-6 rounded-xl shadow-lg flex flex-col">
-                    <div class="flex justify-between items-center mb-6">
-                        <h3 class="font-label-caps text-xs text-zinc-400 uppercase tracking-widest">Hydration Tracker</h3>
-                        <span class="text-cyan-400 font-bold bg-cyan-400/10 px-3 py-1 rounded-full text-sm" id="water-count-text">0 / 8</span>
-                    </div>
-                    <div class="grid grid-cols-4 gap-3 mb-6" id="water-grid">
-                    </div>
-                    <div class="mt-auto pt-4 border-t border-white/10">
-                        <canvas id="chart-water" height="120"></canvas>
-                    </div>
-                </div>
             </div>
 
-            <!-- Reminder Center -->
-            <div class="glass-panel p-6 rounded-xl mt-6 shadow-lg relative z-20" id="notification-center">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
-                    <div>
-                        <h3 class="font-label-caps text-xs text-zinc-400 uppercase tracking-widest">Reminder Center</h3>
-                        <p class="text-sm text-zinc-500 mt-1">Keep training, creatine, and recovery on your radar.</p>
-                    </div>
-                    <button id="notification-permission-btn" onclick="requestNotificationPermission()" class="min-h-[44px] border border-cyan-500/40 text-cyan-300 px-4 py-2 rounded-lg text-xs font-label-caps uppercase tracking-wider hover:bg-cyan-500/10 transition-all">Enable browser alerts</button>
-                </div>
-                <div class="space-y-3" id="notification-settings-list">
-                    <div class="flex items-center gap-3 p-3 rounded-xl bg-black/30 border border-white/5" data-reminder-row="workout">
-                        <span class="material-symbols-outlined text-orange-400">fitness_center</span>
-                        <div class="flex-1 min-w-0"><div class="font-semibold text-white">Workout reminder</div><div class="text-xs text-zinc-500">Time to start your next session</div></div>
-                        <input type="time" id="notify-workout-time" onchange="saveNotificationSettings()" class="w-28 text-sm px-2 py-2">
-                        <input type="checkbox" id="notify-workout-enabled" onchange="saveNotificationSettings()" class="w-5 h-5" aria-label="Enable workout reminder">
-                    </div>
-                    <div class="flex items-center gap-3 p-3 rounded-xl bg-black/30 border border-white/5" data-reminder-row="creatine">
-                        <span class="material-symbols-outlined text-violet-400">medication</span>
-                        <div class="flex-1 min-w-0"><div class="font-semibold text-white">Creatine reminder</div><div class="text-xs text-zinc-500">Log your daily 5g dose</div></div>
-                        <input type="time" id="notify-creatine-time" onchange="saveNotificationSettings()" class="w-28 text-sm px-2 py-2">
-                        <input type="checkbox" id="notify-creatine-enabled" onchange="saveNotificationSettings()" class="w-5 h-5" aria-label="Enable creatine reminder">
-                    </div>
-                    <div class="flex items-center gap-3 p-3 rounded-xl bg-black/30 border border-white/5" data-reminder-row="recovery">
-                        <span class="material-symbols-outlined text-green-400">self_improvement</span>
-                        <div class="flex-1 min-w-0"><div class="font-semibold text-white">Recovery check-in</div><div class="text-xs text-zinc-500">Review hydration and muscle readiness</div></div>
-                        <input type="time" id="notify-recovery-time" onchange="saveNotificationSettings()" class="w-28 text-sm px-2 py-2">
-                        <input type="checkbox" id="notify-recovery-enabled" onchange="saveNotificationSettings()" class="w-5 h-5" aria-label="Enable recovery reminder">
-                    </div>
-                </div>
-                <div id="notification-status" class="text-xs text-zinc-500 mt-4"></div>
-            </div>
-            
-            <!-- Streak -->
-            <div class="glass-panel p-6 rounded-xl mt-6 shadow-lg relative z-20">
-                <h3 class="font-label-caps text-xs text-zinc-400 uppercase tracking-widest mb-4">7-Day Consistency</h3>
-                <div class="flex gap-2 justify-between" id="streak-grid">
-                </div>
-                <p id="motivational-msg" class="mt-6 text-center text-orange-500 italic font-medium font-body-lg text-lg tracking-wide"></p>
-            </div>
         </section>
 
         <!-- EXPORT SECTION -->
         <section id="view-export" class="view-section">
             <header class="mb-8">
-                <h2 class="font-h1 text-4xl text-on-surface font-bold">Vault</h2>
+                <h2 class="font-h1 text-4xl text-on-surface font-bold">Settings</h2>
             </header>
+            <section class="glass-panel p-6 rounded-xl mb-6 shadow-lg relative z-20" id="notification-center">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
+                    <div>
+                        <div class="space-kicker font-label-caps text-[10px] uppercase font-bold">VAULT · SETTINGS</div>
+                        <h3 class="mt-1 text-2xl font-black text-white">Settings</h3>
+                        <p class="text-sm text-slate-400 mt-1">Manage workout, creatine, and recovery reminders.</p>
+                    </div>
+                    <button id="notification-permission-btn" onclick="requestNotificationPermission()" class="min-h-[44px] border border-cyan-500/40 text-cyan-300 px-4 py-2 rounded-lg text-xs font-label-caps uppercase tracking-wider hover:bg-cyan-500/10 transition-all">Enable browser alerts</button>
+                </div>
+                <div class="space-y-3" id="notification-settings-list">
+                    <div class="flex items-center gap-3 p-3 rounded-xl bg-black/30 border border-white/5" data-reminder-row="workout"><span class="material-symbols-outlined text-cyan-400">fitness_center</span><div class="flex-1 min-w-0"><div class="font-semibold text-white">Workout reminder</div><div class="text-xs text-zinc-500">Time to start your next session</div></div><input type="time" id="notify-workout-time" onchange="saveNotificationSettings()" class="w-28 text-sm px-2 py-2"><input type="checkbox" id="notify-workout-enabled" onchange="saveNotificationSettings()" class="w-5 h-5" aria-label="Enable workout reminder"></div>
+                    <div class="flex items-center gap-3 p-3 rounded-xl bg-black/30 border border-white/5" data-reminder-row="creatine"><span class="material-symbols-outlined text-violet-400">medication</span><div class="flex-1 min-w-0"><div class="font-semibold text-white">Creatine reminder</div><div class="text-xs text-zinc-500">Log your daily 5g dose</div></div><input type="time" id="notify-creatine-time" onchange="saveNotificationSettings()" class="w-28 text-sm px-2 py-2"><input type="checkbox" id="notify-creatine-enabled" onchange="saveNotificationSettings()" class="w-5 h-5" aria-label="Enable creatine reminder"></div>
+                    <div class="flex items-center gap-3 p-3 rounded-xl bg-black/30 border border-white/5" data-reminder-row="recovery"><span class="material-symbols-outlined text-green-400">self_improvement</span><div class="flex-1 min-w-0"><div class="font-semibold text-white">Recovery check-in</div><div class="text-xs text-zinc-500">Review hydration and muscle readiness</div></div><input type="time" id="notify-recovery-time" onchange="saveNotificationSettings()" class="w-28 text-sm px-2 py-2"><input type="checkbox" id="notify-recovery-enabled" onchange="saveNotificationSettings()" class="w-5 h-5" aria-label="Enable recovery reminder"></div>
+                </div>
+                <div id="notification-status" class="text-xs text-zinc-500 mt-4"></div>
+            </section>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-20">
                 <!-- Cloud Sync -->
                 <div class="glass-panel p-6 rounded-xl shadow-lg border-t-4 border-t-green-500 md:col-span-2">
@@ -1347,13 +1369,13 @@ tailwind.config = {
         <span class="material-symbols-outlined text-[24px]">insights</span><span class="font-h2 text-[10px] font-bold">Insights</span>
     </button>
     <button data-target="library" class="nav-btn-mob flex flex-col items-center justify-center w-full h-full text-zinc-500 hover:text-orange-500 transition-colors gap-1 pt-1">
-        <span class="material-symbols-outlined text-[24px]">grid_view</span><span class="font-h2 text-[10px] font-bold">Moves</span>
+        <span class="material-symbols-outlined text-[24px]">menu_book</span><span class="font-h2 text-[10px] font-bold">Library</span>
     </button>
-    <button data-target="supps" class="nav-btn-mob flex flex-col items-center justify-center w-full h-full text-zinc-500 hover:text-orange-500 transition-colors gap-1 pt-1">
-        <span class="material-symbols-outlined text-[24px]">recovery</span><span class="font-h2 text-[10px] font-bold">Recover</span>
+    <button data-target="nutrition" class="nav-btn-mob flex flex-col items-center justify-center w-full h-full text-zinc-500 hover:text-orange-500 transition-colors gap-1 pt-1">
+        <span class="material-symbols-outlined text-[24px]">restaurant</span><span class="font-h2 text-[10px] font-bold">Nutrition</span>
     </button>
     <button data-target="export" class="nav-btn-mob flex flex-col items-center justify-center w-full h-full text-zinc-500 hover:text-orange-500 transition-colors gap-1 pt-1">
-        <span class="material-symbols-outlined text-[24px]">inventory_2</span><span class="font-h2 text-[10px] font-bold">Vault</span>
+        <span class="material-symbols-outlined text-[24px]">settings</span><span class="font-h2 text-[10px] font-bold">Settings</span>
     </button>
 </nav>
 
@@ -1852,6 +1874,48 @@ if (!notificationSettings || typeof notificationSettings !== 'object') notificat
     notificationSettings[kind].enabled = notificationSettings[kind].enabled !== false;
     notificationSettings[kind].time = /^\d{2}:\d{2}$/.test(notificationSettings[kind].time || '') ? notificationSettings[kind].time : ({ workout: '18:00', creatine: '09:00', recovery: '21:00' }[kind]);
 });
+const NUTRITION_MEALS = {
+    breakfast: { label: 'Breakfast', icon: 'sunny', color: 'amber', presets: [{ name: 'Oats 80g + banana 120g', calories: 420 }, { name: 'Eggs 150g + toast 60g', calories: 380 }] },
+    lunch: { label: 'Lunch', icon: 'wb_sunny', color: 'cyan', presets: [{ name: 'Chicken 180g + rice 250g', calories: 650 }, { name: 'Beef 180g + bowl 250g', calories: 720 }] },
+    dinner: { label: 'Dinner', icon: 'nights_stay', color: 'violet', presets: [{ name: 'Chicken 180g + pasta 220g', calories: 610 }, { name: 'Tuna 150g + potatoes 250g', calories: 520 }] },
+    snack: { label: 'Snack', icon: 'cookie', color: 'emerald', presets: [{ name: 'Greek yogurt 200g', calories: 180 }, { name: 'Protein shake 350ml', calories: 240 }] }
+};
+// Coach-approved conversion rules will be added here when the full formula is provided.
+const NUTRITION_SUBSTITUTIONS = {};
+const nutritionTodayKey = getLocalYMD(new Date());
+let nutritionState = safeParse('space_gym_nutrition', null);
+if (!nutritionState || nutritionState.date !== nutritionTodayKey) nutritionState = { date: nutritionTodayKey, target: 2400, meals: { breakfast: [], lunch: [], dinner: [], snack: [] } };
+nutritionState.target = Number(nutritionState.target) || 2400;
+Object.keys(NUTRITION_MEALS).forEach(meal => { if (!Array.isArray(nutritionState.meals?.[meal])) nutritionState.meals[meal] = []; });
+function saveNutrition() { localStorage.setItem('space_gym_nutrition', JSON.stringify(nutritionState)); }
+saveNutrition();
+let profileMetrics = safeParse('space_gym_profile_metrics', { startingWeight: '75', targetWeight: '80', height: '178' });
+if (!profileMetrics || typeof profileMetrics !== 'object') profileMetrics = { startingWeight: '75', targetWeight: '80', height: '178' };
+if (!profileMetrics.startingWeight) profileMetrics.startingWeight = '75';
+if (!profileMetrics.targetWeight) profileMetrics.targetWeight = '80';
+if (!profileMetrics.height) profileMetrics.height = '178';
+function saveProfileMetrics() { localStorage.setItem('space_gym_profile_metrics', JSON.stringify(profileMetrics)); }
+function formatMetric(value, unit) { return value ? `${value} ${unit}` : 'Not set'; }
+function renderProfileMetrics() {
+    const starting = document.getElementById('profile-starting-weight');
+    const target = document.getElementById('profile-target-weight');
+    const height = document.getElementById('profile-height');
+    if (starting) starting.textContent = formatMetric(profileMetrics.startingWeight, 'kg');
+    if (target) target.textContent = formatMetric(profileMetrics.targetWeight, 'kg');
+    if (height) height.textContent = formatMetric(profileMetrics.height, 'cm');
+}
+function editProfileMetrics() {
+    const starting = prompt('Starting weight in kg:', profileMetrics.startingWeight || '');
+    if (starting === null) return;
+    const target = prompt('Target weight in kg:', profileMetrics.targetWeight || '');
+    if (target === null) return;
+    const height = prompt('Height in cm:', profileMetrics.height || '');
+    if (height === null) return;
+    profileMetrics = { startingWeight: starting.trim(), targetWeight: target.trim(), height: height.trim() };
+    saveProfileMetrics();
+    renderProfileMetrics();
+}
+saveProfileMetrics();
 let woState = null;
 let woSessionTimerInterval = null;
 let timerRestStart = 0;
@@ -2242,7 +2306,56 @@ function hydratePRRecordsFromSessions() {
     localStorage.setItem('kinetic_pr_records', JSON.stringify(prRecords));
 }
 
+function renderAssignedLibrary() {
+    const roadmap = document.getElementById('assigned-plan-roadmap');
+    const detail = document.getElementById('assigned-plan-detail');
+    const hall = document.getElementById('pr-hall-of-fame');
+    if (!roadmap || !detail || !hall) return;
+    const plans = ['ANT-A', 'POST-A', 'ANT-B', 'POST-B'].map(getTemplateById).filter(Boolean);
+    const selectedId = localStorage.getItem('space_gym_library_plan') || getNextRotatingTemplateId();
+    roadmap.innerHTML = '';
+    plans.forEach((plan, index) => {
+        const done = sessions.filter(session => session.type === plan.id).length;
+        const card = document.createElement('button');
+        card.type = 'button';
+        card.onclick = () => selectAssignedPlan(plan.id);
+        card.className = 'relative text-left rounded-2xl p-4 border transition-all ' + (plan.id === selectedId ? 'border-cyan-300/60 bg-cyan-400/10 shadow-[0_0_25px_rgba(34,211,238,.12)]' : 'border-white/10 bg-white/[.03] hover:border-cyan-300/30');
+        card.innerHTML = '<div class="flex items-center justify-between"><span class="text-2xl font-black ' + (plan.id === selectedId ? 'text-cyan-300' : 'text-slate-500') + '">0' + (index + 1) + '</span><span class="text-[10px] font-bold uppercase tracking-wider ' + (done ? 'text-emerald-300' : 'text-slate-500') + '">' + (done ? 'Logged' : 'Planned') + '</span></div><div class="mt-5 text-sm font-black text-white">' + esc(plan.day) + '</div><div class="mt-1 text-[10px] text-slate-400">' + plan.exercises.length + ' assigned moves</div>';
+        roadmap.appendChild(card);
+    });
+    const selected = getTemplateById(selectedId) || plans[0];
+    if (!selected) return;
+    const isNext = selected.id === getNextRotatingTemplateId();
+    detail.innerHTML = '<div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4"><div><div class="space-kicker font-label-caps text-[10px] uppercase font-bold">COACH ASSIGNED DAY</div><h3 class="mt-2 text-3xl md:text-4xl font-black text-white">' + esc(selected.day) + '</h3><p class="mt-2 max-w-xl text-sm leading-relaxed text-slate-400">A focused ' + esc(selected.day.toLowerCase()) + ' session selected by Coach Hady for Mahmoud’s current phase.</p></div><button type="button" id="assigned-plan-start" class="min-h-11 rounded-xl bg-cyan-400 px-4 text-xs font-black uppercase tracking-wider text-slate-950 hover:bg-cyan-300 transition-all">' + (isNext ? 'Start next session' : 'Open this session') + ' ↗</button></div><div id="assigned-exercise-grid" class="mt-7 grid grid-cols-2 md:grid-cols-3 gap-3"></div>';
+    document.getElementById('assigned-plan-start').onclick = () => startAssignedPlan(selected.id);
+    const exerciseGrid = document.getElementById('assigned-exercise-grid');
+    selected.exercises.forEach((exercise, index) => {
+        const tile = document.createElement('div');
+        tile.className = 'rounded-2xl border border-white/10 bg-black/20 p-4 min-h-28 hover:border-cyan-300/30 transition-all';
+        tile.innerHTML = '<div class="flex items-center justify-between"><span class="h-7 w-7 rounded-full bg-cyan-400/10 grid place-items-center text-xs font-black text-cyan-300">' + String(index + 1).padStart(2, '0') + '</span><span class="text-[9px] uppercase tracking-wider text-slate-500">' + exercise.sets + ' sets</span></div><div class="mt-4 text-sm font-bold text-white">' + esc(exercise.name) + '</div><div class="mt-1 text-[10px] uppercase tracking-wider text-slate-400">' + esc(exercise.primary) + ' · ' + esc(exercise.reps) + '</div>';
+        exerciseGrid.appendChild(tile);
+    });
+    const hof = Object.values(prRecords).sort((a, b) => b.volume - a.volume).slice(0, 20);
+    hall.innerHTML = hof.length ? hof.map(pr => '<div class="p-3 rounded-xl border border-amber-500/20 bg-amber-500/5"><div class="text-sm font-h2 text-amber-100">' + esc(pr.exercise) + '</div><div class="text-xs text-zinc-400 mt-1">' + pr.weight + 'kg × ' + pr.reps + ' = <span class="text-amber-300 font-bold">' + pr.volume + '</span></div><div class="text-[10px] text-zinc-500 font-label-caps uppercase tracking-wider mt-1">' + esc(pr.date || 'Unknown date') + '</div></div>').join('') : '<div class="text-center text-zinc-500 py-6">No PRs yet.</div>';
+}
+
+function selectAssignedPlan(id) {
+    localStorage.setItem('space_gym_library_plan', id);
+    renderAssignedLibrary();
+}
+
+function startAssignedPlan(id) {
+    const select = document.getElementById('wo-type');
+    if (select) {
+        select.value = id;
+        loadTemplateDraftFromSelection();
+    }
+    switchNav('workout');
+}
+
 function renderLibraryPage() {
+    renderAssignedLibrary();
+    return;
     const search = document.getElementById('library-page-search');
     const filter = document.getElementById('library-page-filter');
     const results = document.getElementById('library-page-results');
@@ -2307,6 +2420,108 @@ function bindLibraryInputs() {
     }
 }
 
+function addNutritionItem(meal, name, calories) {
+    if (!nutritionState.meals[meal]) nutritionState.meals[meal] = [];
+    nutritionState.meals[meal].push({ name, calories: Number(calories) || 0, addedAt: Date.now() });
+    saveNutrition();
+    renderNutrition();
+}
+
+function removeNutritionItem(meal, index) {
+    if (!nutritionState.meals[meal]) return;
+    nutritionState.meals[meal].splice(index, 1);
+    saveNutrition();
+    renderNutrition();
+}
+
+function resetNutritionDay() {
+    if (!confirm('Reset all nutrition entries for today?')) return;
+    nutritionState.meals = { breakfast: [], lunch: [], dinner: [], snack: [] };
+    saveNutrition();
+    renderNutrition();
+}
+
+function openMealSubstitution(meal) {
+    const modal = document.getElementById('meal-substitution-modal');
+    const title = document.getElementById('meal-substitution-title');
+    const content = document.getElementById('meal-substitution-content');
+    const meta = NUTRITION_MEALS[meal];
+    if (!modal || !title || !content || !meta) return;
+    title.textContent = `${meta.label} substitutions`;
+    const options = NUTRITION_SUBSTITUTIONS[meal] || [];
+    content.innerHTML = options.length
+        ? options.map(option => `<button type="button" class="w-full min-h-12 mb-2 rounded-xl border border-white/10 bg-white/[.03] px-4 text-left text-sm text-white hover:border-cyan-300/40 transition-all">${option.label}</button>`).join('')
+        : `<div class="rounded-2xl border border-dashed border-cyan-300/25 bg-cyan-400/[.04] p-4"><div class="flex items-center gap-3"><span class="material-symbols-outlined text-cyan-300">tune</span><div><div class="text-sm font-bold text-white">Coach formula coming soon</div><p class="mt-1 text-xs leading-5 text-slate-400">This meal will support conversions such as 100 g chicken → 80 g meat once the approved substitution rules are added.</p></div></div></div>`;
+    modal.classList.remove('hidden');
+}
+
+function closeMealSubstitution() {
+    document.getElementById('meal-substitution-modal')?.classList.add('hidden');
+}
+
+function toggleNutritionSupplement(key) {
+    const today = getLocalYMD(new Date());
+    if (!supps[today]) supps[today] = { c: false, m: false, o: false, water: 0 };
+    if (key === 'v') {
+        const last = localStorage.getItem('kinetic_vitD_last');
+        if (last === today) localStorage.removeItem('kinetic_vitD_last');
+        else localStorage.setItem('kinetic_vitD_last', today);
+    } else {
+        supps[today][key] = !Boolean(supps[today][key]);
+    }
+    localStorage.setItem('kinetic_supps', JSON.stringify(supps));
+    renderNutritionSupplements();
+    renderHydration();
+}
+
+function renderNutritionSupplements() {
+    const container = document.getElementById('nutrition-supplement-grid');
+    if (!container) return;
+    const today = getLocalYMD(new Date());
+    if (!supps[today]) supps[today] = { c: false, m: false, o: false, water: 0 };
+    const t = supps[today];
+    const items = [
+        { key: 'c', name: 'Creatine', dose: '5g', icon: 'bolt' },
+        { key: 'm', name: 'Multivitamin', dose: '1 serving', icon: 'medication' },
+        { key: 'o', name: 'Omega-3', dose: '1 serving', icon: 'water_drop' },
+        { key: 'v', name: 'Vitamin D3', dose: '5000 IU', icon: 'wb_sunny' }
+    ];
+    container.innerHTML = items.map(item => {
+        const checked = item.key === 'v' ? localStorage.getItem('kinetic_vitD_last') === today : Boolean(t[item.key]);
+        return `<button type="button" onclick="toggleNutritionSupplement('${item.key}')" class="min-h-28 rounded-2xl border p-4 text-left transition-all ${checked ? 'border-emerald-300/50 bg-emerald-400/10' : 'border-white/10 bg-white/[.03] hover:border-cyan-300/40'}"><div class="flex items-center justify-between"><span class="material-symbols-outlined ${checked ? 'text-emerald-300' : 'text-cyan-300'}">${item.icon}</span><span class="material-symbols-outlined text-base ${checked ? 'text-emerald-300' : 'text-slate-600'}">${checked ? 'check_circle' : 'radio_button_unchecked'}</span></div><div class="mt-4 text-sm font-bold text-white">${item.name}</div><div class="mt-1 text-[10px] text-slate-400">${item.dose}</div></button>`;
+    }).join('');
+}
+
+function renderNutrition() {
+    const mealsContainer = document.getElementById('nutrition-meals');
+    if (!mealsContainer) return;
+    const total = Object.values(nutritionState.meals).flat().reduce((sum, item) => sum + Number(item.calories || 0), 0);
+    const target = Number(nutritionState.target) || 2400;
+    const remaining = Math.max(0, target - total);
+    const percent = Math.min(100, Math.round((total / target) * 100));
+    const consumedEl = document.getElementById('nutrition-consumed');
+    const targetEl = document.getElementById('nutrition-target');
+    const remainingEl = document.getElementById('nutrition-remaining');
+    const bar = document.getElementById('nutrition-progress-bar');
+    const label = document.getElementById('nutrition-progress-label');
+    if (consumedEl) consumedEl.textContent = total.toLocaleString();
+    if (targetEl) targetEl.textContent = target.toLocaleString();
+    if (remainingEl) remainingEl.textContent = `${remaining.toLocaleString()} kcal`;
+    if (bar) bar.style.width = `${percent}%`;
+    if (label) label.textContent = `${percent}% of target`;
+    renderNutritionSupplements();
+    mealsContainer.innerHTML = Object.entries(NUTRITION_MEALS).map(([meal, meta]) => {
+        const logged = nutritionState.meals[meal] || [];
+        const mealTotal = logged.reduce((sum, item) => sum + Number(item.calories || 0), 0);
+        return `
+            <article class="glass-panel rounded-3xl p-5 md:p-6 border-t-2 border-${meta.color}-400/50">
+                <div class="flex items-start justify-between gap-3"><div class="flex items-center gap-3"><div class="h-11 w-11 rounded-2xl bg-${meta.color}-400/10 flex items-center justify-center"><span class="material-symbols-outlined text-${meta.color}-300">${meta.icon}</span></div><div><h3 class="text-xl font-black text-white">${meta.label}</h3><p class="text-xs text-slate-400">${mealTotal.toLocaleString()} kcal logged</p></div></div><div class="flex items-center gap-2"><span class="text-xs font-bold text-${meta.color}-300">${logged.length} item${logged.length === 1 ? '' : 's'}</span><button type="button" onclick="openMealSubstitution('${meal}')" class="min-h-10 rounded-lg border border-cyan-300/25 px-2.5 text-[10px] font-bold uppercase tracking-wider text-cyan-200 hover:bg-cyan-400/10 transition-all">Substitute</button></div></div>
+                <div class="mt-5 grid grid-cols-2 gap-2">${meta.presets.map(item => `<button onclick="addNutritionItem('${meal}','${item.name}',${item.calories})" class="min-h-12 rounded-xl border border-white/10 bg-white/[.03] px-3 text-left hover:border-cyan-300/40 hover:bg-cyan-400/[.06] active:scale-[.98] transition-all"><span class="block text-xs font-bold text-white">${item.name}</span><span class="mt-1 block text-[10px] text-slate-400">+${item.calories} kcal</span></button>`).join('')}</div>
+                <div class="mt-4 space-y-2">${logged.length ? logged.map((item, index) => `<div class="flex items-center justify-between gap-3 rounded-xl bg-black/20 px-3 py-2"><span class="text-sm text-slate-200">${item.name}</span><button onclick="removeNutritionItem('${meal}',${index})" class="min-h-9 min-w-9 rounded-lg text-slate-400 hover:bg-rose-400/10 hover:text-rose-300 transition-all" aria-label="Remove ${item.name}"><span class="material-symbols-outlined text-base">remove_circle</span></button></div>`).join('') : '<div class="py-3 text-center text-xs text-slate-500">Tap a meal to add it to today.</div>'}</div>
+            </article>`;
+    }).join('');
+}
+
 // --- NAVIGATION ---
 function switchNav(target) {
     document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
@@ -2341,7 +2556,8 @@ function switchNav(target) {
     if(target === 'home') renderHome();
     if(target === 'progress') renderProgress();
     if(target === 'library') renderLibraryPage();
-    if(target === 'supps') renderSupps();
+    if(target === 'nutrition') renderNutrition();
+    if(target === 'export') renderNotificationSettings();
 }
 
 document.querySelectorAll('.nav-btn, .nav-btn-mob').forEach(b => {
@@ -2357,6 +2573,7 @@ function renderHome() {
     document.getElementById('home-total-volume').textContent = totV.toLocaleString();
     renderGamification();
     renderNotifications();
+    renderConsistencyStreak();
     
     if(sessions.length > 0) {
         const last = sessions[sessions.length - 1];
@@ -3309,7 +3526,7 @@ function renderExerciseTrendChart(exName) {
 // --- REMINDERS ---
 const NOTIFICATION_META = {
     workout: { title: 'Workout reminder', icon: 'fitness_center', color: 'orange', message: 'Your next session is waiting. Keep the streak alive.' },
-    creatine: { title: 'Creatine reminder', icon: 'medication', color: 'violet', message: 'Log your daily creatine dose in Recover.' },
+    creatine: { title: 'Creatine reminder', icon: 'medication', color: 'violet', message: 'Log your daily creatine dose in Nutrition.' },
     recovery: { title: 'Recovery check-in', icon: 'self_improvement', color: 'green', message: 'Review hydration and see which muscles are ready.' }
 };
 
@@ -3408,17 +3625,85 @@ function renderNotifications() {
 }
 
 // --- WELLNESS & SUPPS ---
-function renderSupps() {
+function renderHydration() {
+    const today = getLocalYMD(new Date());
+    if(!supps[today]) supps[today] = { c:false, m:false, o:false, water:0 };
+    const t = supps[today];
+
+    // Water grid
+    document.getElementById('water-count-text').textContent = `${t.water} / 8`;
+    const wg = document.getElementById('water-grid');
+    wg.innerHTML = '';
+    for(let i=1; i<=8; i++) {
+        const fill = i <= t.water
+            ? 'bg-cyan-500 shadow-[0_0_15px_rgba(0,227,253,0.6)] border-cyan-400 scale-105'
+            : 'bg-black border-white/10 hover:border-cyan-500/50';
+        wg.innerHTML += `<div onclick="setWater(${i})" class="aspect-square rounded-xl border-2 transition-all cursor-pointer ${fill}"></div>`;
+    }
+    
+    // Water chart
+    if(typeof Chart === 'undefined') return;
+    const wData = [];
+    const wLabels = [];
+    const d = new Date();
+    for(let i=6; i>=0; i--) {
+        const dt = new Date(d); dt.setDate(d.getDate()-i);
+        const ds = getLocalYMD(dt);
+        wData.push((supps[ds] && supps[ds].water) || 0);
+        wLabels.push(i===0 ? 'Today' : dt.toLocaleDateString('en-US',{weekday:'short'}));
+    }
+    if(charts.water) charts.water.destroy();
+    charts.water = new Chart(document.getElementById('chart-water'), {
+        type: 'bar',
+        data: { labels: wLabels, datasets: [{ label: 'Glasses', data: wData, backgroundColor: '#5b8cff', borderRadius: 8 }] },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            scales:{ y:{ max:8, ticks:{ stepSize:2 } } },
+            plugins: { legend: { display: false } }
+        }
+    });
+}
+
+function renderConsistencyStreak() {
+    const sg = document.getElementById('streak-grid');
+    const message = document.getElementById('motivational-msg');
+    if (!sg || !message) return;
+
+    sg.innerHTML = '';
+    const d = new Date();
+    let streakCount = 0;
+    for(let i=6; i>=0; i--) {
+        const dt = new Date(d); dt.setDate(d.getDate()-i);
+        const dateStr = getLocalYMD(dt);
+        const hasWork = sessions.some(s => s.date === dateStr);
+        const hasSupp = supps[dateStr] && supps[dateStr].c;
+        const done = hasWork || hasSupp;
+        if(done) streakCount++;
+        const bg = done ? 'bg-cyan-400 shadow-[0_0_12px_rgba(34,211,238,0.35)] text-slate-950' : 'bg-slate-950 border border-white/10 text-slate-600';
+        sg.innerHTML += `<div class="flex-1 aspect-square max-w-16 rounded-xl ${bg} flex flex-col items-center justify-center transition-all"><span class="text-[8px] font-label-caps opacity-60 block mb-1">${dt.toLocaleDateString('en-US',{weekday:'short'}).toUpperCase()}</span><span class="material-symbols-outlined text-sm ${done?'fill':''}">${done?'local_fire_department':'remove'}</span></div>`;
+    }
+    const msgs = [
+        'A bad workout is better than no workout.',
+        'Consistency is the only currency that matters.',
+        'You are building the machine.',
+        'Embrace the friction. Adapt and overcome.',
+        'Discipline equals freedom.'
+    ];
+    message.textContent = `"${msgs[streakCount % msgs.length]}"`;
+}
+
+// --- WELLNESS & SUPPS (legacy duplicate kept inert) ---
+function renderSuppsLegacy() {
     const today = getLocalYMD(new Date());
     if(!supps[today]) supps[today] = { c:false, m:false, o:false, water:0 };
     const t = supps[today];
 
     renderNotificationSettings();
-    
+
     document.getElementById('supp-creatine').checked = t.c;
     document.getElementById('supp-multi').checked = t.m;
     document.getElementById('supp-omega').checked = t.o;
-    
+
     // Vitamin D Logic (every 3 days)
     const lastVitD = localStorage.getItem('kinetic_vitD_last');
     const vitDContainer = document.getElementById('supp-vitd-container');
@@ -3428,7 +3713,7 @@ function renderSupps() {
         const diff = Math.floor((new Date(today) - new Date(lastVitD)) / (1000 * 60 * 60 * 24));
         if (diff < 3 && lastVitD !== today) isDue = false;
     }
-    
+
     if (isDue) {
         vitDContainer.classList.remove('hidden');
         vitDContainer.classList.add('flex');
@@ -3437,56 +3722,42 @@ function renderSupps() {
         vitDContainer.classList.add('hidden');
         vitDContainer.classList.remove('flex');
     }
-    
+
     // Water grid
     document.getElementById('water-count-text').textContent = `${t.water} / 8`;
     const wg = document.getElementById('water-grid');
     wg.innerHTML = '';
     for(let i=1; i<=8; i++) {
-        const fill = i <= t.water 
-            ? 'bg-cyan-500 shadow-[0_0_15px_rgba(0,227,253,0.6)] border-cyan-400 scale-105' 
+        const fill = i <= t.water
+            ? 'bg-cyan-500 shadow-[0_0_15px_rgba(0,227,253,0.6)] border-cyan-400 scale-105'
             : 'bg-black border-white/10 hover:border-cyan-500/50';
         wg.innerHTML += `<div onclick="setWater(${i})" class="aspect-square rounded-xl border-2 transition-all cursor-pointer ${fill}"></div>`;
     }
     
-    // Streak Array Setup
-    const sg = document.getElementById('streak-grid');
-    sg.innerHTML = '';
-    const d = new Date();
-    let streakCount = 0;
-    
-    for(let i=6; i>=0; i--) {
-        const dt = new Date(d); dt.setDate(d.getDate()-i);
-        const dateStr = getLocalYMD(dt);
-        
-        const hasWork = sessions.some(s => s.date === dateStr);
-        const hasSupp = supps[dateStr] && supps[dateStr].c; // taking creatine counts as trying!
-        const done = hasWork || hasSupp;
-        
-        if(done) streakCount++;
-        
-        const bg = done 
-            ? 'bg-orange-500 shadow-[0_0_12px_rgba(255,140,0,0.4)] text-black' 
-            : 'bg-black border border-white/10 text-zinc-600';
-            
-        sg.innerHTML += `
-            <div class="flex-1 aspect-square rounded-lg ${bg} flex flex-col items-center justify-center transition-all">
-                <span class="text-[8px] font-label-caps opacity-50 block mb-1">${dt.toLocaleDateString('en-US',{weekday:'short'}).toUpperCase()}</span>
-                <span class="material-symbols-outlined text-sm ${done?'fill':''}">${done?'local_fire_department':'remove'}</span>
-            </div>
-        `;
-    }
-    
-    const msgs = [
-        "A bad workout is better than no workout.", 
-        "Consistency is the only currency that matters.", 
-        "You are building the machine.", 
-        "Embrace the friction. Adapt and overcome.",
-        "Discipline equals freedom."
-    ];
-    document.getElementById('motivational-msg').textContent = `"${msgs[streakCount % msgs.length]}"`;
-    
     // Water chart
+    if(typeof Chart === 'undefined') return;
+    const wData = [];
+    const wLabels = [];
+    for(let i=6; i>=0; i--) {
+        const dt = new Date(new Date()); dt.setDate(new Date().getDate()-i);
+        const ds = getLocalYMD(dt);
+        wData.push((supps[ds] && supps[ds].water) || 0);
+        wLabels.push(i===0 ? 'Today' : dt.toLocaleDateString('en-US',{weekday:'short'}));
+    }
+    if(charts.water) charts.water.destroy();
+    charts.water = new Chart(document.getElementById('chart-water'), {
+        type: 'bar',
+        data: { labels: wLabels, datasets: [{ label: 'Glasses', data: wData, backgroundColor: '#5b8cff', borderRadius: 8 }] },
+        options: { responsive: true, maintainAspectRatio: false, scales:{ y:{ max:8, ticks:{ stepSize:2 } } }, plugins: { legend: { display: false } } }
+    });
+}
+
+/*
+ * The old supplements page also rendered the streak card here. It now lives
+ * on Today through renderConsistencyStreak(), so supplements stay focused on
+ * hydration, reminders, and the daily stack.
+ */
+/* LEGACY SUPPLEMENTS RENDER BLOCK REMOVED
     if(typeof Chart === 'undefined') return;
     const wData = [];
     const wLabels = [];
@@ -3507,6 +3778,7 @@ function renderSupps() {
         }
     });
 }
+*/
 
 function saveSupps() {
     const today = getLocalYMD(new Date());
@@ -3523,7 +3795,7 @@ function saveSupps() {
     }
     
     localStorage.setItem('kinetic_supps', JSON.stringify(supps));
-    renderSupps();
+    renderHydration();
     syncToCloud();
 }
 
@@ -3533,7 +3805,7 @@ function setWater(n) {
     // toggle off if clicking the same glass
     supps[today].water = (supps[today].water === n) ? n-1 : n;
     localStorage.setItem('kinetic_supps', JSON.stringify(supps));
-    renderSupps();
+    renderHydration();
     syncToCloud();
 }
 
@@ -3734,9 +4006,11 @@ document.addEventListener('DOMContentLoaded', () => {
     bindLibraryInputs();
     renderLibraryPage();
     renderMemberQR();
+    renderProfileMetrics();
     switchNav('profile');
     renderNotifications();
     checkScheduledNotifications();
+    renderNutrition();
 
     const backupInput = document.getElementById('import-file');
     if (backupInput && !backupInput.dataset.autoImport) {
